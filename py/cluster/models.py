@@ -1,5 +1,6 @@
 from django.db import models
 from django import forms
+import psycopg2
 
 
 class TrackFunctionField(models.Field):
@@ -64,7 +65,6 @@ class HostCluster(models.Model):
 	self.save()
 
     def discover_cluster(self):
-	import psycopg2
 	conn=psycopg2.connect(self.get_conn_string())
 	cur=conn.cursor()
 	cur.execute("SELECT current_setting('server_version') AS ver")
@@ -181,7 +181,6 @@ class DatabaseName(models.Model):
 	return conn_string
 
     def discover_database(self):
-	import psycopg2
 	conn=psycopg2.connect(self.get_conn_string())
 	cur=conn.cursor()
 	exist_sch=self.schemaname_set.values('id','obj_oid','sch_name').filter(alive=True)
@@ -228,6 +227,70 @@ class SchemaName(models.Model):
 	self.alive=False
 	self.save()
 
+    def discover_schema_tables(self,conn):
+	exist_tbls=self.tablename_set.values('id','obj_oid','tbl_name').filter(alive=True)
+
+#	parent_db=DatabaseName.objects.get(pk=self.dn)
+#	conn=psycopg2.connect(parent_db.get_conn_string())
+	cur=conn.cursor()
+
+	cur.execute("""SELECT r.oid,r.relname,r.reltoastrelid,
+    CASE WHEN h.inhrelid IS NULL THEN 'f'::boolean ELSE 't'::boolean END AS has_parent,
+    CASE WHEN i.indexrelid IS NULL THEN 0::int ELSE (SELECT COUNT(1) FROM pg_index WHERE indrelid=r.oid)::int END AS indexes
+    FROM pg_class r
+    LEFT JOIN pg_inherits h ON r.oid=h.inhrelid
+    LEFT JOIN pg_index i ON r.oid=i.indrelid
+    WHERE r.relkind='r'
+    AND r.relnamespace=%s GROUP BY 1,2,3,4,5
+    ORDER BY 1,2,3,4,5""",self.obj_oid)
+#".$self{database_fields}{obj_oid}.
+	new_tbls=cur.fetchall()
+	for new_t in new_tbls:
+	    for exist_t in exist_tbls:
+		if new_t[0]==exist_t['obj_oid'] and new_t[1]==exist_t['tbl_name']:
+		    break
+	    else:
+		self.tablename_set.create(obj_oid=new_t[0],tbl_name=new_t[1],has_parent=new_t[3])
+	for exist_t in exist_tbls:
+	    for new_t in new_tbls:
+		if new_t[0]==exist_t['obj_oid'] and new_t[1]==exist_t['tbl_name']:
+		    break
+	    else:
+		remove_tbl=TableName.objects.get(pk=exist_t['id'])
+		remove_tbl.set_non_alive()
+
+
+    def discover_schema_functions(self,conn):
+	exist_funcs=self.functionname_set.values('id','pro_oid','func_name').filter(alive=True)
+
+#	parent_db=DatabaseName.objects.get(pk=self.dn)
+#	conn=psycopg2.connect(parent_db.get_conn_string())
+	cur=conn.cursor()
+
+	cur.execute("""SELECT p.oid AS pro_oid,p.proname AS funcname,p.proretset,t.typname,l.lanname
+    FROM pg_proc p
+    LEFT JOIN pg_namespace n ON n.oid = p.pronamespace
+    JOIN pg_type t ON p.prorettype=t.oid
+    JOIN pg_language l ON p.prolang=l.oid
+    WHERE (p.prolang <> (12)::oid)
+    AND n.oid=%s""",self.obj_oid)
+
+	new_funcs=cur.fetchall()
+	for new_f in new_funcs:
+	    for exist_f in exist_funcs:
+		if new_f[0]==exist_f['pro_oid'] and new_f[1]==exist_f['func_name']:
+		    break
+	    else:
+		self.functionname_set.create(obj_oid=new_f[0],func_name=new_f[1],proretset=new_f[2],prorettype=hew_f[3],prolang=new_f[4])
+	for exist_f in exist_funcs:
+	    for new_f in new_funcs:
+		if new_f[0]==exist_f['pro_oid'] and new_f[1]==exist_f['func_name']:
+		    break
+	    else:
+		remove_func=FunctionName.objects.get(pk=exist_f['id'])
+		remove_func.set_non_alive()
+
+
 
 ###################################################################################################
 
@@ -245,6 +308,9 @@ class FunctionName(models.Model):
     class Meta:
         db_table = 'function_name'
 
+    def set_non_alive(self):
+	self.alive=False
+	self.save()
 
 ###################################################################################################
 
@@ -259,6 +325,31 @@ class TableName(models.Model):
     class Meta:
         db_table = 'table_name'
 
+    def set_non_alive(self):
+	self.alive=False
+	self.save()
+
+    def discover_table_indexes(self,conn):
+	exist_idxs=self.indexname_set.values('id','obj_oid','idx_name').filter(alive=True)
+	cur=conn.cursor()
+	cur.execute("""SELECT i.indexrelid,c.relname,i.indisunique,i.indisprimary
+    FROM pg_index i
+    JOIN pg_class c ON i.indexrelid=c.oid
+    WHERE i.indrelid=%s""",self.obj_oid)
+	new_idxs=cur.fetchall()
+	for new_i in new_idxs:
+	    for exist_i in exist_idxs:
+		if new_i[0]==exist_i['obj_id'] and new_i[1]==exist_i['idx_name']:
+		    break
+	    else:
+		self.indexname_set.create(obj_oid=new_i[0],idx_name=new_i[1],is_unique=new_i[2],is_primary=new_i[3])
+	for exist_i in exist_idxs:
+	    for new_i in new_idxs:
+		if new_i[0]==exist_i['obj_id'] and new_i[1]==exist_i['idx_name']:
+		    break
+	    else:
+		remove_ind=IndexName.objects.get(pk=exist_i['id'])
+		remove_ind.set_non_alive()
 
 ###################################################################################################
 
@@ -274,17 +365,21 @@ class IndexName(models.Model):
     class Meta:
 	db_table = 'index_name'
 
+    def set_non_alive(self):
+	self.alive=False
+	self.save()
+
 
 ###################################################################################################
 
 
-#class TableToastName(models.Model):
-#    tn = models.ForeignKey(TableName)
-#    obj_oid = models.IntegerField()
-#    alive = models.BooleanField()
-#    tbl_name = models.CharField(max_length=-1)
-#    class Meta:
-#        db_table = u'table_toast_name'
+class TableToastName(models.Model):
+    tn = models.ForeignKey(TableName,primary_key=True)
+    obj_oid = models.IntegerField()
+    alive = models.BooleanField()
+    tbl_name = models.CharField(max_length=-1)
+    class Meta:
+        db_table = 'table_toast_name'
 
 
 ###################################################################################################
