@@ -1,0 +1,47 @@
+<h3>Details for Schema: {{ schema.sch_name }}</h3>
+Cluster: {{ cluster.hostname }}<br>
+Database: {{ database.db_name}}<br>
+
+<table border="1">
+    <tr>
+	<td>Schema Details</td>
+	<td>Tables</td>
+    </tr><tr>
+	<td>
+
+<table border="1">
+    <tr>
+	<td>Schema Object OID</td>
+	<td>{{ schema.obj_oid }}</td>
+    </tr><tr>
+	<td>Observable</td>
+	<td>{{ schema.alive|default:"Not defined" }}</td>
+    </tr><tr>
+	<td>Description</td>
+	<td>{{ schema.description|default:"Not defined" }}</td>
+    </tr>
+
+</table>
+<br>
+<a href=update>Update</a>
+<br>
+	</td><td valign="top">
+
+{% if tables %}
+<table border="1">
+    <tr>
+	<td>Table</td>
+    </tr>
+    {% for table in tables %}
+    <tr>
+	<td><a href="{{ table.id }}">{{ table.table_name }}</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+    No Tables discovered
+{% endif %}
+
+	</td>
+    </tr>
+</table>

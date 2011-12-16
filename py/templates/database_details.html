@@ -1,0 +1,56 @@
+<h3>Details for Database: {{ database.db_name }}</h3>
+<br>
+Cluster: {{ cluster.hostname }}
+<table border="1">
+    <tr>
+	<td>Database Details</td>
+	<td>Schemas</td>
+    </tr><tr>
+	<td>
+
+<table border="1">
+    <tr>
+	<td>Database Name</td>
+	<td>{{ database.db_name }}</td>
+    </tr><tr>
+	<td>Database Object OID</td>
+	<td>{{ database.obj_oid }}</td>
+    </tr><tr>
+	<td>Is Alive</td>
+	<td>{{ database.alive|default:"Not defined" }}</td>
+    </tr><tr>
+	<td>Is Observable</td>
+	<td>{{ database.obdervable|default:"Not defined" }}</td>
+    </tr><tr>
+	<td>Description</td>
+	<td>{{ database.description|default:"Not defined" }}</td>
+    </tr>
+
+</table>
+<br>
+<a href=discover>Discover...</a>
+<br>
+<a href=update>Update</a>
+<br>
+	</td><td valign="top">
+
+{% if schemas %}
+<table border="1">
+    <tr>
+	<td>Schema</td>
+	<td>Observable</td>
+    </tr>
+    {% for schema in schemas %}
+    <tr>
+	<td><a href="{{ schema.id }}">{{ schema.sch_name }}</a></td>
+	<td>{{ schema.observable }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+    No schema discovered
+{% endif %}
+
+	</td>
+    </tr>
+</table>

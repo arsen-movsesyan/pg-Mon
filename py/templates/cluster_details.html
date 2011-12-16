@@ -1,0 +1,69 @@
+<h3>Details for Cluster: {{ cluster.hostname }}</h3>
+<table border="1">
+    <tr>
+	<td>Cluster Details</td>
+	<td>Databases</td>
+    </tr><tr>
+	<td>
+
+<table border="1">
+    <tr>
+	<td>Hostname</td>
+	<td>{{ cluster.hostname }}</td>
+    </tr><tr>
+	<td>IP Address</td>
+	<td>{{ cluster.ip_address }}</td>
+    </tr><tr>
+	<td>FQDN</td>
+	<td>{{ cluster.fqdn|default:"Not defined" }}</td>
+    </tr><tr>
+	<td>Postgres DATA Path</td>
+	<td>{{ cluster.pg_data_path|default:"Not defined" }}</td>
+    </tr><tr>
+	<td>Postgres Version</td>
+	<td>{{ cluster.pg_version|default:"Not defined" }}</td>
+    </tr><tr>
+	<td>Is Master</td>
+	<td>{{ cluster.is_master }}</td>
+    </tr><tr>
+	<td>Is Alive</td>
+	<td>{{ cluster.alive|default:"Not defined" }}</td>
+    </tr><tr>
+	<td>Comments</td>
+	<td>{{ cluster.spec_comments|default:"Not defined" }}</td>
+    </tr><tr>
+	<td>Track Counts</td>
+	<td>{{ cluster.track_counts|default:"Not defined" }}</td>
+    </tr><tr>
+	<td>Track Functions</td>
+	<td>{{ cluster.track_functions|default:"Not defined" }}</td>
+    </tr>
+
+</table>
+<br>
+<a href=discover>Discover...</a>
+<br>
+<a href=update>Update</a>
+<br>
+	</td><td valign="top">
+
+{% if dbs %}
+<table border="1">
+    <tr>
+	<td>Database</td>
+	<td>Observable</td>
+    </tr>
+    {% for db in dbs %}
+    <tr>
+	<td><a href="{{ db.id }}">{{ db.db_name }}</a></td>
+	<td>{{db.observable}}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+    No databases discovered
+{% endif %}
+
+	</td>
+    </tr>
+</table>
