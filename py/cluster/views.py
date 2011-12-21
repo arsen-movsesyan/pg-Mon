@@ -80,4 +80,11 @@ def sch_details(request,cluster_id,database_id,schema_id):
     func_set=sch.functionname_set.filter(alive=True).order_by('func_name')
     return render_to_response('schema_details.html',{'cluster':hc,'database':db,'schema':sch,'tables':table_set,'functions':func_set},RequestContext(request))
 
-
+def discover_sch(request,cluster_id,database_id,schema_id):
+    hc=HostCluster.objects.get(pk=cluster_id)
+    db=DatabaseName.objects.get(pk=database_id)
+    sch=SchemaName.objects.get(pk=schema_id)
+#    conn=psycopg2.connect(db.get_conn_string())
+    sch.discover_schema_tables(db.get_conn_string())
+    sch.discover_schema_functions(db.get_conn_string())
+    return HttpResponseRedirect("/"+cluster_id+"/"+database_id+"/"+schema_id)

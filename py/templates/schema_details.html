@@ -6,8 +6,9 @@ Database: {{ database.db_name}}<br>
     <tr>
 	<td>Schema Details</td>
 	<td>Tables</td>
+	<td>Functions</td>
     </tr><tr>
-	<td>
+	<td valign="top">
 
 <table border="1">
     <tr>
@@ -23,7 +24,8 @@ Database: {{ database.db_name}}<br>
 
 </table>
 <br>
-<a href=update>Update</a>
+<a href=update>Update</a><br>
+<a href=discover>Discover</a>
 <br>
 	</td><td valign="top">
 
@@ -42,6 +44,23 @@ Database: {{ database.db_name}}<br>
     No Tables discovered
 {% endif %}
 
+	</td><td valign="top">
+{% if functions %}
+<table border="1">
+    <tr>
+	<td>Function</td>
+	<td>Language</td>
+    </tr>
+    {% for func in functions %}
+    <tr>
+	<td>{{ func.func_name }}</td>
+	<td>{{ func.prolang }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+    No Functions Discovered
+{% endif %}
 	</td>
     </tr>
 </table>

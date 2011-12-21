@@ -9,7 +9,7 @@ urlpatterns = patterns('',
     # (r'^py/', include('py.foo.urls')),
 
     url(r'^$', 'cluster.views.index'),
-    url(r'^add$', 'cluster.views.add_cluster'),
+    url(r'^add/$', 'cluster.views.add_cluster'),
 
     url(r'^(?P<cluster_id>\d+)/$', 'cluster.views.cluster_details'),
     url(r'^(?P<cluster_id>\d+)/update/$', 'cluster.views.update_cluster'),
@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     url(r'^(?P<cluster_id>\d+)/(?P<database_id>\d+)/discover/$', 'cluster.views.discover_db'),
 
     url(r'^(?P<cluster_id>\d+)/(?P<database_id>\d+)/(?P<schema_id>\d+)/$','cluster.views.sch_details'),
+    url(r'^(?P<cluster_id>\d+)/(?P<database_id>\d+)/(?P<schema_id>\d+)/discover/$','cluster.views.discover_sch'),
 
 
 

@@ -1,4 +1,5 @@
 from django.db import models
+from django.db import connection
 from django import forms
 import psycopg2
 
@@ -127,6 +128,27 @@ class HostCluster(models.Model):
     class Meta:
 	db_table = 'host_cluster'
 
+    def bg_stat(self,time):
+	conn=psycopg2.connect(self.get_conn_string())
+	cursor = conn.cursor()
+	cursor.execute("""SELECT
+pg_stat_get_bgwriter_timed_checkpoints() AS checkpoints_timed,
+pg_stat_get_bgwriter_requested_checkpoints() AS checkpoints_req,
+pg_stat_get_bgwriter_buf_written_checkpoints() AS buffers_checkpoint,
+pg_stat_get_bgwriter_buf_written_clean() AS buffers_clean,
+pg_stat_get_bgwriter_maxwritten_clean() AS maxwritten_clean,
+pg_stat_get_buf_written_backend() AS buffers_backend,
+pg_stat_get_buf_alloc() AS buffers_alloc""")
+	stat=cursor.fetchone()
+	self.bgwriterstat_set.create(time_id=time
+	,checkpoints_timed=stat[0]
+	,checkpoints_req=stat[1]
+	,buffers_checkpoint=stat[2]
+	,buffers_clean=stat[3]
+	,maxwritten_clean=stat[4]
+	,buffers_backend=stat[5]
+	,buffers_alloc=stat[6])
+
 
 class ClusterForm(forms.Form):
     db_host = forms.CharField(max_length=30)
@@ -150,6 +172,7 @@ class ClusterConnParamForm(forms.Form):
     db_password = forms.CharField(required=False)
     db_port = forms.IntegerField(initial=5432)
     db_sslmode = forms.ChoiceField(choices=SSLMODE_CHOICE)
+
 
 ###################################################################################################
 
@@ -177,7 +200,6 @@ class DatabaseName(models.Model):
 	cursor=connection.cursor()
 	cursor.execute("SELECT get_conn_string(%s,%s)",[self.hc_id,self.id])
 	conn_string=cursor.fetchone()[0]
-	print "Con String = " + conn_string
 	return conn_string
 
     def discover_database(self):
@@ -210,6 +232,35 @@ class DatabaseName(models.Model):
     class Meta:
 	db_table = 'database_name'
 
+    def db_stat(self,time):
+	conn=psycopg2.connect(self.get_conn_string())
+	cursor=conn.cursor()
+	cursor.execute("""SELECT
+pg_database_size(oid) AS db_size,
+pg_stat_get_db_xact_commit(oid) AS xact_commit,
+pg_stat_get_db_xact_rollback(oid) AS xact_rollback,
+pg_stat_get_db_blocks_fetched(oid) AS blks_fetch,
+pg_stat_get_db_blocks_hit(oid) AS blks_hit,
+pg_stat_get_db_tuples_returned(oid) AS tup_returned,
+pg_stat_get_db_tuples_fetched(oid) AS tup_fetched,
+pg_stat_get_db_tuples_inserted(oid) AS tup_inserted,
+pg_stat_get_db_tuples_updated(oid) AS tup_updated,
+pg_stat_get_db_tuples_deleted(oid) AS tup_deleted
+FROM pg_database
+WHERE oid =%s""",(self.obj_oid,))
+	stat=cursor.fetchone()
+	self.databasestat_set.create(time_id=time,
+    db_size = stat[0],
+    xact_commit = stat[1],
+    xact_rollback = stat[2],
+    blks_fetch = stat[3],
+    blks_hit = stat[4],
+    tup_returned = stat[5],
+    tup_fetched = stat[6],
+    tup_inserted = stat[7],
+    tup_updated = stat[8],
+    tup_deleted = stat[9])
+
 
 ###################################################################################################
 
@@ -227,30 +278,28 @@ class SchemaName(models.Model):
 	self.alive=False
 	self.save()
 
-    def discover_schema_tables(self,conn):
+    def discover_schema_tables(self,conn_string):
+	conn=psycopg2.connect(conn_string)
 	exist_tbls=self.tablename_set.values('id','obj_oid','tbl_name').filter(alive=True)
-
-#	parent_db=DatabaseName.objects.get(pk=self.dn)
-#	conn=psycopg2.connect(parent_db.get_conn_string())
 	cur=conn.cursor()
 
 	cur.execute("""SELECT r.oid,r.relname,r.reltoastrelid,
-    CASE WHEN h.inhrelid IS NULL THEN 'f'::boolean ELSE 't'::boolean END AS has_parent,
-    CASE WHEN i.indexrelid IS NULL THEN 0::int ELSE (SELECT COUNT(1) FROM pg_index WHERE indrelid=r.oid)::int END AS indexes
+    CASE WHEN h.inhrelid IS NULL THEN 'f'::boolean ELSE 't'::boolean END AS has_parent
     FROM pg_class r
     LEFT JOIN pg_inherits h ON r.oid=h.inhrelid
-    LEFT JOIN pg_index i ON r.oid=i.indrelid
     WHERE r.relkind='r'
-    AND r.relnamespace=%s GROUP BY 1,2,3,4,5
-    ORDER BY 1,2,3,4,5""",self.obj_oid)
-#".$self{database_fields}{obj_oid}.
+    AND r.relnamespace=%s""",(self.obj_oid,))
 	new_tbls=cur.fetchall()
 	for new_t in new_tbls:
 	    for exist_t in exist_tbls:
 		if new_t[0]==exist_t['obj_oid'] and new_t[1]==exist_t['tbl_name']:
 		    break
 	    else:
-		self.tablename_set.create(obj_oid=new_t[0],tbl_name=new_t[1],has_parent=new_t[3])
+		new_table_obj=self.tablename_set.create(obj_oid=new_t[0],tbl_name=new_t[1],has_parent=new_t[3])
+		if new_t[2]:
+		    new_toast_tbl_obj=new_table_obj.create_toast(conn_string,new_t[2])
+		new_table_obj.discover_indexes(conn)
+
 	for exist_t in exist_tbls:
 	    for new_t in new_tbls:
 		if new_t[0]==exist_t['obj_oid'] and new_t[1]==exist_t['tbl_name']:
@@ -260,11 +309,9 @@ class SchemaName(models.Model):
 		remove_tbl.set_non_alive()
 
 
-    def discover_schema_functions(self,conn):
+    def discover_schema_functions(self,conn_string):
+	conn=psycopg2.connect(conn_string)
 	exist_funcs=self.functionname_set.values('id','pro_oid','func_name').filter(alive=True)
-
-#	parent_db=DatabaseName.objects.get(pk=self.dn)
-#	conn=psycopg2.connect(parent_db.get_conn_string())
 	cur=conn.cursor()
 
 	cur.execute("""SELECT p.oid AS pro_oid,p.proname AS funcname,p.proretset,t.typname,l.lanname
@@ -273,7 +320,7 @@ class SchemaName(models.Model):
     JOIN pg_type t ON p.prorettype=t.oid
     JOIN pg_language l ON p.prolang=l.oid
     WHERE (p.prolang <> (12)::oid)
-    AND n.oid=%s""",self.obj_oid)
+    AND n.oid=%s""",(self.obj_oid,))
 
 	new_funcs=cur.fetchall()
 	for new_f in new_funcs:
@@ -281,7 +328,7 @@ class SchemaName(models.Model):
 		if new_f[0]==exist_f['pro_oid'] and new_f[1]==exist_f['func_name']:
 		    break
 	    else:
-		self.functionname_set.create(obj_oid=new_f[0],func_name=new_f[1],proretset=new_f[2],prorettype=hew_f[3],prolang=new_f[4])
+		self.functionname_set.create(pro_oid=new_f[0],func_name=new_f[1],proretset=new_f[2],prorettype=new_f[3],prolang=new_f[4])
 	for exist_f in exist_funcs:
 	    for new_f in new_funcs:
 		if new_f[0]==exist_f['pro_oid'] and new_f[1]==exist_f['func_name']:
@@ -290,13 +337,9 @@ class SchemaName(models.Model):
 		remove_func=FunctionName.objects.get(pk=exist_f['id'])
 		remove_func.set_non_alive()
 
-
-
 ###################################################################################################
 
-
 class FunctionName(models.Model):
-#    id = models.IntegerField(primary_key=True)
     sn = models.ForeignKey(SchemaName)
     pro_oid = models.IntegerField()
     proretset = models.BooleanField()
@@ -312,15 +355,30 @@ class FunctionName(models.Model):
 	self.alive=False
 	self.save()
 
+    def func_stat(self,time,conn_string):
+	conn=psycopg2.connect(conn_string)
+	cursor=conn.cursor()
+	cursor.execute("""SELECT
+COALESCE(pg_stat_get_function_calls(oid),0) AS func_calls,
+COALESCE((pg_stat_get_function_time(oid)),0) AS total_time,
+COALESCE((pg_stat_get_function_self_time(oid)),0) AS self_time
+FROM pg_proc
+WHERE oid=%s""",(self.pro_oid,))
+	stat=cursor.fetchone()
+	self.functionstat_set.create(time_id=time,
+    func_calls = stat[0],
+    total_time = stat[1],
+    self_time = stat[2])
+
+
 ###################################################################################################
 
 
 class TableName(models.Model):
-#    id = models.IntegerField(primary_key=True)
     sn = models.ForeignKey(SchemaName)
     obj_oid = models.IntegerField()
     has_parent = models.BooleanField()
-    alive = models.BooleanField()
+    alive = models.BooleanField(default=True)
     tbl_name = models.CharField(max_length=30)
     class Meta:
         db_table = 'table_name'
@@ -329,66 +387,341 @@ class TableName(models.Model):
 	self.alive=False
 	self.save()
 
-    def discover_table_indexes(self,conn):
+    def discover_indexes(self,conn_string):
+	conn=psycopg2.connect(conn_string)
 	exist_idxs=self.indexname_set.values('id','obj_oid','idx_name').filter(alive=True)
 	cur=conn.cursor()
 	cur.execute("""SELECT i.indexrelid,c.relname,i.indisunique,i.indisprimary
     FROM pg_index i
     JOIN pg_class c ON i.indexrelid=c.oid
-    WHERE i.indrelid=%s""",self.obj_oid)
+    WHERE i.indrelid=%s""",(self.obj_oid,))
 	new_idxs=cur.fetchall()
 	for new_i in new_idxs:
 	    for exist_i in exist_idxs:
-		if new_i[0]==exist_i['obj_id'] and new_i[1]==exist_i['idx_name']:
+		if new_i[0]==exist_i['obj_oid'] and new_i[1]==exist_i['idx_name']:
 		    break
 	    else:
 		self.indexname_set.create(obj_oid=new_i[0],idx_name=new_i[1],is_unique=new_i[2],is_primary=new_i[3])
 	for exist_i in exist_idxs:
 	    for new_i in new_idxs:
-		if new_i[0]==exist_i['obj_id'] and new_i[1]==exist_i['idx_name']:
+		if new_i[0]==exist_i['obj_oid'] and new_i[1]==exist_i['idx_name']:
 		    break
 	    else:
 		remove_ind=IndexName.objects.get(pk=exist_i['id'])
 		remove_ind.set_non_alive()
 
+    def create_toast(self,conn_string,toast_relid):
+	conn=psycopg2.connect(conn_string)
+	cur=conn.cursor()
+	cur.execute("""SELECT t.relname,t.reltoastidxid,i.relname
+    FROM pg_class t
+    INNER JOIN pg_class r ON r.reltoastrelid=t.oid
+    INNER JOIN pg_class i ON t.reltoastidxid=i.oid
+    WHERE t.oid=%s""",(toast_relid,))
+	toast_res=cur.fetchone()
+	tt=self.tabletoastname_set.create(obj_oid=toast_relid,tbl_name=toast_res[0])
+	tt.indextoastname_set.create(obj_oid=toast_res[1],idx_name=toast_res[2])
+
+
+    def tbl_stat(self,time,conn_string):
+	conn=psycopg2.connect(conn_string)
+	cursor=conn.cursor()
+	cursor.execute("""SELECT
+pg_relation_size(oid) AS relsize,
+pg_total_relation_size(oid) AS totalrelsize,
+reltuples::bigint,
+pg_stat_get_numscans(oid) AS seq_scan,
+pg_stat_get_tuples_returned(oid) AS seq_tup_read,
+pg_stat_get_tuples_fetched(oid) AS seq_tup_fetch,
+pg_stat_get_tuples_inserted(oid) AS n_tup_ins,
+pg_stat_get_tuples_updated(oid) AS n_tup_upd,
+pg_stat_get_tuples_deleted(oid) AS n_tup_del,
+pg_stat_get_tuples_hot_updated(oid) AS n_tup_hot_upd,
+pg_stat_get_live_tuples(oid) AS n_live_tup,
+pg_stat_get_dead_tuples(oid) AS n_dead_tup,
+pg_stat_get_blocks_fetched(oid) AS heap_blks_fetch,
+pg_stat_get_blocks_hit(oid) AS heap_blks_hit
+FROM pg_class
+WHERE oid=%s""",(self.obj_oid,))
+	stat=cursor.fetchone()
+	self.tablestat_set.create(time_id=time,
+    tbl_size = stat[0],
+    tbl_total_size = stat[1],
+    tbl_tuples = stat[2],
+    seq_scan = stat[3],
+    seq_tup_read = stat[4],
+    seq_tup_fetch = stat[5],
+    n_tup_ins = stat[6],
+    n_tup_upd = stat[7],
+    n_tup_del = stat[8],
+    n_tup_hot_upd = stat[9],
+    n_live_tup = stat[10],
+    n_dead_tup = stat[11],
+    heap_blks_fetch = stat[12],
+    heap_blks_hit = stat[13])
+
+    def tbl_va_stat(self,time,conn_string):
+	conn=psycopg2.connect(conn_string)
+	cursor=conn.cursor()
+	cursor.execute("""SELECT
+pg_stat_get_last_vacuum_time(oid) AS last_vacuum,
+pg_stat_get_last_autovacuum_time(oid) AS last_autovacuum,
+pg_stat_get_last_analyze_time(oid) AS last_analyze,
+pg_stat_get_last_autoanalyze_time(oid) AS last_autoanalyze
+FROM pg_class WHERE oid=%s""",(self.obj_oid,))
+	stat=cursor.fetchone()
+	self.tablevastat_set.create(time_id=time,
+    last_vacuum = stat[0],
+    last_autovacuum = stat[1],
+    last_analyze = stat[2],
+    last_autoanalyze = stat[3])
+
+
 ###################################################################################################
 
-
 class IndexName(models.Model):
-#    id = models.IntegerField(primary_key=True)
     tn = models.ForeignKey(TableName)
     obj_oid = models.IntegerField()
     is_unique = models.BooleanField()
     is_primary = models.BooleanField()
-    alive = models.BooleanField()
+    alive = models.BooleanField(default=True)
     idx_name = models.CharField(max_length=30)
     class Meta:
 	db_table = 'index_name'
 
-    def set_non_alive(self):
-	self.alive=False
-	self.save()
-
+    def idx_stat(self,time,conn_string):
+	conn=psycopg2.connect(conn_string)
+	cursor=conn.cursor()
+	cursor.execute("""SELECT
+pg_stat_get_numscans(oid) AS idx_scan,
+pg_stat_get_tuples_returned(oid) AS idx_tup_read,
+pg_stat_get_tuples_fetched(oid) AS idx_tup_fetch,
+pg_stat_get_blocks_fetched(oid) AS idx_blks_fetch,
+pg_stat_get_blocks_hit(oid) AS idx_blks_hit
+FROM pg_class WHERE oid=%s""",(self.obj_oid,))
+	stat=cursor.fetchone()
+	self.indexstat_set.create(time_id=time,
+    idx_scan = stat[0],
+    idx_tup_read = stat[1],
+    idx_tup_fetch = stat[2],
+    idx_blks_fetch = stat[3],
+    idx_blks_hit = stat[4])
 
 ###################################################################################################
-
 
 class TableToastName(models.Model):
     tn = models.ForeignKey(TableName,primary_key=True)
     obj_oid = models.IntegerField()
-    alive = models.BooleanField()
-    tbl_name = models.CharField(max_length=-1)
+    alive = models.BooleanField(default=True)
+    tbl_name = models.CharField(max_length=30)
     class Meta:
         db_table = 'table_toast_name'
+
+    def tbl_toast_stat(self,time,conn_string):
+	conn=psycopg2.connect(conn_string)
+	cursor=conn.cursor()
+	cursor.execute("""SELECT
+pg_stat_get_numscans(oid) AS seq_scan,
+pg_stat_get_tuples_returned(oid) AS seq_tup_read,
+pg_stat_get_tuples_fetched(oid) AS seq_tup_fetch,
+pg_stat_get_tuples_inserted(oid) AS n_tup_ins,
+pg_stat_get_tuples_updated(oid) AS n_tup_upd,
+pg_stat_get_tuples_deleted(oid) AS n_tup_del,
+pg_stat_get_tuples_hot_updated(oid) AS n_tup_hot_upd,
+pg_stat_get_live_tuples(oid) AS n_live_tup,
+pg_stat_get_dead_tuples(oid) AS n_dead_tup,
+pg_stat_get_blocks_fetched(oid) AS heap_blks_fetch,
+pg_stat_get_blocks_hit(oid) AS heap_blks_hit
+FROM pg_class WHERE oid=%s""",(self.obj_oid,))
+	stat=cursor.fetchone()
+	self.tabletoaststat_set.create(time_id=time,
+    seq_scan = stat[0],
+    seq_tup_read = stat[1],
+    seq_tup_fetch = stat[2],
+    n_tup_ins = stat[3],
+    n_tup_upd = stat[4],
+    n_tup_del = stat[5],
+    n_tup_hot_upd = stat[6],
+    n_live_tup = stat[7],
+    n_dead_tup = stat[8],
+    heap_blks_fetch = stat[9],
+    heap_blks_hit = stat[10])
 
 
 ###################################################################################################
 
-#class IndexToastName(models.Model):
-#    tn = models.ForeignKey(TableToastName)
-#    obj_oid = models.IntegerField()
-#    alive = models.BooleanField()
-#    idx_name = models.CharField(max_length=-1)
-#    class Meta:
-#	db_table = u'index_toast_name'
+class IndexToastName(models.Model):
+    tn = models.ForeignKey(TableToastName,primary_key=True)
+    obj_oid = models.IntegerField()
+    alive = models.BooleanField(default=True)
+    idx_name = models.CharField(max_length=30)
+    class Meta:
+	db_table = 'index_toast_name'
+
+    def idx_toast_stat(self,time,conn_string):
+	conn=psycopg2.connect(conn_string)
+	cursor=conn.cursor()
+	cursor.execute("""SELECT
+pg_stat_get_numscans(oid) AS idx_scan,
+pg_stat_get_tuples_returned(oid) AS idx_tup_read,
+pg_stat_get_tuples_fetched(oid) AS idx_tup_fetch,
+pg_stat_get_blocks_fetched(oid) AS idx_blks_fetch,
+pg_stat_get_blocks_hit(oid) AS idx_blks_hit
+FROM pg_class WHERE oid=%s""",(self.obj_oid,))
+	stat=cursor.fetchone()
+	self.indextoaststat_set.create(time_id=time,
+    tidx_scan = stat[0],
+    tidx_tup_read = stat[1],
+    tidx_tup_fetch = stat[2],
+    tidx_blks_fetch = stat[3],
+    tidx_blks_hit = stat[4])
+
+
+###################################################################################################
+###################################################################################################
+
+class LogTime(models.Model):
+    actual_time = models.DateTimeField(null=True)
+    hour_truncate = models.DateTimeField(null=True,unique=True)
+    class Meta:
+	db_table = 'log_time'
+
+    def __init__(self,*args,**kwargs):
+	cursor = connection.cursor()
+	cursor.execute("SELECT LOCALTIMESTAMP,date_trunc('hour',LOCALTIMESTAMP)")
+	time_data=cursor.fetchone()
+	kwargs['actual_time']=time_data[0]
+	kwargs['hour_truncate']=time_data[1]
+	super(LogTime,self).__init__(*args,**kwargs)
+
+
+###################################################################################################
+
+class BgwriterStat(models.Model):
+    hc = models.ForeignKey(HostCluster)
+    time = models.ForeignKey(LogTime)
+    checkpoints_timed = models.BigIntegerField()
+    checkpoints_req = models.BigIntegerField()
+    buffers_checkpoint = models.BigIntegerField()
+    buffers_clean = models.BigIntegerField()
+    maxwritten_clean = models.BigIntegerField()
+    buffers_backend = models.BigIntegerField()
+    buffers_alloc = models.BigIntegerField()
+    conn_string = ''
+    class Meta:
+	db_table = 'bgwriter_stat'
+
+
+###################################################################################################
+
+class DatabaseStat(models.Model):
+    dn = models.ForeignKey(DatabaseName)
+    time = models.ForeignKey(LogTime)
+    db_size = models.BigIntegerField()
+    xact_commit = models.BigIntegerField()
+    xact_rollback = models.BigIntegerField()
+    blks_fetch = models.BigIntegerField()
+    blks_hit = models.BigIntegerField()
+    tup_returned = models.BigIntegerField()
+    tup_fetched = models.BigIntegerField()
+    tup_inserted = models.BigIntegerField()
+    tup_updated = models.BigIntegerField()
+    tup_deleted = models.BigIntegerField()
+    class Meta:
+	db_table = 'database_stat'
+
+###################################################################################################
+
+class TableStat(models.Model):
+    tn = models.ForeignKey(TableName)
+    time = models.ForeignKey(LogTime)
+    tbl_size = models.BigIntegerField()
+    tbl_total_size = models.BigIntegerField()
+    tbl_tuples = models.BigIntegerField()
+    seq_scan = models.BigIntegerField()
+    seq_tup_read = models.BigIntegerField()
+    seq_tup_fetch = models.BigIntegerField()
+    n_tup_ins = models.BigIntegerField()
+    n_tup_upd = models.BigIntegerField()
+    n_tup_del = models.BigIntegerField()
+    n_tup_hot_upd = models.BigIntegerField()
+    n_live_tup = models.BigIntegerField()
+    n_dead_tup = models.BigIntegerField()
+    heap_blks_fetch = models.BigIntegerField()
+    heap_blks_hit = models.BigIntegerField()
+    class Meta:
+	db_table = 'table_stat'
+
+###################################################################################################
+
+class TableVaStat(models.Model):
+    tn = models.ForeignKey(TableName)
+    time = models.ForeignKey(LogTime)
+    last_vacuum = models.DateTimeField()
+    last_autovacuum = models.DateTimeField()
+    last_analyze = models.DateTimeField()
+    last_autoanalyze = models.DateTimeField()
+    class Meta:
+	db_table = 'table_va_stat'
+
+
+###################################################################################################
+
+class FunctionStat(models.Model):
+    fn = models.ForeignKey(FunctionName)
+    time = models.ForeignKey(LogTime)
+    func_calls = models.BigIntegerField()
+    total_time = models.BigIntegerField()
+    self_time = models.BigIntegerField()
+    class Meta:
+	db_table = 'function_stat'
+
+
+###################################################################################################
+
+class IndexStat(models.Model):
+    in_id = models.ForeignKey(IndexName,db_column='in_id')
+    time = models.ForeignKey(LogTime)
+    idx_scan = models.BigIntegerField()
+    idx_tup_read = models.BigIntegerField()
+    idx_tup_fetch = models.BigIntegerField()
+    idx_blks_fetch = models.BigIntegerField()
+    idx_blks_hit = models.BigIntegerField()
+    class Meta:
+	db_table = 'index_stat'
+
+
+###################################################################################################
+
+
+class TableToastStat(models.Model):
+    tn = models.ForeignKey(TableToastName)
+    time = models.ForeignKey(LogTime)
+    seq_scan = models.BigIntegerField()
+    seq_tup_read = models.BigIntegerField()
+    seq_tup_fetch = models.BigIntegerField()
+    n_tup_ins = models.BigIntegerField()
+    n_tup_upd = models.BigIntegerField()
+    n_tup_del = models.BigIntegerField()
+    n_tup_hot_upd = models.BigIntegerField()
+    n_live_tup = models.BigIntegerField()
+    n_dead_tup = models.BigIntegerField()
+    heap_blks_fetch = models.BigIntegerField()
+    heap_blks_hit = models.BigIntegerField()
+    class Meta:
+	db_table = 'table_toast_stat'
+
+###################################################################################################
+
+
+class IndexToastStat(models.Model):
+    tn = models.ForeignKey(IndexToastName)
+    time = models.ForeignKey(LogTime)
+    tidx_scan = models.BigIntegerField()
+    tidx_tup_read = models.BigIntegerField()
+    tidx_tup_fetch = models.BigIntegerField()
+    tidx_blks_fetch = models.BigIntegerField()
+    tidx_blks_hit = models.BigIntegerField()
+    class Meta:
+	db_table = u'index_toast_stat'
 
