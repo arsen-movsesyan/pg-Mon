@@ -10,6 +10,7 @@ urlpatterns = patterns('',
 
     url(r'^$', 'cluster.views.index'),
     url(r'^add/$', 'cluster.views.add_cluster'),
+    url(r'^about/$', 'cluster.views.about'),
 
     url(r'^(?P<cluster_id>\d+)/$', 'cluster.views.cluster_details'),
     url(r'^(?P<cluster_id>\d+)/update/$', 'cluster.views.update_cluster'),

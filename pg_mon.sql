@@ -52,49 +52,6 @@ CREATE TYPE track_functions_state AS ENUM (
 ALTER TYPE public.track_functions_state OWNER TO postgres;
 
 --
--- Name: get_closest_log_time_id(timestamp without time zone); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION get_closest_log_time_id(req_time timestamp without time zone) RETURNS integer
-    LANGUAGE plpgsql
-    AS $$DECLARE
-	ret_id INTEGER;
-	near_id INTEGER;
-	far_id INTEGER;
-	near_ht TIMESTAMP WITHOUT TIME ZONE;
-	far_ht TIMESTAMP WITHOUT TIME ZONE;
-BEGIN
-	SELECT id INTO ret_id FROM log_time WHERE hour_truncate=date_trunc('hour',req_time);
-	IF NOT FOUND THEN
-		SELECT id INTO near_id FROM log_time WHERE hour_truncate =(SELECT MIN(hour_truncate) FROM log_time WHERE hour_truncate>req_time);
-		IF NOT FOUND THEN
-			SELECT id INTO ret_id FROM log_time WHERE hour_truncate =(SELECT MAX(hour_truncate) FROM log_time);
-			RETURN ret_id;
-		ELSE
-			SELECT id INTO far_id FROM log_time WHERE hour_truncate=
-				(SELECT MAX(hour_truncate) FROM log_time 
-				WHERE hour_truncate BETWEEN req_time - ((SELECT hour_truncate FROM log_time WHERE id=near_id)-req_time)::interval AND req_time);
-			IF NOT FOUND THEN 
-				RETURN near_id;
-			ELSE
-				SELECT hour_truncate INTO near_ht FROM log_time WHERE id=near_id;
-				SELECT hour_truncate INTO far_ht FROM log_time WHERE id=far_id;
-				IF (req_time-far_ht) > (near_ht-req_time) THEN
-					RETURN near_id;
-				ELSE
-					RETURN far_id;
-				END IF;
-			END IF;
-		END IF;
-	ELSE
-		RETURN ret_id;
-	END IF;
-END$$;
-
-
-ALTER FUNCTION public.get_closest_log_time_id(req_time timestamp without time zone) OWNER TO postgres;
-
---
 -- Name: get_conn_string(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -436,15 +393,15 @@ CREATE TABLE host_cluster (
     ip_address inet NOT NULL,
     hostname character varying NOT NULL,
     is_master boolean NOT NULL,
+    observable boolean DEFAULT true NOT NULL,
     alive boolean DEFAULT true NOT NULL,
+    track_counts boolean,
+    track_functions track_functions_state,
     pg_version character varying,
     pg_data_path character varying,
     fqdn character varying,
     spec_comments character varying,
-    conn_param character varying[],
-    observable boolean DEFAULT true NOT NULL,
-    track_counts boolean,
-    track_functions track_functions_state
+    conn_param character varying[]
 );
 
 
@@ -563,8 +520,8 @@ ALTER TABLE public.index_toast_stat OWNER TO postgres;
 
 CREATE TABLE log_time (
     id integer NOT NULL,
-    actual_time timestamp without time zone NOT NULL,
-    hour_truncate timestamp without time zone NOT NULL
+    actual_time timestamp without time zone DEFAULT ('now'::text)::timestamp without time zone NOT NULL,
+    hour_truncate timestamp without time zone DEFAULT date_trunc('hour'::text, ('now'::text)::timestamp without time zone) NOT NULL
 );
 
 

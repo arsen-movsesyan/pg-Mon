@@ -1,51 +1,49 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<title>PgMon Database Inventory</title>
-<meta name="keywords" content="" />
-<meta name="description" content="" />
-<link href="/media/css/style.css" rel="stylesheet" type="text/css" media="screen" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>PgMon Database Inventory</title>
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet" type="text/css" media="screen" />
 </head>
-<body>
-<div id="wrapper">
-    <div id="logo">
-	<h1>PgMon Postgresql Monitoring</h1>
-
-	<p><em> nice company slogan here <!--<a href="http://www.freecsstemplates.org/">Link</a>--></em></p>
-
-    </div>
-    <hr />
-<!-- end #logo -->
 
 
-    <div id="header">
-	<div id="menu">
-	    <ul>
-		<li class="current_page_item"><a href="#" class="first">Home</a></li>
-		<li><a href="#">About</a></li>
-		<li><a href="#">Services</a></li>
-		<li><a href="#">Support</a></li>
-		<li></li>
-		<li><a href="#">Contact</a></li>
-	    </ul>
-	</div>
-<!-- end #menu -->
-<!-- end #menu -->
-	<div id="search">
-	    <form method="get" action="">
-		<fieldset>
-		    <input type="text" name="s" id="search-text" size="15" />
-		    <input type="submit" id="search-submit" value="GO" />
-		</fieldset>
-	    </form>
-	</div>
-<!-- end #search -->
-    </div>
-<!-- end #header -->
-<!-- end #header-wrapper -->
-{% block content %}{% endblock %}
+<table border="0" class="main">
+    <tbody>
+    <tr>
+	<td class="top"></td>
+	<td class="top">
 
+<div id="logo">
+    <h1>PgMon</h1>
+    <p><em>PostgreSQL Monitoring Solution</em></p>
+</div>
 
+	</td>
+    </tr><tr>
+	<td class="search">search</td>
 
-</body></html>
+	<td class="topmenu">
+
+{% block topmenu %}
+<table class="top_menu">
+    <tr>
+	<td class="menuitem"><a class="menu" href="about">About</a></td>
+	<td class="menuitem"><a class="menu" href="#">Config</a></td>
+	<td class="menuitem"><a class="menu" href="#">Satistic</a></td>
+	<td class="menuitem"><a class="menu" href="#">Documentation</a></td>
+    </tr>
+</table>
+{% endblock topmenu %}
+
+	</td>
+    </tr><tr>
+	<td class="navi">{% block navi %}{% endblock navi %}
+</td>
+	<td class="content">{% block text %}{% endblock text %}</td>
+    </tr><tr>
+	<td class="copyright" colspan="2">Copyright &copy PgMon 2012</td>
+    </tr>
+    </tbody>
+</table>
+</html>

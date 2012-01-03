@@ -3,6 +3,14 @@ from django.shortcuts import render_to_response
 from cluster.models import *
 from django.http import HttpResponse, HttpResponseRedirect
 
+
+
+class TopMenu():
+    menuitems=['About','Config','Statistic','Documentation']
+
+
+
+
 def index(request):
     all_clusters = HostCluster.objects.all()
     return render_to_response('index.html', {'all_clusters': all_clusters},RequestContext(request))
@@ -88,3 +96,6 @@ def discover_sch(request,cluster_id,database_id,schema_id):
     sch.discover_schema_tables(db.get_conn_string())
     sch.discover_schema_functions(db.get_conn_string())
     return HttpResponseRedirect("/"+cluster_id+"/"+database_id+"/"+schema_id)
+
+#def about(request):
+#    return Ht

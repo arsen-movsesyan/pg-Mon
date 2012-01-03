@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+
+{% block text %}
 <h3>{{ message }}</h3>
 
 <form method="post" action=".">{% csrf_token %}
@@ -10,3 +13,4 @@
 </table><br>
 <input type="submit" name="{{action}}_cluster_submit" value="{{action}} Cluster">
 </form>
+{% endblock %}

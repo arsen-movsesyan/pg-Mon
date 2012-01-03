@@ -99,7 +99,8 @@ class HostCluster(models.Model):
     def add_edit(self):
 	self.ip_address=self.model_data['db_ip_address']
 	self.hostname=self.model_data['db_host']
-	self.is_master=self.model_data['db_is_master']
+	self.is_master=self.model_data.get('db_is_master', False)
+#	self.is_master=self.model_data['db_is_master']
 	self.spec_comments=self.model_data['db_comments']
 	self.fqdn=self.model_data['db_fqdn']
 	conn_array=Array()
@@ -298,7 +299,7 @@ class SchemaName(models.Model):
 		new_table_obj=self.tablename_set.create(obj_oid=new_t[0],tbl_name=new_t[1],has_parent=new_t[3])
 		if new_t[2]:
 		    new_toast_tbl_obj=new_table_obj.create_toast(conn_string,new_t[2])
-		new_table_obj.discover_indexes(conn)
+		new_table_obj.discover_indexes(conn_string)
 
 	for exist_t in exist_tbls:
 	    for new_t in new_tbls:
