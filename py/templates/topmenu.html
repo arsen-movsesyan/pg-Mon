@@ -1,0 +1,15 @@
+{% block topmenu %}
+<table class="top_menu">
+    <tr>
+    {% for item in items %}
+	<td class=
+	{{ if item.id }}
+	    "menuitem_selected"
+	{{ else }}
+	    "menuitem"
+	{{ endif }}
+	><a class="menu" href="about">{{ item.name }}</a></td>
+    </tr>
+</table>
+{% endblock topmenu %}
+
