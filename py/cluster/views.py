@@ -51,11 +51,18 @@ def update_cluster(request,cluster_id):
     ae_conn_form=ClusterConnParamForm(add_conn_form)
     return render_to_response('add_edit_cluster.html',{'add_form':ae_form,'add_conn_form':ae_conn_form,'message':'Update Cluster Form','action':'update'},RequestContext(request))
 
+def cluster_queries(request,cluster_id):
+    cluster=HostCluster.objects.get(pk=cluster_id)
+    queries=cluster.cluster_queries()
+    all_clusters = HostCluster.objects.all()
+    return render_to_response('cluster_queries.html',{'cluster':cluster,'current_queries':queries,'all_clusters': all_clusters},RequestContext(request))
+
 
 def cluster_details(request,cluster_id):
     cluster=HostCluster.objects.get(pk=cluster_id)
     dbs=cluster.databasename_set.filter(alive=True).order_by('db_name')
-    return render_to_response('cluster_details.html',{'cluster':cluster,'dbs':dbs},RequestContext(request))
+    all_clusters = HostCluster.objects.all()
+    return render_to_response('cluster_details.html',{'cluster':cluster,'dbs':dbs,'all_clusters': all_clusters},RequestContext(request))
 
 
 def discover_cluster(request,cluster_id):
@@ -72,21 +79,24 @@ def discover_db(request,cluster_id,database_id):
     return HttpResponseRedirect("/"+cluster_id+"/"+database_id)
 
 def db_details(request,cluster_id,database_id):
-    hc=HostCluster.objects.get(pk=cluster_id)
+    all_clusters = HostCluster.objects.all()
+    cluster=HostCluster.objects.get(pk=cluster_id)
+#    hc=HostCluster.objects.get(pk=cluster_id)
     db=DatabaseName.objects.get(pk=database_id)
     sch_set=db.schemaname_set.filter(alive=True).order_by('sch_name')
-    return render_to_response('database_details.html',{'cluster':hc,'database':db,'schemas':sch_set},RequestContext(request))
+    return render_to_response('database_details.html',{'cluster':cluster,'database':db,'schemas':sch_set,'all_clusters': all_clusters},RequestContext(request))
 #    return HttpResponse("Cluster: "+cluster_id+"<br>Database: "+database_id)
 
 ##########################################################################################
 
 def sch_details(request,cluster_id,database_id,schema_id):
+    all_clusters = HostCluster.objects.all()
     hc=HostCluster.objects.get(pk=cluster_id)
     db=DatabaseName.objects.get(pk=database_id)
     sch=SchemaName.objects.get(pk=schema_id)
     table_set=sch.tablename_set.filter(alive=True).order_by('tbl_name')
     func_set=sch.functionname_set.filter(alive=True).order_by('func_name')
-    return render_to_response('schema_details.html',{'cluster':hc,'database':db,'schema':sch,'tables':table_set,'functions':func_set},RequestContext(request))
+    return render_to_response('schema_details.html',{'cluster':hc,'database':db,'schema':sch,'tables':table_set,'functions':func_set,'all_clusters': all_clusters},RequestContext(request))
 
 def discover_sch(request,cluster_id,database_id,schema_id):
     hc=HostCluster.objects.get(pk=cluster_id)

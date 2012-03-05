@@ -72,7 +72,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    "/home/arsen/work/pgMon_2/py/cluster/static",
+    "/home/arsen/work/pg-Mon/py/cluster/static",
 )
 
 # List of finder classes that know how to find static files in
@@ -107,7 +107,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    "/usr/home/arsen/work/pgMon_2/py/templates",
+    "/home/arsen/work/pg-Mon/py/templates",
 )
 
 INSTALLED_APPS = (

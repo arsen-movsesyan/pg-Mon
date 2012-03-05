@@ -1,3 +1,7 @@
+{% extends "index.html" %}
+
+{% block text %}
+
 <h3>Details for Cluster: {{ cluster.hostname }}</h3>
 <table border="1">
     <tr>
@@ -41,6 +45,8 @@
 
 </table>
 <br>
+<a href=queries>View Queries</a>
+<br>
 <a href=discover>Discover...</a>
 <br>
 <a href=update>Update</a>
@@ -67,3 +73,5 @@
 	</td>
     </tr>
 </table>
+
+{% endblock %}

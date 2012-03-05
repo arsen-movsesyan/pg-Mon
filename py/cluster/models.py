@@ -150,6 +150,16 @@ pg_stat_get_buf_alloc() AS buffers_alloc""")
 	,buffers_backend=stat[5]
 	,buffers_alloc=stat[6])
 
+    def cluster_queries(self):
+	conn=psycopg2.connect(self.get_conn_string())
+	cursor = conn.cursor()
+	cursor.execute("""SELECT now()-query_start AS duration,datname,procpid,usename,client_addr,
+	CASE WHEN char_length(current_query)>110 THEN substring(current_query from 0 for 110)||'...'
+	ELSE current_query
+	END AS cur_query FROM pg_stat_activity WHERE current_query!='<IDLE>' AND NOT procpid=pg_backend_pid() ORDER BY 1 DESC""")
+	queries = cursor.fetchall()
+	return queries
+
 
 class ClusterForm(forms.Form):
     db_host = forms.CharField(max_length=30)
@@ -507,6 +517,11 @@ FROM pg_class WHERE oid=%s""",(self.obj_oid,))
     idx_tup_fetch = stat[2],
     idx_blks_fetch = stat[3],
     idx_blks_hit = stat[4])
+
+    def set_non_alive(self):
+	self.alive=False
+	self.save()
+
 
 ###################################################################################################
 

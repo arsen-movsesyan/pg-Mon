@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
 {% block navi %}
-
+Clusters<br>
 {% if all_clusters %}
     {% for cluster in all_clusters %}
-	<a href="{{ cluster.id }}/">{{ cluster.hostname }}</a><br>
+	<a href="/{{ cluster.id }}/">{{ cluster.hostname }}</a><br>
     {% endfor %}
 {% else %}
     <p>No clusters available</p>
 {% endif %}
 <br>
-<a href=add>Add New Cluster...</a>
+<a href=/add>Add New Cluster...</a>
 <br>
 {% endblock %}

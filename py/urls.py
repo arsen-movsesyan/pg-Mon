@@ -4,24 +4,26 @@ from django.conf.urls.defaults import *
 # from django.contrib import admin
 # admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns('cluster.views',
     # Example:
     # (r'^py/', include('py.foo.urls')),
 
-    url(r'^$', 'cluster.views.index'),
-    url(r'^add/$', 'cluster.views.add_cluster'),
-    url(r'^about/$', 'cluster.views.about'),
+    url(r'^$', 'index'),
+    url(r'^add/$', 'add_cluster'),
+    url(r'^about/$', 'about'),
+    url(r'^doc/$', 'documentation'),
 
-    url(r'^(?P<cluster_id>\d+)/$', 'cluster.views.cluster_details'),
-    url(r'^(?P<cluster_id>\d+)/update/$', 'cluster.views.update_cluster'),
-    url(r'^(?P<cluster_id>\d+)/discover/$', 'cluster.views.discover_cluster'),
+    url(r'^(?P<cluster_id>\d+)/$', 'cluster_details'),
+    url(r'^(?P<cluster_id>\d+)/update/$', 'update_cluster'),
+    url(r'^(?P<cluster_id>\d+)/queries/$', 'cluster_queries'),
+    url(r'^(?P<cluster_id>\d+)/discover/$', 'discover_cluster'),
 
 
-    url(r'^(?P<cluster_id>\d+)/(?P<database_id>\d+)/$', 'cluster.views.db_details'),
-    url(r'^(?P<cluster_id>\d+)/(?P<database_id>\d+)/discover/$', 'cluster.views.discover_db'),
+    url(r'^(?P<cluster_id>\d+)/(?P<database_id>\d+)/$', 'db_details'),
+    url(r'^(?P<cluster_id>\d+)/(?P<database_id>\d+)/discover/$', 'discover_db'),
 
-    url(r'^(?P<cluster_id>\d+)/(?P<database_id>\d+)/(?P<schema_id>\d+)/$','cluster.views.sch_details'),
-    url(r'^(?P<cluster_id>\d+)/(?P<database_id>\d+)/(?P<schema_id>\d+)/discover/$','cluster.views.discover_sch'),
+    url(r'^(?P<cluster_id>\d+)/(?P<database_id>\d+)/(?P<schema_id>\d+)/$','sch_details'),
+    url(r'^(?P<cluster_id>\d+)/(?P<database_id>\d+)/(?P<schema_id>\d+)/discover/$','discover_sch'),
 
 
 

@@ -1,3 +1,7 @@
+{% extends "index.html" %}
+
+{% block text %}
+
 <h3>Details for Schema: {{ schema.sch_name }}</h3>
 Cluster: {{ cluster.hostname }}<br>
 Database: {{ database.db_name}}<br>
@@ -64,3 +68,5 @@ Database: {{ database.db_name}}<br>
 	</td>
     </tr>
 </table>
+
+{% endblock %}
