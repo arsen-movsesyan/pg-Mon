@@ -1,0 +1,33 @@
+{% extends "index.html" %}
+
+{% block text %}
+
+<h3>Running Queries for Cluster: {{ cluster.hostname }}</h3>
+<br>
+<a href="">Refresh</a>
+<br><br>
+
+<table border="0">
+    <tr align=center bgcolor=#CCCCC>
+	<td><b>NN</b></td>
+	<td><b>Duration<b></td>
+	<td><b>Database<b></td>
+	<td><b>ProcPID<b></td>
+	<td><b>Client Address<b></td>
+	<td><b>User<b></td>
+	<td><b>Query<b></td>
+    </tr>
+{% for query_row in current_queries %}
+    <tr>
+	<td>1</td>
+	<td><b>{{ query_row.0 }}</b></td>
+	<td>{{ query_row.1 }}</td>
+	<td>{{ query_row.2 }}</td>
+	<td>{{ query_row.4 }}</td>
+	<td>{{ query_row.3 }}</td>
+	<td>{{ query_row.5 }}</td>
+    </tr>
+{% endfor %}
+</table>
+
+{% endblock %}
