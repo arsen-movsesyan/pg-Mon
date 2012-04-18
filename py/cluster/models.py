@@ -130,9 +130,17 @@ class HostCluster(models.Model):
 	db_table = 'host_cluster'
 
     def bg_stat(self,time):
-	conn=psycopg2.connect(self.get_conn_string())
+	try:
+	    conn=psycopg2.connect(self.get_conn_string())
+	except Exception, e:
+	    pass
+	if e.pgerror != None:
+	    print e.pgcode
+	    print e.pgerror
+	    return
 	cursor = conn.cursor()
-	cursor.execute("""SELECT
+	try:
+	    cursor.execute("""SELECT
 pg_stat_get_bgwriter_timed_checkpoints() AS checkpoints_timed,
 pg_stat_get_bgwriter_requested_checkpoints() AS checkpoints_req,
 pg_stat_get_bgwriter_buf_written_checkpoints() AS buffers_checkpoint,
@@ -140,6 +148,12 @@ pg_stat_get_bgwriter_buf_written_clean() AS buffers_clean,
 pg_stat_get_bgwriter_maxwritten_clean() AS maxwritten_clean,
 pg_stat_get_buf_written_backend() AS buffers_backend,
 pg_stat_get_buf_alloc() AS buffers_alloc""")
+	except Exception, e:
+	    pass
+	if e.pgerror != None:
+	    print e.pgcode
+	    print e.pgerror
+	    return
 	stat=cursor.fetchone()
 	self.bgwriterstat_set.create(time_id=time
 	,checkpoints_timed=stat[0]
@@ -439,7 +453,6 @@ class TableName(models.Model):
 	cursor=conn.cursor()
 	cursor.execute("""SELECT
 pg_relation_size(oid) AS relsize,
-pg_total_relation_size(oid) AS totalrelsize,
 reltuples::bigint,
 pg_stat_get_numscans(oid) AS seq_scan,
 pg_stat_get_tuples_returned(oid) AS seq_tup_read,
@@ -504,6 +517,7 @@ class IndexName(models.Model):
 	conn=psycopg2.connect(conn_string)
 	cursor=conn.cursor()
 	cursor.execute("""SELECT
+pg_relation_size(oid) AS relsize,
 pg_stat_get_numscans(oid) AS idx_scan,
 pg_stat_get_tuples_returned(oid) AS idx_tup_read,
 pg_stat_get_tuples_fetched(oid) AS idx_tup_fetch,
@@ -537,6 +551,7 @@ class TableToastName(models.Model):
 	conn=psycopg2.connect(conn_string)
 	cursor=conn.cursor()
 	cursor.execute("""SELECT
+pg_relation_size(oid) AS relsize,
 pg_stat_get_numscans(oid) AS seq_scan,
 pg_stat_get_tuples_returned(oid) AS seq_tup_read,
 pg_stat_get_tuples_fetched(oid) AS seq_tup_fetch,
@@ -578,6 +593,7 @@ class IndexToastName(models.Model):
 	conn=psycopg2.connect(conn_string)
 	cursor=conn.cursor()
 	cursor.execute("""SELECT
+pg_relation_size(oid) AS relsize,
 pg_stat_get_numscans(oid) AS idx_scan,
 pg_stat_get_tuples_returned(oid) AS idx_tup_read,
 pg_stat_get_tuples_fetched(oid) AS idx_tup_fetch,
@@ -652,7 +668,7 @@ class TableStat(models.Model):
     tn = models.ForeignKey(TableName)
     time = models.ForeignKey(LogTime)
     tbl_size = models.BigIntegerField()
-    tbl_total_size = models.BigIntegerField()
+#    tbl_total_size = models.BigIntegerField()
     tbl_tuples = models.BigIntegerField()
     seq_scan = models.BigIntegerField()
     seq_tup_read = models.BigIntegerField()
@@ -698,6 +714,7 @@ class FunctionStat(models.Model):
 class IndexStat(models.Model):
     in_id = models.ForeignKey(IndexName,db_column='in_id')
     time = models.ForeignKey(LogTime)
+    idx_size = models.BigIntegerField()
     idx_scan = models.BigIntegerField()
     idx_tup_read = models.BigIntegerField()
     idx_tup_fetch = models.BigIntegerField()
@@ -713,6 +730,7 @@ class IndexStat(models.Model):
 class TableToastStat(models.Model):
     tn = models.ForeignKey(TableToastName)
     time = models.ForeignKey(LogTime)
+    tbl_size = models.BigIntegerField()
     seq_scan = models.BigIntegerField()
     seq_tup_read = models.BigIntegerField()
     seq_tup_fetch = models.BigIntegerField()
@@ -733,6 +751,7 @@ class TableToastStat(models.Model):
 class IndexToastStat(models.Model):
     tn = models.ForeignKey(IndexToastName)
     time = models.ForeignKey(LogTime)
+    tidx_size = models.BigIntegerField()
     tidx_scan = models.BigIntegerField()
     tidx_tup_read = models.BigIntegerField()
     tidx_tup_fetch = models.BigIntegerField()
