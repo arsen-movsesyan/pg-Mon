@@ -1,12 +1,12 @@
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from cluster.models import *
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect,HttpResponseNotFound
 
 
 
-class TopMenu():
-    menuitems=['About','Config','Statistic','Documentation']
+##class TopMenu():
+##    menuitems=['About','Config','Statistic','Documentation']
 
 
 
@@ -14,6 +14,9 @@ class TopMenu():
 def index(request):
     all_clusters = HostCluster.objects.all()
     return render_to_response('index.html', {'all_clusters': all_clusters},RequestContext(request))
+
+def not_found(request):
+    return HttpResponseNotFound('<h1>Page not found</h1>')
 
 
 def add_cluster(request):

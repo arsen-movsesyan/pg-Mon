@@ -1,8 +1,12 @@
 from django.db import models
 from django.db import connection
 from django import forms
+import logging
 import psycopg2
+import telnetlib
 
+
+logger = logging.getLogger('pg_mon_logger')
 
 class TrackFunctionField(models.Field):
 
@@ -43,7 +47,7 @@ class HostCluster(models.Model):
     observable = models.BooleanField(default=True)
     alive = models.BooleanField(default=True)
     track_counts = models.NullBooleanField(null=True)
-    track_functions = models.CharField(max_length=10,null=True)
+#    track_functions = models.CharField(max_length=10,null=True)
     track_functions = TrackFunctionField(null=True)
     pg_version = models.CharField(max_length=30,null=True)
     pg_data_path = models.CharField(max_length=30,null=True)
@@ -51,50 +55,27 @@ class HostCluster(models.Model):
     spec_comments = models.TextField(max_length=2000,null=True)
     conn_param = VarcharArrayField(max_length=255)
 
+
     def set_content_data(self,in_data):
 	self.model_data=in_data
 
+
     def set_non_alive(self):
 	self.alive=False
+	logger.info('Hostcluster "{}" disabled. Set "alive=False"'.format(self.hostcluster))
 	self.save()
+
 
     def toggle_observable(self):
+	obs='TRUE'
 	if self.observable:
 	    self.observable=False
+	    obs='FALSE'
 	else:
 	    self.observable=True
+	logger.info('Hostcluster "{}" set {} observable={}'.format(self.hostcluster,obs))
 	self.save()
 
-    def discover_cluster(self):
-	conn=psycopg2.connect(self.get_conn_string())
-	cur=conn.cursor()
-	cur.execute("SELECT current_setting('server_version') AS ver")
-	self.pg_version=cur.fetchone()[0]
-	cur.execute("SELECT current_setting('data_directory') AS pg_data_path")
-	self.pg_data_path=cur.fetchone()[0]
-	cur.execute("SELECT CASE WHEN current_setting('track_counts')='on' THEN 't'::boolean ELSE 'f'::boolean END AS track_counts")
-	self.track_counts=cur.fetchone()[0]
-	cur.execute("SELECT current_setting('track_functions') AS track_functions")
-	self.track_functions=str(cur.fetchone()[0])
-	self.save()
-
-	exist_dbs=self.databasename_set.values('id','obj_oid','db_name').filter(alive=True)
-
-	cur.execute("SELECT oid,datname FROM pg_database WHERE NOT datistemplate AND datname !='postgres'")
-	new_dbs=cur.fetchall()
-	for new_db in new_dbs:
-	    for exist_db in exist_dbs:
-		if new_db[0] == exist_db['obj_oid'] and new_db[1] == exist_db['db_name']:
-		    break
-	    else:
-		db=self.databasename_set.create(obj_oid=new_db[0],db_name=new_db[1])
-	for exist_db in exist_dbs:
-	    for new_db in new_dbs:
-		if new_db[0] == exist_db['obj_oid'] and new_db[1] == exist_db['db_name']:
-		    break
-	    else:
-		drop_db=DatabaseName.objects.get(pk=exist_db['id'])
-		drop_db.set_non_alive()
 
     def add_edit(self):
 	self.ip_address=self.model_data['db_ip_address']
@@ -113,32 +94,100 @@ class HostCluster(models.Model):
 	self.conn_param=conn_array.get_string()
 	self.save()
 
+
     def get_conn_string(self):
 	ret=''
+	logger.debug('Connection string requested for host: {}'.format(self.hostname))
 	for param in self.conn_param:
 	    ret+=param+" "
+	    logger.debug('Parameter "{}" appended'.format(param))
+	logger.debug('Connection string: "{}" found'.format(ret[:-1]))
 	return ret[:-1]
 
+
     def get_conn_param(self,name):
+	logger.debug("Requested connection param: {}".format(name))
 	for param in self.conn_param:
 	    k_v=param.split("=")
 	    if k_v[0]==name:
+		logger.debug("Found VALUE for param {}: {}".format(name,k_v[1]))
 		return k_v[1]
+	logger.warning('No connection value found for param: "{}" or param is incorrect'.format(name))
 	return False
+
+
+    def conn_test(self):
+	tn=telnetlib.Telnet()
+	logger.debug("Connection test requested for host: %s",self.hostname)
+	try:
+	    tn.open(self.ip_address,self.get_conn_param("port"),1)
+	except IOError:
+	    logger.warning('No connection to host: {} port: {}'.format(self.ip_address,self.get_conn_param("port")))
+	    return False
+	logger.debug('Host: {} is up and listening on port: {}'.format(self.ip_address,self.get_conn_param("port")))
+	return True
+
 
     class Meta:
 	db_table = 'host_cluster'
 
-    def bg_stat(self,time):
-	try:
-	    conn=psycopg2.connect(self.get_conn_string())
-	except Exception, e:
-	    pass
-	if e.pgerror != None:
-	    print e.pgcode
-	    print e.pgerror
+    def get_self_db_conn(self):
+	if self.conn_test():
+	    try:
+		conn=psycopg2.connect(self.get_conn_string())
+	    except Exception, e:
+		logger.warning("Cannot connect to postgres: {}".format(self.get_conn_string()))
+		logger.warning(e.pgcode)
+		logger.warning(e.pgerror)
+		return False
+	    self.db_conn=conn
+	    logger.info('Connection to DB for host "{}" obtained succsessfully'.format(self.hostname))
+	    return True
+	else:
+	    return False
+
+
+    def discover_cluster(self):
+	if self.get_self_db_conn():
+	    cur = self.db_conn.cursor()
+	else:
 	    return
-	cursor = conn.cursor()
+	logger.debug("Hostcluster discover DB requested for {}".format(self.hostname))
+
+	cur.execute("SELECT current_setting('server_version') AS ver")
+	self.pg_version=cur.fetchone()[0]
+	cur.execute("SELECT current_setting('data_directory') AS pg_data_path")
+	self.pg_data_path=cur.fetchone()[0]
+	cur.execute("SELECT CASE WHEN current_setting('track_counts')='on' THEN 't'::boolean ELSE 'f'::boolean END AS track_counts")
+	self.track_counts=cur.fetchone()[0]
+	cur.execute("SELECT current_setting('track_functions') AS track_functions")
+	self.track_functions=str(cur.fetchone()[0])
+	self.save()
+	exist_dbs=self.databasename_set.values('id','obj_oid','db_name').filter(alive=True)
+	cur.execute("SELECT oid,datname FROM pg_database WHERE NOT datistemplate AND datname !='postgres'")
+	new_dbs=cur.fetchall()
+	for new_db in new_dbs:
+	    for exist_db in exist_dbs:
+		if new_db[0] == exist_db['obj_oid'] and new_db[1] == exist_db['db_name']:
+		    break
+	    else:
+		db=self.databasename_set.create(obj_oid=new_db[0],db_name=new_db[1])
+	for exist_db in exist_dbs:
+	    for new_db in new_dbs:
+		if new_db[0] == exist_db['obj_oid'] and new_db[1] == exist_db['db_name']:
+		    break
+	    else:
+		drop_db=DatabaseName.objects.get(pk=exist_db['id'])
+		drop_db.set_non_alive()
+	return True
+
+
+    def bg_stat(self,time):
+	if self.get_self_db_conn():
+	    cursor = self.db_conn.cursor()
+	else:
+	    return
+	logger.debug("Hostcluster stat requested for {}".format(self.hostname))
 	try:
 	    cursor.execute("""SELECT
 pg_stat_get_bgwriter_timed_checkpoints() AS checkpoints_timed,
@@ -149,11 +198,12 @@ pg_stat_get_bgwriter_maxwritten_clean() AS maxwritten_clean,
 pg_stat_get_buf_written_backend() AS buffers_backend,
 pg_stat_get_buf_alloc() AS buffers_alloc""")
 	except Exception, e:
-	    pass
-	if e.pgerror != None:
-	    print e.pgcode
-	    print e.pgerror
+	    loger.error("Cannot execute hostcluster stat query for host: {}".format(self.hostname))
+	    logger.error(e.pgcode)
+	    logger.error(e.pgerror)
 	    return
+	logger.info("Hostcluster stat query for host {} executed successfully".format(self.hostname))
+	logger.debug('Hostcluster stat results:\n\t{}'.format(stat))
 	stat=cursor.fetchone()
 	self.bgwriterstat_set.create(time_id=time
 	,checkpoints_timed=stat[0]
@@ -164,15 +214,37 @@ pg_stat_get_buf_alloc() AS buffers_alloc""")
 	,buffers_backend=stat[5]
 	,buffers_alloc=stat[6])
 
+
     def cluster_queries(self):
-	conn=psycopg2.connect(self.get_conn_string())
-	cursor = conn.cursor()
-	cursor.execute("""SELECT now()-query_start AS duration,datname,procpid,usename,client_addr,
+#	try:
+#	    conn=psycopg2.connect(self.get_conn_string())
+#	except Exception, e:
+#	    print e.pgcode
+#	    print e.pgerror
+	    return
+#	conn=psycopg2.connect(self.get_conn_string())
+#	cursor = conn.cursor()
+
+	if self.get_self_db_conn():
+	    cursor = self.db_conn.cursor()
+	else:
+	    return
+	logger.debug("Hostcluster running queries requested for {}".format(self.hostname))
+	try:
+	    cursor.execute("""SELECT now()-query_start AS duration,datname,procpid,usename,client_addr,
 	CASE WHEN char_length(current_query)>110 THEN substring(current_query from 0 for 110)||'...'
 	ELSE current_query
 	END AS cur_query FROM pg_stat_activity WHERE current_query!='<IDLE>' AND NOT procpid=pg_backend_pid() ORDER BY 1 DESC""")
+	except Exception, e:
+	    loger.error("Cannot execute hostcluster running queries request for host: {}".format(self.hostname))
+	    logger.error(e.pgcode)
+	    logger.error(e.pgerror)
+	    return
 	queries = cursor.fetchall()
+	logger.debug('Running queries executed succsessfully for host: {}'.format(self.hostname))
+	logger.debug('Queries running:\n\t{}'.format(queries)
 	return queries
+
 
 
 class ClusterForm(forms.Form):
@@ -181,6 +253,7 @@ class ClusterForm(forms.Form):
     db_fqdn = forms.CharField(max_length=30,required=False)
     db_is_master = forms.BooleanField(widget=forms.CheckboxInput(attrs={'checked':True}))
     db_comments = forms.CharField(max_length=2000,required=False)
+
 
 
 class ClusterConnParamForm(forms.Form):
@@ -221,17 +294,27 @@ class DatabaseName(models.Model):
 	self.save()
 
     def get_conn_string(self):
-	from django.db import connection
+#	from django.db import connection
 	cursor=connection.cursor()
 	cursor.execute("SELECT get_conn_string(%s,%s)",[self.hc_id,self.id])
 	conn_string=cursor.fetchone()[0]
 	return conn_string
 
     def discover_database(self):
-	conn=psycopg2.connect(self.get_conn_string())
+	try:
+	    conn=psycopg2.connect(self.get_conn_string())
+	except Exception, e:
+	    print e.pgcode
+	    print e.pgerror
+	    return
 	cur=conn.cursor()
 	exist_sch=self.schemaname_set.values('id','obj_oid','sch_name').filter(alive=True)
-	cur.execute("SELECT oid,nspname FROM pg_namespace WHERE nspname NOT IN ('pg_catalog', 'information_schema') AND nspname !~ '^pg_toast' AND nspname !~ '^pg_temp'")
+	try:
+	    cur.execute("SELECT oid,nspname FROM pg_namespace WHERE nspname NOT IN ('pg_catalog', 'information_schema') AND nspname !~ '^pg_toast' AND nspname !~ '^pg_temp'")
+	except Exception, e:
+	    print e.pgcode
+	    print e.pgerror
+	    return
 	new_sch=cur.fetchall()
 
 	for new_s in new_sch:

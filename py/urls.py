@@ -10,8 +10,8 @@ urlpatterns = patterns('cluster.views',
 
     url(r'^$', 'index'),
     url(r'^add/$', 'add_cluster'),
-    url(r'^about/$', 'about'),
-    url(r'^doc/$', 'documentation'),
+    url(r'^about/$', 'not_found'),
+    url(r'^doc/$', 'not_found'),
 
     url(r'^(?P<cluster_id>\d+)/$', 'cluster_details'),
     url(r'^(?P<cluster_id>\d+)/update/$', 'update_cluster'),
@@ -24,8 +24,6 @@ urlpatterns = patterns('cluster.views',
 
     url(r'^(?P<cluster_id>\d+)/(?P<database_id>\d+)/(?P<schema_id>\d+)/$','sch_details'),
     url(r'^(?P<cluster_id>\d+)/(?P<database_id>\d+)/(?P<schema_id>\d+)/discover/$','discover_sch'),
-
-
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
