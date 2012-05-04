@@ -133,35 +133,37 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'handlers': {
-	'mail_admins': {
-	    'level': 'ERROR',
-	    'class': 'django.utils.log.AdminEmailHandler'
-	},
+#	'mail_admins': {
+#	    'level': 'ERROR',
+#	    'class': 'django.utils.log.AdminEmailHandler'
+#	},
 	'main_file_handler': {
 	    'class': 'logging.handlers.RotatingFileHandler',
-	    'level': 'INFO',
+	    'level': 'DEBUG',
 	    'formatter': 'simple',
-	    'filename': 'test_stat.log',
+	    'filename': 'pg_mon.log',
 	    'mode': 'a',
 	    'maxBytes': 1073741824,
 	    'backupCount': 5,
 	},
-	'debug_output_handler': {
-	    'class': 'logging.FileHandler',
-	    'level': 'DEBUG',
-	    'formatter': 'verbose',
-	    'filename': 'test_debug.log',
-	    'mode': 'a'
-	},
+#	'debug_output_handler': {
+#	    'class': 'logging.handlers.RotatingFileHandler',
+#	    'level': 'DEBUG',
+#	    'formatter': 'verbose',
+#	    'filename': 'test_debug.log',
+#	    'mode': 'a'
+#	    'maxBytes': 1073741824,
+#	    'backupCount': 5,
+#	},
     },
     'loggers': {
-	'django.request': {
-	    'handlers': ['mail_admins'],
-	    'level': 'ERROR',
-	    'propagate': False,
-	},
+#	'django.request': {
+#	    'handlers': ['mail_admins'],
+#	    'level': 'ERROR',
+#	    'propagate': False,
+#	},
 	'pg_mon_logger': {
-	    'handlers': ['debug_output_handler','main_file_handler'],
+	    'handlers': ['main_file_handler'],
 	    'level': 'DEBUG',
 	    'propagate': True,
 	}
@@ -175,4 +177,11 @@ LOGGING = {
 	}
     }
 }
+
+
+##################################################################################################
+##################################################################################################
+## Custom parameters
+
+#override_log_time=True
 

@@ -843,8 +843,8 @@ ALTER TABLE ONLY index_toast_stat
 -- Name: log_time_hour_truncate_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
-ALTER TABLE ONLY log_time
-    ADD CONSTRAINT log_time_hour_truncate_key UNIQUE (hour_truncate);
+--ALTER TABLE ONLY log_time
+--    ADD CONSTRAINT log_time_hour_truncate_key UNIQUE (hour_truncate);
 
 
 --

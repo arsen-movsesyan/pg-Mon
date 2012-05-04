@@ -1,6 +1,8 @@
 from django.db import models
 from django.db import connection
 from django import forms
+from django.db import IntegrityError, DatabaseError
+from sys import exit
 import logging
 import psycopg2
 import telnetlib
@@ -179,6 +181,7 @@ class HostCluster(models.Model):
 	    else:
 		drop_db=DatabaseName.objects.get(pk=exist_db['id'])
 		drop_db.set_non_alive()
+	cur.close()
 	return True
 
 
@@ -202,10 +205,11 @@ pg_stat_get_buf_alloc() AS buffers_alloc""")
 	    logger.error(e.pgcode)
 	    logger.error(e.pgerror)
 	    return
+	stat=cursor.fetchone()
 	logger.info("Hostcluster stat query for host {} executed successfully".format(self.hostname))
 	logger.debug('Hostcluster stat results:\n\t{}'.format(stat))
-	stat=cursor.fetchone()
-	self.bgwriterstat_set.create(time_id=time
+	try:
+	    self.bgwriterstat_set.create(time_id=time
 	,checkpoints_timed=stat[0]
 	,checkpoints_req=stat[1]
 	,buffers_checkpoint=stat[2]
@@ -213,19 +217,14 @@ pg_stat_get_buf_alloc() AS buffers_alloc""")
 	,maxwritten_clean=stat[4]
 	,buffers_backend=stat[5]
 	,buffers_alloc=stat[6])
-
+	except (IntegrityError,DatabaseError) as msg:
+	    logger.error('Cannot create bgwriter record for hostcluster {0}'.format(self.hostname))
+	    logger.error('DETAILS: {0}'.format(msg))
+	    pass
+	cursore.close()
 
     def cluster_queries(self):
-#	try:
-#	    conn=psycopg2.connect(self.get_conn_string())
-#	except Exception, e:
-#	    print e.pgcode
-#	    print e.pgerror
-	    return
-#	conn=psycopg2.connect(self.get_conn_string())
-#	cursor = conn.cursor()
-
-	if self.get_self_db_conn():
+	if self.get_self_db_conn() == True:
 	    cursor = self.db_conn.cursor()
 	else:
 	    return
@@ -236,15 +235,14 @@ pg_stat_get_buf_alloc() AS buffers_alloc""")
 	ELSE current_query
 	END AS cur_query FROM pg_stat_activity WHERE current_query!='<IDLE>' AND NOT procpid=pg_backend_pid() ORDER BY 1 DESC""")
 	except Exception, e:
-	    loger.error("Cannot execute hostcluster running queries request for host: {}".format(self.hostname))
-	    logger.error(e.pgcode)
-	    logger.error(e.pgerror)
+	    logger.error("Cannot execute hostcluster running queries request for host: {}".format(self.hostname))
+	    logger.error('DETAILS: {0}{1}'.format(e.pgcode,e.pgerror))
 	    return
 	queries = cursor.fetchall()
 	logger.debug('Running queries executed succsessfully for host: {}'.format(self.hostname))
-	logger.debug('Queries running:\n\t{}'.format(queries)
+	logger.debug('Queries running:\n\t{}'.format(queries))
+	cursore.close()
 	return queries
-
 
 
 class ClusterForm(forms.Form):
@@ -702,19 +700,33 @@ class LogTime(models.Model):
 	db_table = 'log_time'
 
     def __init__(self,*args,**kwargs):
+	logging.debug('Log time requested')
 	cursor = connection.cursor()
-	cursor.execute("SELECT LOCALTIMESTAMP,date_trunc('hour',LOCALTIMESTAMP)")
+	time_check_query="""SELECT CASE
+    WHEN (SELECT COUNT(1) FROM log_time WHERE hour_truncate=(SELECT date_trunc('hour',now())::timestamp without time zone)) > 0 
+	THEN NULl
+    ELSE 
+	LOCALTIMESTAMP END AS actual_time,
+    date_trunc('hour',LOCALTIMESTAMP) as hour_truncate"""
+	cursor.execute(time_check_query)
 	time_data=cursor.fetchone()
+	if time_data[0] is None:
+	    logging.critical('Appropriate record for "{0}" already exists'.format(time_data[1]))
+#	    print 'Appropriate record for "{0}" already exists'.format(time_data[1])
+
+	    exit()
+	logging.debug('Log time obtained. Actual Time: {0}\tHour Truncate: {1}'.format(time_data[0],time_data[1]))
 	kwargs['actual_time']=time_data[0]
 	kwargs['hour_truncate']=time_data[1]
 	super(LogTime,self).__init__(*args,**kwargs)
-
+	self.save()
 
 ###################################################################################################
 
 class BgwriterStat(models.Model):
     hc = models.ForeignKey(HostCluster)
     time = models.ForeignKey(LogTime)
+#    time = models.IntegerField()
     checkpoints_timed = models.BigIntegerField()
     checkpoints_req = models.BigIntegerField()
     buffers_checkpoint = models.BigIntegerField()
@@ -732,6 +744,7 @@ class BgwriterStat(models.Model):
 class DatabaseStat(models.Model):
     dn = models.ForeignKey(DatabaseName)
     time = models.ForeignKey(LogTime)
+#    time = models.IntegerField()
     db_size = models.BigIntegerField()
     xact_commit = models.BigIntegerField()
     xact_rollback = models.BigIntegerField()
@@ -750,6 +763,7 @@ class DatabaseStat(models.Model):
 class TableStat(models.Model):
     tn = models.ForeignKey(TableName)
     time = models.ForeignKey(LogTime)
+#    time = models.IntegerField()
     tbl_size = models.BigIntegerField()
 #    tbl_total_size = models.BigIntegerField()
     tbl_tuples = models.BigIntegerField()
@@ -772,6 +786,7 @@ class TableStat(models.Model):
 class TableVaStat(models.Model):
     tn = models.ForeignKey(TableName)
     time = models.ForeignKey(LogTime)
+#    time = models.IntegerField()
     last_vacuum = models.DateTimeField()
     last_autovacuum = models.DateTimeField()
     last_analyze = models.DateTimeField()
@@ -785,6 +800,7 @@ class TableVaStat(models.Model):
 class FunctionStat(models.Model):
     fn = models.ForeignKey(FunctionName)
     time = models.ForeignKey(LogTime)
+#    time = models.IntegerField()
     func_calls = models.BigIntegerField()
     total_time = models.BigIntegerField()
     self_time = models.BigIntegerField()
@@ -797,6 +813,7 @@ class FunctionStat(models.Model):
 class IndexStat(models.Model):
     in_id = models.ForeignKey(IndexName,db_column='in_id')
     time = models.ForeignKey(LogTime)
+#    time = models.IntegerField()
     idx_size = models.BigIntegerField()
     idx_scan = models.BigIntegerField()
     idx_tup_read = models.BigIntegerField()
@@ -813,6 +830,7 @@ class IndexStat(models.Model):
 class TableToastStat(models.Model):
     tn = models.ForeignKey(TableToastName)
     time = models.ForeignKey(LogTime)
+#    time = models.IntegerField()
     tbl_size = models.BigIntegerField()
     seq_scan = models.BigIntegerField()
     seq_tup_read = models.BigIntegerField()
@@ -834,6 +852,7 @@ class TableToastStat(models.Model):
 class IndexToastStat(models.Model):
     tn = models.ForeignKey(IndexToastName)
     time = models.ForeignKey(LogTime)
+#    time = models.IntegerField()
     tidx_size = models.BigIntegerField()
     tidx_scan = models.BigIntegerField()
     tidx_tup_read = models.BigIntegerField()
