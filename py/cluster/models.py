@@ -56,6 +56,12 @@ class HostCluster(models.Model):
     fqdn = models.CharField(max_length=255,null=True)
     spec_comments = models.TextField(max_length=2000,null=True)
     conn_param = VarcharArrayField(max_length=255)
+    db_conn = None
+
+
+    class Meta:
+	db_table = 'host_cluster'
+
 
 
     def set_content_data(self,in_data):
@@ -64,7 +70,7 @@ class HostCluster(models.Model):
 
     def set_non_alive(self):
 	self.alive=False
-	logger.info('Hostcluster "{}" disabled. Set "alive=False"'.format(self.hostcluster))
+	logger.info('Hostcluster "{0}" disabled. Set "alive=False"'.format(self.hostcluster))
 	self.save()
 
 
@@ -75,7 +81,7 @@ class HostCluster(models.Model):
 	    obs='FALSE'
 	else:
 	    self.observable=True
-	logger.info('Hostcluster "{}" set {} observable={}'.format(self.hostcluster,obs))
+	logger.info('Hostcluster "{0}" observable set to "{1}"'.format(self.hostcluster,obs))
 	self.save()
 
 
@@ -99,75 +105,69 @@ class HostCluster(models.Model):
 
     def get_conn_string(self):
 	ret=''
-	logger.debug('Connection string requested for host: {}'.format(self.hostname))
 	for param in self.conn_param:
 	    ret+=param+" "
-	    logger.debug('Parameter "{}" appended'.format(param))
-	logger.debug('Connection string: "{}" found'.format(ret[:-1]))
+	logger.debug('Connection string: "{0}" found'.format(ret[:-1]))
 	return ret[:-1]
 
 
     def get_conn_param(self,name):
-	logger.debug("Requested connection param: {}".format(name))
 	for param in self.conn_param:
 	    k_v=param.split("=")
 	    if k_v[0]==name:
-		logger.debug("Found VALUE for param {}: {}".format(name,k_v[1]))
+		logger.debug("Found VALUE for param {0}: {1}".format(name,k_v[1]))
 		return k_v[1]
-	logger.warning('No connection value found for param: "{}" or param is incorrect'.format(name))
+	logger.warning('No connection value found for param: "{0}" or param is incorrect'.format(name))
 	return False
 
 
     def conn_test(self):
 	tn=telnetlib.Telnet()
-	logger.debug("Connection test requested for host: %s",self.hostname)
 	try:
 	    tn.open(self.ip_address,self.get_conn_param("port"),1)
 	except IOError:
-	    logger.warning('No connection to host: {} port: {}'.format(self.ip_address,self.get_conn_param("port")))
+	    logger.warning('No connection to host: {0} port: {1}'.format(self.ip_address,self.get_conn_param("port")))
 	    return False
-	logger.debug('Host: {} is up and listening on port: {}'.format(self.ip_address,self.get_conn_param("port")))
+	logger.debug('Host: {0} is up and listening on port: {1}'.format(self.ip_address,self.get_conn_param("port")))
+	tn.close()
 	return True
 
-
-    class Meta:
-	db_table = 'host_cluster'
 
     def get_self_db_conn(self):
 	if self.conn_test():
 	    try:
 		conn=psycopg2.connect(self.get_conn_string())
 	    except Exception, e:
-		logger.warning("Cannot connect to postgres: {}".format(self.get_conn_string()))
-		logger.warning(e.pgcode)
-		logger.warning(e.pgerror)
+		logger.warning("Cannot connect to postgres: {0}".format(self.get_conn_string()))
+		logger.warning("Details: {0}{1}".format(e.pgcode,e.pgerror))
 		return False
 	    self.db_conn=conn
-	    logger.info('Connection to DB for host "{}" obtained succsessfully'.format(self.hostname))
+	    logger.debug('Connection to DB for host "{0}" obtained succsessfully'.format(self.hostname))
 	    return True
 	else:
 	    return False
 
 
     def discover_cluster(self):
-	if self.get_self_db_conn():
-	    cur = self.db_conn.cursor()
+	if self.db_conn is None:
+	    if self.get_self_db_conn():
+		l_cursor = self.db_conn.cursor()
+	    else:
+		return
 	else:
-	    return
-	logger.debug("Hostcluster discover DB requested for {}".format(self.hostname))
-
-	cur.execute("SELECT current_setting('server_version') AS ver")
-	self.pg_version=cur.fetchone()[0]
-	cur.execute("SELECT current_setting('data_directory') AS pg_data_path")
-	self.pg_data_path=cur.fetchone()[0]
-	cur.execute("SELECT CASE WHEN current_setting('track_counts')='on' THEN 't'::boolean ELSE 'f'::boolean END AS track_counts")
-	self.track_counts=cur.fetchone()[0]
-	cur.execute("SELECT current_setting('track_functions') AS track_functions")
-	self.track_functions=str(cur.fetchone()[0])
+	    l_cursor = self.db_conn.cursor()
+	l_cursor.execute("SELECT current_setting('server_version') AS ver")
+	self.pg_version=l_cursor.fetchone()[0]
+	l_cursor.execute("SELECT current_setting('data_directory') AS pg_data_path")
+	self.pg_data_path=l_cursor.fetchone()[0]
+	l_cursor.execute("SELECT CASE WHEN current_setting('track_counts')='on' THEN 't'::boolean ELSE 'f'::boolean END AS track_counts")
+	self.track_counts=l_cursor.fetchone()[0]
+	l_cursor.execute("SELECT current_setting('track_functions') AS track_functions")
+	self.track_functions=str(l_cursor.fetchone()[0])
 	self.save()
 	exist_dbs=self.databasename_set.values('id','obj_oid','db_name').filter(alive=True)
-	cur.execute("SELECT oid,datname FROM pg_database WHERE NOT datistemplate AND datname !='postgres'")
-	new_dbs=cur.fetchall()
+	l_cursor.execute("SELECT oid,datname FROM pg_database WHERE NOT datistemplate AND datname !='postgres'")
+	new_dbs=l_cursor.fetchall()
 	for new_db in new_dbs:
 	    for exist_db in exist_dbs:
 		if new_db[0] == exist_db['obj_oid'] and new_db[1] == exist_db['db_name']:
@@ -181,18 +181,20 @@ class HostCluster(models.Model):
 	    else:
 		drop_db=DatabaseName.objects.get(pk=exist_db['id'])
 		drop_db.set_non_alive()
-	cur.close()
+	l_cursor.close()
 	return True
 
 
     def bg_stat(self,time):
-	if self.get_self_db_conn():
-	    cursor = self.db_conn.cursor()
+	if self.db_conn is None:
+	    if self.get_self_db_conn():
+		l_cursor = self.db_conn.cursor()
+	    else:
+		return
 	else:
-	    return
-	logger.debug("Hostcluster stat requested for {}".format(self.hostname))
+	    l_cursor = self.db_conn.cursor()
 	try:
-	    cursor.execute("""SELECT
+	    l_cursor.execute("""SELECT
 pg_stat_get_bgwriter_timed_checkpoints() AS checkpoints_timed,
 pg_stat_get_bgwriter_requested_checkpoints() AS checkpoints_req,
 pg_stat_get_bgwriter_buf_written_checkpoints() AS buffers_checkpoint,
@@ -201,12 +203,10 @@ pg_stat_get_bgwriter_maxwritten_clean() AS maxwritten_clean,
 pg_stat_get_buf_written_backend() AS buffers_backend,
 pg_stat_get_buf_alloc() AS buffers_alloc""")
 	except Exception, e:
-	    loger.error("Cannot execute hostcluster stat query for host: {}".format(self.hostname))
-	    logger.error(e.pgcode)
-	    logger.error(e.pgerror)
+	    logger.error("Cannot execute hostcluster stat query for host: {}".format(self.hostname))
+	    logger.error("Details: {0}{1}".format(e.pgcode,e.pgerror))
 	    return
-	stat=cursor.fetchone()
-	logger.info("Hostcluster stat query for host {} executed successfully".format(self.hostname))
+	stat=l_cursor.fetchone()
 	logger.debug('Hostcluster stat results:\n\t{}'.format(stat))
 	try:
 	    self.bgwriterstat_set.create(time_id=time
@@ -221,28 +221,34 @@ pg_stat_get_buf_alloc() AS buffers_alloc""")
 	    logger.error('Cannot create bgwriter record for hostcluster {0}'.format(self.hostname))
 	    logger.error('DETAILS: {0}'.format(msg))
 	    pass
-	cursore.close()
+	logger.debug('Hostcluster stat results saved')
+	l_cursor.close()
 
     def cluster_queries(self):
-	if self.get_self_db_conn() == True:
-	    cursor = self.db_conn.cursor()
+	if self.db_conn is None:
+	    if self.get_self_db_conn():
+		l_cursor = self.db_conn.cursor()
+	    else:
+		return
 	else:
-	    return
-	logger.debug("Hostcluster running queries requested for {}".format(self.hostname))
+	    l_cursor = self.db_conn.cursor()
 	try:
-	    cursor.execute("""SELECT now()-query_start AS duration,datname,procpid,usename,client_addr,
+	    l_cursor.execute("""SELECT now()-query_start AS duration,datname,procpid,usename,client_addr,
 	CASE WHEN char_length(current_query)>110 THEN substring(current_query from 0 for 110)||'...'
 	ELSE current_query
 	END AS cur_query FROM pg_stat_activity WHERE current_query!='<IDLE>' AND NOT procpid=pg_backend_pid() ORDER BY 1 DESC""")
 	except Exception, e:
-	    logger.error("Cannot execute hostcluster running queries request for host: {}".format(self.hostname))
-	    logger.error('DETAILS: {0}{1}'.format(e.pgcode,e.pgerror))
+	    logger.error("Cannot execute hostcluster running queries request for host: {0}".format(self.hostname))
+	    logger.error('Details: {0}{1}'.format(e.pgcode,e.pgerror))
 	    return
-	queries = cursor.fetchall()
-	logger.debug('Running queries executed succsessfully for host: {}'.format(self.hostname))
+	queries = l_cursor.fetchall()
 	logger.debug('Queries running:\n\t{}'.format(queries))
-	cursore.close()
+	l_cursor.close()
 	return queries
+
+    def __del__(self):
+	if self.db_conn is not None:
+	    self.db_conn.close()
 
 
 class ClusterForm(forms.Form):
@@ -280,41 +286,67 @@ class DatabaseName(models.Model):
     db_name = models.CharField(max_length=30)
     description = models.TextField(null=True)
 
+    class Meta:
+	db_table = 'database_name'
+
+    db_conn = None
+
     def set_non_alive(self):
 	self.alive=False
 	self.save()
+	logger.info('Database "{0}" disabled. Set "alive=False"'.format(self.db_name))
+	logger.debug('Details: id={0} hc_id={1}'.format(self.id,self.hc_id))
 
     def toggle_observable(self):
+	obs='TRUE'
 	if self.observable:
 	    self.observable=False
+	    obs='FALSE'
 	else:
 	    self.observable=True
 	self.save()
+	logger.info('Database "{0}" set observable to "{1}"'.format(self.hostcluster,obs))
 
     def get_conn_string(self):
-#	from django.db import connection
-	cursor=connection.cursor()
-	cursor.execute("SELECT get_conn_string(%s,%s)",[self.hc_id,self.id])
-	conn_string=cursor.fetchone()[0]
+	l_cursor=connection.cursor()
+	l_cursor.execute("SELECT get_conn_string({0},{1})".format(self.hc_id,self.id))
+	conn_string=l_cursor.fetchone()[0]
+	l_cursor.close()
 	return conn_string
 
-    def discover_database(self):
+
+    def get_self_db_conn(self):
 	try:
 	    conn=psycopg2.connect(self.get_conn_string())
 	except Exception, e:
-	    print e.pgcode
-	    print e.pgerror
-	    return
-	cur=conn.cursor()
-	exist_sch=self.schemaname_set.values('id','obj_oid','sch_name').filter(alive=True)
-	try:
-	    cur.execute("SELECT oid,nspname FROM pg_namespace WHERE nspname NOT IN ('pg_catalog', 'information_schema') AND nspname !~ '^pg_toast' AND nspname !~ '^pg_temp'")
-	except Exception, e:
-	    print e.pgcode
-	    print e.pgerror
-	    return
-	new_sch=cur.fetchall()
+	    logger.warning("Cannot connect to postgres: {0}".format(self.get_conn_string()))
+	    logger.warning("Details: {0}{1}".format(e.pgcode,e.pgerror))
+	    return False
+	self.db_conn=conn
+	logger.debug('Connection to DB for host "{0}" obtained succsessfully'.format(self.db_name))
+	return True
 
+
+    def obtain_database_connection(self):
+	return self.db_conn
+
+
+    def discover_database(self):
+	if self.db_conn is None:
+	    if self.get_self_db_conn():
+		l_cursor = self.db_conn.cursor()
+	    else:
+		return
+	else:
+	    l_cursor = self.db_conn.cursor()
+	try:
+	    l_cursor.execute("SELECT oid,nspname FROM pg_namespace WHERE nspname NOT IN ('pg_catalog', 'information_schema') AND nspname !~ '^pg_toast' AND nspname !~ '^pg_temp'")
+	except Exception, e:
+	    logger.error("Cannot execute database discover queries for db: {0}".format(self.db_name))
+	    logger.error('Details: {0}{1}'.format(e.pgcode,e.pgerror))
+	    return
+	exist_sch=self.schemaname_set.values('id','obj_oid','sch_name').filter(alive=True)
+	new_sch=l_cursor.fetchall()
 	for new_s in new_sch:
 	    for exist_s in exist_sch:
 		if new_s[0] == exist_s['obj_oid'] and new_s[1] == exist_s['sch_name']:
@@ -329,19 +361,25 @@ class DatabaseName(models.Model):
 		remove_sch=SchemaName.objects.get(pk=exist_s['id'])
 		remove_sch.set_non_alive()
 #		exist_s.set_non_alive()
+	l_cursor.close()
 
 
     def edit_description(self,new_description):
+	old_desc=self.description
 	self.description=new_description
 	self.save()
-
-    class Meta:
-	db_table = 'database_name'
+	logger.info('Database description changed from "{0}" to "{1}"'.format(old_desc,self.description))
 
     def db_stat(self,time):
-	conn=psycopg2.connect(self.get_conn_string())
-	cursor=conn.cursor()
-	cursor.execute("""SELECT
+	if self.db_conn is None:
+	    if self.get_self_db_conn():
+		l_cursor = self.db_conn.cursor()
+	    else:
+		return
+	else:
+	    l_cursor = self.db_conn.cursor()
+	try:
+	    l_cursor.execute("""SELECT
 pg_database_size(oid) AS db_size,
 pg_stat_get_db_xact_commit(oid) AS xact_commit,
 pg_stat_get_db_xact_rollback(oid) AS xact_rollback,
@@ -353,9 +391,15 @@ pg_stat_get_db_tuples_inserted(oid) AS tup_inserted,
 pg_stat_get_db_tuples_updated(oid) AS tup_updated,
 pg_stat_get_db_tuples_deleted(oid) AS tup_deleted
 FROM pg_database
-WHERE oid =%s""",(self.obj_oid,))
-	stat=cursor.fetchone()
-	self.databasestat_set.create(time_id=time,
+WHERE oid ={0}""".format(self.obj_oid))
+	except Exception, e:
+	    logger.error("Cannot execute database stat queries for db: {0}".format(self.db_name))
+	    logger.error('Details: {0}{1}'.format(e.pgcode,e.pgerror))
+	    return
+	stat=l_cursor.fetchone()
+	logger.debug('Database stat results for DB {0}:\n\t{1}'.format(self.db_name,stat))
+	try:
+	    self.databasestat_set.create(time_id=time,
     db_size = stat[0],
     xact_commit = stat[1],
     xact_rollback = stat[2],
@@ -366,6 +410,18 @@ WHERE oid =%s""",(self.obj_oid,))
     tup_inserted = stat[7],
     tup_updated = stat[8],
     tup_deleted = stat[9])
+	except (IntegrityError,DatabaseError) as msg:
+	    logger.error('Cannot create database stat record for database {0}'.format(self.db_name))
+	    logger.error('DETAILS: {0}'.format(msg))
+	    pass
+	logger.debug('Database stat results saved')
+	l_cursor.close()
+
+
+    def __del__(self):
+	if self.db_conn is not None:
+	    self.db_conn.close()
+
 
 
 ###################################################################################################
@@ -700,7 +756,7 @@ class LogTime(models.Model):
 	db_table = 'log_time'
 
     def __init__(self,*args,**kwargs):
-	logging.debug('Log time requested')
+	logger.debug('Log time requested')
 	cursor = connection.cursor()
 	time_check_query="""SELECT CASE
     WHEN (SELECT COUNT(1) FROM log_time WHERE hour_truncate=(SELECT date_trunc('hour',now())::timestamp without time zone)) > 0 
@@ -711,11 +767,11 @@ class LogTime(models.Model):
 	cursor.execute(time_check_query)
 	time_data=cursor.fetchone()
 	if time_data[0] is None:
-	    logging.critical('Appropriate record for "{0}" already exists'.format(time_data[1]))
+	    logger.critical('Appropriate record for "{0}" already exists'.format(time_data[1]))
 #	    print 'Appropriate record for "{0}" already exists'.format(time_data[1])
 
 	    exit()
-	logging.debug('Log time obtained. Actual Time: {0}\tHour Truncate: {1}'.format(time_data[0],time_data[1]))
+	logger.debug('Log time obtained. Actual Time: {0}\tHour Truncate: {1}'.format(time_data[0],time_data[1]))
 	kwargs['actual_time']=time_data[0]
 	kwargs['hour_truncate']=time_data[1]
 	super(LogTime,self).__init__(*args,**kwargs)
