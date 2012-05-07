@@ -339,7 +339,7 @@ class DatabaseName(models.Model):
 	    if self.get_self_db_conn():
 #		logger.debug("Created new PROD connection handler for database {0}".format(self.db_name))
 		return self.db_conn
-	logger.debug("Returning PROD connection handler object: {0}".format(self.db_conn))
+#	logger.debug("Returning PROD connection handler object: {0}".format(self.db_conn))
 	return self.db_conn
 
 
@@ -734,7 +734,7 @@ FROM pg_class WHERE oid=%s""",(self.obj_oid,))
     last_analyze = stat[2],
     last_autoanalyze = stat[3])
 	except (IntegrityError,DatabaseError) as msg:
-	    logger.error('Cannot create VA stat record for database {0}'.format(self.tbl_name))
+	    logger.error('Cannot create VA stat record for table {0}'.format(self.tbl_name))
 	    logger.error('DETAILS: {0}'.format(msg))
 	    pass
 #	logger.debug('Table VA stat results saved. Table: {0}'.format(self.tbl_name))
@@ -753,10 +753,10 @@ class IndexName(models.Model):
     class Meta:
 	db_table = 'index_name'
 
-    def idx_stat(self,time,conn_string):
-	conn=psycopg2.connect(conn_string)
-	cursor=conn.cursor()
-	cursor.execute("""SELECT
+    def idx_stat(self,time,prod_conn):
+	r_cursor=prod_conn.cursor()
+	try:
+	    r_cursor.execute("""SELECT
 pg_relation_size(oid) AS relsize,
 pg_stat_get_numscans(oid) AS idx_scan,
 pg_stat_get_tuples_returned(oid) AS idx_tup_read,
@@ -764,13 +764,26 @@ pg_stat_get_tuples_fetched(oid) AS idx_tup_fetch,
 pg_stat_get_blocks_fetched(oid) AS idx_blks_fetch,
 pg_stat_get_blocks_hit(oid) AS idx_blks_hit
 FROM pg_class WHERE oid=%s""",(self.obj_oid,))
-	stat=cursor.fetchone()
-	self.indexstat_set.create(time_id=time,
-    idx_scan = stat[0],
-    idx_tup_read = stat[1],
-    idx_tup_fetch = stat[2],
-    idx_blks_fetch = stat[3],
-    idx_blks_hit = stat[4])
+	except Exception,e:
+	    logger.error("Cannot execute stat queries for index: {0}".format(self.idx_name))
+	    logger.error('Details: {0}{1}'.format(e.pgcode,e.pgerror))
+	    return
+	stat=r_cursor.fetchone()
+	try:
+	    self.indexstat_set.create(time_id=time,
+    idx_size = stat[0],
+    idx_scan = stat[1],
+    idx_tup_read = stat[2],
+    idx_tup_fetch = stat[3],
+    idx_blks_fetch = stat[4],
+    idx_blks_hit = stat[5])
+	except (IntegrityError,DatabaseError) as msg:
+	    logger.error('Cannot create index stat record for index {0}'.format(self.idx_name))
+	    logger.error('DETAILS: {0}'.format(msg))
+	    pass
+#	logger.debug('Table VA stat results saved. Table: {0}'.format(self.tbl_name))
+	r_cursor.close()
+
 
     def set_non_alive(self):
 	self.alive=False
@@ -788,10 +801,10 @@ class TableToastName(models.Model):
     class Meta:
         db_table = 'table_toast_name'
 
-    def tbl_toast_stat(self,time,conn_string):
-	conn=psycopg2.connect(conn_string)
-	cursor=conn.cursor()
-	cursor.execute("""SELECT
+    def tbl_toast_stat(self,time,prod_conn):
+	r_cursor=prod_conn.cursor()
+	try:
+	    r_cursor.execute("""SELECT
 pg_relation_size(oid) AS relsize,
 pg_stat_get_numscans(oid) AS seq_scan,
 pg_stat_get_tuples_returned(oid) AS seq_tup_read,
@@ -805,19 +818,33 @@ pg_stat_get_dead_tuples(oid) AS n_dead_tup,
 pg_stat_get_blocks_fetched(oid) AS heap_blks_fetch,
 pg_stat_get_blocks_hit(oid) AS heap_blks_hit
 FROM pg_class WHERE oid=%s""",(self.obj_oid,))
-	stat=cursor.fetchone()
-	self.tabletoaststat_set.create(time_id=time,
-    seq_scan = stat[0],
-    seq_tup_read = stat[1],
-    seq_tup_fetch = stat[2],
-    n_tup_ins = stat[3],
-    n_tup_upd = stat[4],
-    n_tup_del = stat[5],
-    n_tup_hot_upd = stat[6],
-    n_live_tup = stat[7],
-    n_dead_tup = stat[8],
-    heap_blks_fetch = stat[9],
-    heap_blks_hit = stat[10])
+	except Exception,e:
+	    logger.error("Cannot execute stat queries for TOAST table: {0}".format(self.tbl_name))
+	    logger.error('Details: {0}{1}'.format(e.pgcode,e.pgerror))
+	    return
+	stat=r_cursor.fetchone()
+	try:
+	    self.tabletoaststat_set.create(time_id=time,
+    ttbl_size = stat[0],
+    seq_scan = stat[1],
+    seq_tup_read = stat[2],
+    seq_tup_fetch = stat[3],
+    n_tup_ins = stat[4],
+    n_tup_upd = stat[5],
+    n_tup_del = stat[6],
+    n_tup_hot_upd = stat[7],
+    n_live_tup = stat[8],
+    n_dead_tup = stat[9],
+    heap_blks_fetch = stat[10],
+    heap_blks_hit = stat[11])
+	except (IntegrityError,DatabaseError) as msg:
+	    logger.error('Cannot create TOAST table stat record for table {0}'.format(self.tbl_name))
+	    logger.error('DETAILS: {0}'.format(msg))
+	    pass
+#	logger.debug('Table VA stat results saved. Table: {0}'.format(self.tbl_name))
+	r_cursor.close()
+
+
 
     def set_non_alive(self):
 	self.alive=False
@@ -870,24 +897,36 @@ class IndexToastName(models.Model):
     class Meta:
 	db_table = 'index_toast_name'
 
-    def idx_toast_stat(self,time,conn_string):
-	conn=psycopg2.connect(conn_string)
-	cursor=conn.cursor()
-	cursor.execute("""SELECT
+    def idx_toast_stat(self,time,prod_conn):
+	r_cursor=prod_conn.cursor()
+	try:
+	    r_cursor.execute("""SELECT
 pg_relation_size(oid) AS relsize,
 pg_stat_get_numscans(oid) AS idx_scan,
 pg_stat_get_tuples_returned(oid) AS idx_tup_read,
 pg_stat_get_tuples_fetched(oid) AS idx_tup_fetch,
 pg_stat_get_blocks_fetched(oid) AS idx_blks_fetch,
 pg_stat_get_blocks_hit(oid) AS idx_blks_hit
-FROM pg_class WHERE oid=%s""",(self.obj_oid,))
-	stat=cursor.fetchone()
-	self.indextoaststat_set.create(time_id=time,
-    tidx_scan = stat[0],
-    tidx_tup_read = stat[1],
-    tidx_tup_fetch = stat[2],
-    tidx_blks_fetch = stat[3],
-    tidx_blks_hit = stat[4])
+FROM pg_class WHERE oid={0}""".format(self.obj_oid))
+	except Exception,e:
+	    logger.error("Cannot execute stat queries for TOAST index: {0}".format(self.idx_name))
+	    logger.error('Details: {0}{1}'.format(e.pgcode,e.pgerror))
+	    return
+	stat=r_cursor.fetchone()
+	try:
+	    self.indextoaststat_set.create(time_id=time,
+    tidx_size = stat[0],
+    tidx_scan = stat[1],
+    tidx_tup_read = stat[2],
+    tidx_tup_fetch = stat[3],
+    tidx_blks_fetch = stat[4],
+    tidx_blks_hit = stat[5])
+	except (IntegrityError,DatabaseError) as msg:
+	    logger.error('Cannot create TOAST index stat record for index {0}'.format(self.idx_name))
+	    logger.error('DETAILS: {0}'.format(msg))
+	    pass
+#	logger.debug('Table VA stat results saved. Table: {0}'.format(self.tbl_name))
+	r_cursor.close()
 
 
 ###################################################################################################
@@ -1031,7 +1070,7 @@ class TableToastStat(models.Model):
     tn = models.ForeignKey(TableToastName)
     time = models.ForeignKey(LogTime)
 #    time = models.IntegerField()
-    tbl_size = models.BigIntegerField()
+    ttbl_size = models.BigIntegerField()
     seq_scan = models.BigIntegerField()
     seq_tup_read = models.BigIntegerField()
     seq_tup_fetch = models.BigIntegerField()
