@@ -334,6 +334,7 @@ class DatabaseName(models.Model):
 
 
     def obtain_database_connection(self):
+<<<<<<< HEAD
 #	logger.debug("Request for PROD connection handler for database {0}".format(self.db_name))
 	if self.db_conn is None:
 #	    logger.debug("Requested PROD connection does not exists. Trying to create...")
@@ -341,6 +342,8 @@ class DatabaseName(models.Model):
 #		logger.debug("Created new PROD connection handler for database {0}".format(self.db_name))
 		return self.db_conn
 #	logger.debug("Returning PROD connection handler object: {0}".format(self.db_conn))
+=======
+>>>>>>> 28cd8491638770ba7cf8d282495498c604d01948
 	return self.db_conn
 
 
@@ -378,6 +381,10 @@ class DatabaseName(models.Model):
 	    else:
 		remove_sch=SchemaName.objects.get(pk=exist_s['id'])
 		remove_sch.set_non_alive()
+<<<<<<< HEAD
+=======
+#		exist_s.set_non_alive()
+>>>>>>> 28cd8491638770ba7cf8d282495498c604d01948
 	l_cursor.close()
 
 
