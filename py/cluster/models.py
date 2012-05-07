@@ -173,7 +173,13 @@ class HostCluster(models.Model):
 		if new_db[0] == exist_db['obj_oid'] and new_db[1] == exist_db['db_name']:
 		    break
 	    else:
-		db=self.databasename_set.create(obj_oid=new_db[0],db_name=new_db[1])
+		try:
+		    db=self.databasename_set.create(obj_oid=new_db[0],db_name=new_db[1])
+		except (IntegrityError,DatabaseError) as msg:
+		    logger.error('Cannot create new database record for cluster {0}'.format(self.hostname))
+		    logger.error('DETAILS: {0}'.format(msg))
+		    return
+		logger.info("Created new database {0} for cluster {1}".format(new_db[1],self.hostname))
 	for exist_db in exist_dbs:
 	    for new_db in new_dbs:
 		if new_db[0] == exist_db['obj_oid'] and new_db[1] == exist_db['db_name']:
@@ -203,7 +209,7 @@ pg_stat_get_bgwriter_maxwritten_clean() AS maxwritten_clean,
 pg_stat_get_buf_written_backend() AS buffers_backend,
 pg_stat_get_buf_alloc() AS buffers_alloc""")
 	except Exception, e:
-	    logger.error("Cannot execute hostcluster stat query for host: {}".format(self.hostname))
+	    logger.error("Cannot execute hostcluster stat query for host: {0}".format(self.hostname))
 	    logger.error("Details: {0}{1}".format(e.pgcode,e.pgerror))
 	    return
 	stat=l_cursor.fetchone()
@@ -328,6 +334,13 @@ class DatabaseName(models.Model):
 
 
     def obtain_database_connection(self):
+#	logger.debug("Request for PROD connection handler for database {0}".format(self.db_name))
+	if self.db_conn is None:
+#	    logger.debug("Requested PROD connection does not exists. Trying to create...")
+	    if self.get_self_db_conn():
+#		logger.debug("Created new PROD connection handler for database {0}".format(self.db_name))
+		return self.db_conn
+#	logger.debug("Returning PROD connection handler object: {0}".format(self.db_conn))
 	return self.db_conn
 
 
@@ -352,7 +365,12 @@ class DatabaseName(models.Model):
 		if new_s[0] == exist_s['obj_oid'] and new_s[1] == exist_s['sch_name']:
 		    break
 	    else:
-		self.schemaname_set.create(obj_oid=new_s[0],sch_name=new_s[1])
+		try:
+		    self.schemaname_set.create(obj_oid=new_s[0],sch_name=new_s[1])
+		except (IntegrityError,DatabaseError) as msg:
+		    logger.error('Cannot create new schema record for database {0}'.format(self.db_name))
+		    logger.error('DETAILS: {0}'.format(msg))
+		logger.info("Created new schema {0} for database {1}".format(new_s[1],self.db_name))
 	for exist_s in exist_sch:
 	    for new_s in new_sch:
 		if new_s[0] == exist_s['obj_oid'] and new_s[1] == exist_s['sch_name']:
@@ -360,7 +378,6 @@ class DatabaseName(models.Model):
 	    else:
 		remove_sch=SchemaName.objects.get(pk=exist_s['id'])
 		remove_sch.set_non_alive()
-#		exist_s.set_non_alive()
 	l_cursor.close()
 
 
@@ -438,30 +455,35 @@ class SchemaName(models.Model):
 
     def set_non_alive(self):
 	self.alive=False
+	logger.info('Schema "{0}" disabled. Set "alive=False"'.format(self.sch_name))
 	self.save()
 
-    def discover_schema_tables(self,conn_string):
-	conn=psycopg2.connect(conn_string)
+    def discover_schema_tables(self,db_conn):
 	exist_tbls=self.tablename_set.values('id','obj_oid','tbl_name').filter(alive=True)
-	cur=conn.cursor()
-
-	cur.execute("""SELECT r.oid,r.relname,r.reltoastrelid,
+	r_cursor=db_conn.cursor()
+	try:
+	    r_cursor.execute("""SELECT r.oid,r.relname,r.reltoastrelid,
     CASE WHEN h.inhrelid IS NULL THEN 'f'::boolean ELSE 't'::boolean END AS has_parent
     FROM pg_class r
     LEFT JOIN pg_inherits h ON r.oid=h.inhrelid
     WHERE r.relkind='r'
-    AND r.relnamespace=%s""",(self.obj_oid,))
-	new_tbls=cur.fetchall()
+    AND r.relnamespace={0}""".format(self.obj_oid))
+	except Exception, e:
+	    logger.error("Cannot execute table discovery query for schema: {0}".format(self.sch_name))
+	    logger.error("Details: {0}{1}".format(e.pgcode,e.pgerror))
+	    return
+	new_tbls=r_cursor.fetchall()
 	for new_t in new_tbls:
 	    for exist_t in exist_tbls:
 		if new_t[0]==exist_t['obj_oid'] and new_t[1]==exist_t['tbl_name']:
 		    break
 	    else:
-		new_table_obj=self.tablename_set.create(obj_oid=new_t[0],tbl_name=new_t[1],has_parent=new_t[3])
-		if new_t[2]:
-		    new_toast_tbl_obj=new_table_obj.create_toast(conn_string,new_t[2])
-		new_table_obj.discover_indexes(conn_string)
-
+		try:
+		    new_table_obj=self.tablename_set.create(obj_oid=new_t[0],tbl_name=new_t[1],has_parent=new_t[3])
+		except (IntegrityError,DatabaseError) as msg:
+		    logger.error('Cannot create new table record for schema {0}'.format(self.sch_name))
+		    logger.error('DETAILS: {0}'.format(msg))
+		logger.info("New table created {0} for schema {1}".format(new_t[1],self.sch_name))
 	for exist_t in exist_tbls:
 	    for new_t in new_tbls:
 		if new_t[0]==exist_t['obj_oid'] and new_t[1]==exist_t['tbl_name']:
@@ -469,22 +491,28 @@ class SchemaName(models.Model):
 	    else:
 		remove_tbl=TableName.objects.get(pk=exist_t['id'])
 		remove_tbl.set_non_alive()
+	r_cursor.close()
+	for exist_t in self.tablename_set.filter(alive=True):
+	    exist_t.discover_indexes(db_conn)
+	    exist_t.discover_toast_table(db_conn)
 
 
-    def discover_schema_functions(self,conn_string):
-	conn=psycopg2.connect(conn_string)
+    def discover_schema_functions(self,prod_conn):
+	r_cursor=prod_conn.cursor()
 	exist_funcs=self.functionname_set.values('id','pro_oid','func_name').filter(alive=True)
-	cur=conn.cursor()
-
-	cur.execute("""SELECT p.oid AS pro_oid,p.proname AS funcname,p.proretset,t.typname,l.lanname
+	try:
+	    r_cursor.execute("""SELECT p.oid AS pro_oid,p.proname AS funcname,p.proretset,t.typname,l.lanname
     FROM pg_proc p
     LEFT JOIN pg_namespace n ON n.oid = p.pronamespace
     JOIN pg_type t ON p.prorettype=t.oid
     JOIN pg_language l ON p.prolang=l.oid
     WHERE (p.prolang <> (12)::oid)
     AND n.oid=%s""",(self.obj_oid,))
-
-	new_funcs=cur.fetchall()
+	except Exception, e:
+	    logger.error("Cannot execute function discovery query for schema: {0}".format(self.hostname))
+	    logger.error("Details: {0}{1}".format(e.pgcode,e.pgerror))
+	    return
+	new_funcs=r_cursor.fetchall()
 	for new_f in new_funcs:
 	    for exist_f in exist_funcs:
 		if new_f[0]==exist_f['pro_oid'] and new_f[1]==exist_f['func_name']:
@@ -498,6 +526,7 @@ class SchemaName(models.Model):
 	    else:
 		remove_func=FunctionName.objects.get(pk=exist_f['id'])
 		remove_func.set_non_alive()
+	r_cursor.close()
 
 ###################################################################################################
 
@@ -510,27 +539,40 @@ class FunctionName(models.Model):
     prorettype = models.CharField(max_length=30)
     prolang = models.CharField(max_length=30)
     description = models.TextField()
+
     class Meta:
         db_table = 'function_name'
 
     def set_non_alive(self):
 	self.alive=False
+	logger.info('Function "{0}" disabled. Set "alive=False"'.format(self.func_name))
 	self.save()
 
-    def func_stat(self,time,conn_string):
-	conn=psycopg2.connect(conn_string)
-	cursor=conn.cursor()
-	cursor.execute("""SELECT
+    def func_stat(self,time,prod_conn):
+	r_cursor=prod_conn.cursor()
+	try:
+	    r_cursor.execute("""SELECT
 COALESCE(pg_stat_get_function_calls(oid),0) AS func_calls,
 COALESCE((pg_stat_get_function_time(oid)),0) AS total_time,
 COALESCE((pg_stat_get_function_self_time(oid)),0) AS self_time
 FROM pg_proc
-WHERE oid=%s""",(self.pro_oid,))
-	stat=cursor.fetchone()
-	self.functionstat_set.create(time_id=time,
+WHERE oid={0}""".format(self.pro_oid))
+	except Exception,e:
+	    logger.error("Cannot execute stat queries for function: {0}".format(self.func_name))
+	    logger.error('Details: {0}{1}'.format(e.pgcode,e.pgerror))
+	    return
+	stat=r_cursor.fetchone()
+	try:
+	    self.functionstat_set.create(time_id=time,
     func_calls = stat[0],
     total_time = stat[1],
     self_time = stat[2])
+	except (IntegrityError,DatabaseError) as msg:
+	    logger.error('Cannot create stat record for function {0}'.format(self.func_name))
+	    logger.error('DETAILS: {0}'.format(msg))
+	    pass
+#	logger.debug('Function stat results saved. Function: {0}'.format(self.func_name))
+	r_cursor.close()
 
 
 ###################################################################################################
@@ -547,23 +589,34 @@ class TableName(models.Model):
 
     def set_non_alive(self):
 	self.alive=False
+	logger.info('Table "{0}" disabled. Set "alive=False"'.format(self.tbl_name))
 	self.save()
 
-    def discover_indexes(self,conn_string):
-	conn=psycopg2.connect(conn_string)
+    def discover_indexes(self,prod_conn):
 	exist_idxs=self.indexname_set.values('id','obj_oid','idx_name').filter(alive=True)
-	cur=conn.cursor()
-	cur.execute("""SELECT i.indexrelid,c.relname,i.indisunique,i.indisprimary
+	r_cursor=prod_conn.cursor()
+	try:
+	    r_cursor.execute("""SELECT i.indexrelid,c.relname,i.indisunique,i.indisprimary
     FROM pg_index i
     JOIN pg_class c ON i.indexrelid=c.oid
-    WHERE i.indrelid=%s""",(self.obj_oid,))
-	new_idxs=cur.fetchall()
+    WHERE i.indrelid={0}""".format(self.obj_oid))
+	except Exception,e:
+	    logger.error("Cannot execute index discovery query for table: {0}".format(self.tbl_name))
+	    logger.error("Details: {0}{1}".format(e.pgcode,e.pgerror))
+	    return
+	new_idxs=r_cursor.fetchall()
 	for new_i in new_idxs:
 	    for exist_i in exist_idxs:
 		if new_i[0]==exist_i['obj_oid'] and new_i[1]==exist_i['idx_name']:
 		    break
 	    else:
-		self.indexname_set.create(obj_oid=new_i[0],idx_name=new_i[1],is_unique=new_i[2],is_primary=new_i[3])
+		try:
+		    self.indexname_set.create(obj_oid=new_i[0],idx_name=new_i[1],is_unique=new_i[2],is_primary=new_i[3])
+		except (IntegrityError,DatabaseError) as msg:
+		    logger.error('Cannot create stat record for table {0}'.format(self.tbl_name))
+		    logger.error('DETAILS: {0}'.format(msg))
+		    return
+		logger.info("Added new index: {0} for table: {1}".format(new_i[1],self.tbl_name))
 	for exist_i in exist_idxs:
 	    for new_i in new_idxs:
 		if new_i[0]==exist_i['obj_oid'] and new_i[1]==exist_i['idx_name']:
@@ -571,24 +624,53 @@ class TableName(models.Model):
 	    else:
 		remove_ind=IndexName.objects.get(pk=exist_i['id'])
 		remove_ind.set_non_alive()
-
-    def create_toast(self,conn_string,toast_relid):
-	conn=psycopg2.connect(conn_string)
-	cur=conn.cursor()
-	cur.execute("""SELECT t.relname,t.reltoastidxid,i.relname
-    FROM pg_class t
-    INNER JOIN pg_class r ON r.reltoastrelid=t.oid
-    INNER JOIN pg_class i ON t.reltoastidxid=i.oid
-    WHERE t.oid=%s""",(toast_relid,))
-	toast_res=cur.fetchone()
-	tt=self.tabletoastname_set.create(obj_oid=toast_relid,tbl_name=toast_res[0])
-	tt.indextoastname_set.create(obj_oid=toast_res[1],idx_name=toast_res[2])
+	r_cursor.close()
 
 
-    def tbl_stat(self,time,conn_string):
-	conn=psycopg2.connect(conn_string)
-	cursor=conn.cursor()
-	cursor.execute("""SELECT
+    def discover_toast_table(self,prod_conn):
+	exist_tt=self.tabletoastname_set.filter(alive=True)
+	r_cursor=prod_conn.cursor()
+	try:
+	    r_cursor.execute("""SELECT r.reltoastrelid,t.relname
+    FROM pg_class r
+    INNER JOIN pg_class t ON r.reltoastrelid=t.oid
+    WHERE r.relkind='r'
+    AND t.relkind='t'
+    AND r.oid={0}""".format(self.obj_oid))
+	except Exception, e:
+	    logger.error("Cannot execute toast discovery query for table: {0}".format(self.tbl_name))
+	    logger.error('Details: {0}{1}'.format(e.pgcode,e.pgerror))
+	    return
+	new_tt=r_cursor.fetchone()
+	if new_tt and exist_tt:
+	    if new_tt[0] != exist_tt[0].obj_oid and new_tt[1] != exist_tt[0].tbl_name:
+		exist_tt[0].set_non_alive()
+		try:
+		    self.tabletoastname_set.create(obj_oid=new_tt[0],tbl_name=new_tt[1])
+		except (IntegrityError,DatabaseError) as msg:
+		    logger.error('Cannot create toast table record for table {0}'.format(self.tbl_name))
+		    logger.error('DETAILS: {0}'.format(msg))
+		    pass
+		logger.info("Created TOAST table {0} for relation {1}".format(new_tt[1],self.tbl_name))
+	elif new_tt and not exist_tt:
+	    try:
+		self.tabletoastname_set.create(obj_oid=new_tt[0],tbl_name=new_tt[1])
+	    except (IntegrityError,DatabaseError) as msg:
+		logger.error('Cannot create toast table record for table {0}'.format(self.tbl_name))
+		logger.error('DETAILS: {0}'.format(msg))
+		pass
+	    logger.info("Created TOAST table {0} for relation {1}".format(new_tt[1],self.tbl_name))
+	elif not new_tt and exist_tt:
+	    exist_tt[0].set_non_alive()
+	r_cursor.close()
+	for tt in self.tabletoastname_set.filter(alive=True):
+	    tt.discover_toast_index(prod_conn)
+
+
+    def tbl_stat(self,time,prod_conn):
+	r_cursor=prod_conn.cursor()
+	try:
+	    r_cursor.execute("""SELECT
 pg_relation_size(oid) AS relsize,
 reltuples::bigint,
 pg_stat_get_numscans(oid) AS seq_scan,
@@ -603,39 +685,61 @@ pg_stat_get_dead_tuples(oid) AS n_dead_tup,
 pg_stat_get_blocks_fetched(oid) AS heap_blks_fetch,
 pg_stat_get_blocks_hit(oid) AS heap_blks_hit
 FROM pg_class
-WHERE oid=%s""",(self.obj_oid,))
-	stat=cursor.fetchone()
-	self.tablestat_set.create(time_id=time,
+WHERE oid={0}""".format(self.obj_oid))
+	except Exception,e:
+	    logger.error("Cannot execute stat queries for table: {0}".format(self.tbl_name))
+	    logger.error('Details: {0}{1}'.format(e.pgcode,e.pgerror))
+	    return
+	stat=r_cursor.fetchone()
+	try:
+	    self.tablestat_set.create(time_id=time,
     tbl_size = stat[0],
-    tbl_total_size = stat[1],
-    tbl_tuples = stat[2],
-    seq_scan = stat[3],
-    seq_tup_read = stat[4],
-    seq_tup_fetch = stat[5],
-    n_tup_ins = stat[6],
-    n_tup_upd = stat[7],
-    n_tup_del = stat[8],
-    n_tup_hot_upd = stat[9],
-    n_live_tup = stat[10],
-    n_dead_tup = stat[11],
-    heap_blks_fetch = stat[12],
-    heap_blks_hit = stat[13])
+    tbl_tuples = stat[1],
+    seq_scan = stat[2],
+    seq_tup_read = stat[3],
+    seq_tup_fetch = stat[4],
+    n_tup_ins = stat[5],
+    n_tup_upd = stat[6],
+    n_tup_del = stat[7],
+    n_tup_hot_upd = stat[8],
+    n_live_tup = stat[9],
+    n_dead_tup = stat[10],
+    heap_blks_fetch = stat[11],
+    heap_blks_hit = stat[12])
+	except (IntegrityError,DatabaseError) as msg:
+	    logger.error('Cannot create stat record for table {0}'.format(self.tbl_name))
+	    logger.error('DETAILS: {0}'.format(msg))
+	    pass
+#	logger.debug('Table stat results saved. Table: {0}'.format(self.tbl_name))
+	r_cursor.close()
 
-    def tbl_va_stat(self,time,conn_string):
-	conn=psycopg2.connect(conn_string)
-	cursor=conn.cursor()
-	cursor.execute("""SELECT
+
+    def tbl_va_stat(self,time,prod_conn):
+	r_cursor=prod_conn.cursor()
+	try:
+	    r_cursor.execute("""SELECT
 pg_stat_get_last_vacuum_time(oid) AS last_vacuum,
 pg_stat_get_last_autovacuum_time(oid) AS last_autovacuum,
 pg_stat_get_last_analyze_time(oid) AS last_analyze,
 pg_stat_get_last_autoanalyze_time(oid) AS last_autoanalyze
 FROM pg_class WHERE oid=%s""",(self.obj_oid,))
-	stat=cursor.fetchone()
-	self.tablevastat_set.create(time_id=time,
+	except Exception,e:
+	    logger.error("Cannot execute VA stat queries for table: {0}".format(self.tbl_name))
+	    logger.error('Details: {0}{1}'.format(e.pgcode,e.pgerror))
+	    return
+	stat=r_cursor.fetchone()
+	try:
+	    self.tablevastat_set.create(time_id=time,
     last_vacuum = stat[0],
     last_autovacuum = stat[1],
     last_analyze = stat[2],
     last_autoanalyze = stat[3])
+	except (IntegrityError,DatabaseError) as msg:
+	    logger.error('Cannot create VA stat record for database {0}'.format(self.tbl_name))
+	    logger.error('DETAILS: {0}'.format(msg))
+	    pass
+#	logger.debug('Table VA stat results saved. Table: {0}'.format(self.tbl_name))
+	r_cursor.close()
 
 
 ###################################################################################################
@@ -671,13 +775,14 @@ FROM pg_class WHERE oid=%s""",(self.obj_oid,))
 
     def set_non_alive(self):
 	self.alive=False
+	logger.info('Index "{0}" disabled. Set "alive=False"'.format(self.idx_name))
 	self.save()
 
 
 ###################################################################################################
 
 class TableToastName(models.Model):
-    tn = models.ForeignKey(TableName,primary_key=True)
+    tn = models.ForeignKey(TableName)
     obj_oid = models.IntegerField()
     alive = models.BooleanField(default=True)
     tbl_name = models.CharField(max_length=30)
@@ -715,11 +820,51 @@ FROM pg_class WHERE oid=%s""",(self.obj_oid,))
     heap_blks_fetch = stat[9],
     heap_blks_hit = stat[10])
 
+    def set_non_alive(self):
+	self.alive=False
+	logger.info('TOAST Table "{0}" disabled. Set "alive=False"'.format(self.tbl_name))
+	self.save()
+
+    def discover_toast_index(self,prod_conn):
+	exist_it=self.indextoastname_set.filter(alive=True)
+	r_cursor=prod_conn.cursor()
+	try:
+	    r_cursor.execute("""SELECT i.oid,i.relname
+    FROM pg_class t
+    INNER JOIN pg_class i ON t.reltoastidxid=i.oid
+    WHERE t.relkind='t'
+    AND t.oid={0}""".format(self.obj_oid))
+	except Exception, e:
+	    logger.error("Cannot execute toast index discovery query for table: {0}".format(self.tbl_name))
+	    logger.error('Details: {0}{1}'.format(e.pgcode,e.pgerror))
+	    return
+	new_it=r_cursor.fetchone()
+	if new_it and exist_it:
+	    if new_it[0] != exist_it[0].obj_oid and new_it[1] != exist_it[0].idx_name:
+		exist_it[0].set_non_alive()
+		try:
+		    self.indextoastname_set.create(obj_oid=new_it[0],idx_name=new_it[1])
+		except (IntegrityError,DatabaseError) as msg:
+		    logger.error('Cannot create toast index record for table {0}'.format(self.tbl_name))
+		    logger.error('DETAILS: {0}'.format(msg))
+		    pass
+		logger.info("Created TOAST index {0} for relation {1}".format(new_it[1],self.tbl_name))
+	elif new_it and not exist_it:
+	    try:
+		self.indextoastname_set.create(obj_oid=new_it[0],idx_name=new_it[1])
+	    except (IntegrityError,DatabaseError) as msg:
+		logger.error('Cannot create toast index record for table {0}'.format(self.tbl_name))
+		logger.error('DETAILS: {0}'.format(msg))
+		pass
+	    logger.info("Created TOAST index {0} for relation {1}".format(new_it[1],self.tbl_name))
+	elif not new_it and exist_it:
+	    exist_tt[0].set_non_alive()
+	r_cursor.close()
 
 ###################################################################################################
 
 class IndexToastName(models.Model):
-    tn = models.ForeignKey(TableToastName,primary_key=True)
+    tn = models.ForeignKey(TableToastName)
     obj_oid = models.IntegerField()
     alive = models.BooleanField(default=True)
     idx_name = models.CharField(max_length=30)

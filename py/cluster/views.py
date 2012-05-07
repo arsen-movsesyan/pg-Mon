@@ -106,8 +106,8 @@ def discover_sch(request,cluster_id,database_id,schema_id):
     db=DatabaseName.objects.get(pk=database_id)
     sch=SchemaName.objects.get(pk=schema_id)
 #    conn=psycopg2.connect(db.get_conn_string())
-    sch.discover_schema_tables(db.get_conn_string())
-    sch.discover_schema_functions(db.get_conn_string())
+    sch.discover_schema_tables(db.obtain_database_connection())
+    sch.discover_schema_functions(db.obtain_database_connection())
     return HttpResponseRedirect("/"+cluster_id+"/"+database_id+"/"+schema_id)
 
 #def about(request):

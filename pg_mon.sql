@@ -3,17 +3,16 @@
 --
 
 SET statement_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = off;
+SET client_encoding = 'SQL_ASCII';
+SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-SET escape_string_warning = off;
 
 --
 -- Name: pg_mon; Type: DATABASE; Schema: -; Owner: postgres
 --
 
-CREATE DATABASE pg_mon WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'C' LC_CTYPE = 'C';
+CREATE DATABASE pg_mon WITH TEMPLATE = template0 ENCODING = 'SQL_ASCII' LC_COLLATE = 'C' LC_CTYPE = 'C';
 
 
 ALTER DATABASE pg_mon OWNER TO postgres;
@@ -21,20 +20,24 @@ ALTER DATABASE pg_mon OWNER TO postgres;
 \connect pg_mon
 
 SET statement_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = off;
+SET client_encoding = 'SQL_ASCII';
+SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-SET escape_string_warning = off;
 
 --
--- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
-CREATE OR REPLACE PROCEDURAL LANGUAGE plpgsql;
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
-ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO postgres;
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
 
 SET search_path = public, pg_catalog;
 
@@ -125,7 +128,7 @@ ALTER FUNCTION public.get_conn_string(hc_id integer, dn_id integer) OWNER TO pos
 CREATE FUNCTION remove_databases() RETURNS trigger
     LANGUAGE plpgsql
     AS $$BEGIN
-	UPDATE database_name SET alive='f' WHERE NEW.alive='f' AND hc_id=OLD.id;
+	UPDATE database_name SET alive='f' WHERE NEW.alive='f' AND hc_id=OLD.id AND alive='t';
 	RETURN NEW;
 END$$;
 
@@ -139,7 +142,7 @@ ALTER FUNCTION public.remove_databases() OWNER TO postgres;
 CREATE FUNCTION remove_functions() RETURNS trigger
     LANGUAGE plpgsql
     AS $$BEGIN
-	UPDATE function_name SET alive='f' WHERE NEW.alive='f' AND sn_id=OLD.id;
+	UPDATE function_name SET alive='f' WHERE NEW.alive='f' AND sn_id=OLD.id AND alive='t';
 	RETURN NEW;
 END$$;
 
@@ -153,7 +156,7 @@ ALTER FUNCTION public.remove_functions() OWNER TO postgres;
 CREATE FUNCTION remove_indexes() RETURNS trigger
     LANGUAGE plpgsql
     AS $$BEGIN
-	UPDATE index_name SET alive='f' WHERE NEW.alive='f' AND tn_id=OLD.id;
+	UPDATE index_name SET alive='f' WHERE NEW.alive='f' AND tn_id=OLD.id AND alive='t';
 	RETURN NEW;
 END$$;
 
@@ -167,7 +170,7 @@ ALTER FUNCTION public.remove_indexes() OWNER TO postgres;
 CREATE FUNCTION remove_schemas() RETURNS trigger
     LANGUAGE plpgsql
     AS $$BEGIN
-	UPDATE schema_name SET alive='f' WHERE NEW.alive='f' AND dn_id=OLD.id;
+	UPDATE schema_name SET alive='f' WHERE NEW.alive='f' AND dn_id=OLD.id AND alive='t';
 	RETURN NEW;
 END$$;
 
@@ -181,7 +184,7 @@ ALTER FUNCTION public.remove_schemas() OWNER TO postgres;
 CREATE FUNCTION remove_tables() RETURNS trigger
     LANGUAGE plpgsql
     AS $$BEGIN
-	UPDATE table_name SET alive='f' WHERE NEW.alive='f' AND sn_id=OLD.id;
+	UPDATE table_name SET alive='f' WHERE NEW.alive='f' AND sn_id=OLD.id AND alive='t';
 	RETURN NEW;
 END$$;
 
@@ -195,7 +198,7 @@ ALTER FUNCTION public.remove_tables() OWNER TO postgres;
 CREATE FUNCTION remove_toas_indexes() RETURNS trigger
     LANGUAGE plpgsql
     AS $$BEGIN
-	UPDATE index_toast_name SET alive='f' WHERE NEW.alive='f' AND tn_id=OLD.tn_id;
+	UPDATE index_toast_name SET alive='f' WHERE NEW.alive='f' AND tn_id=OLD.tn_id AND alive='t';
 	RETURN NEW;
 END$$;
 
@@ -209,7 +212,7 @@ ALTER FUNCTION public.remove_toas_indexes() OWNER TO postgres;
 CREATE FUNCTION remove_toast_tables() RETURNS trigger
     LANGUAGE plpgsql
     AS $$BEGIN
-	UPDATE table_toast_name SET alive='f' WHERE NEW.alive='f' AND tn_id=OLD.id;
+	UPDATE table_toast_name SET alive='f' WHERE NEW.alive='f' AND tn_id=OLD.id AND alive='t';
 	RETURN NEW;
 END$$;
 
@@ -246,6 +249,24 @@ END$$;
 
 ALTER FUNCTION public.terminate_change() OWNER TO postgres;
 
+--
+-- Name: test_log_time(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION test_log_time() RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$BEGIN
+	PERFORM 1 FROM log_time WHERE hour_truncate=(SELECT date_trunc('hour',now())::timestamp without time zone);
+	IF FOUND THEN
+		RETURN FALSE;
+	END IF;
+	RETURN TRUE;
+END
+	$$;
+
+
+ALTER FUNCTION public.test_log_time() OWNER TO postgres;
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -255,6 +276,7 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE bgwriter_stat (
+    id bigint NOT NULL,
     hc_id integer NOT NULL,
     time_id integer NOT NULL,
     checkpoints_timed bigint,
@@ -268,6 +290,27 @@ CREATE TABLE bgwriter_stat (
 
 
 ALTER TABLE public.bgwriter_stat OWNER TO postgres;
+
+--
+-- Name: bgwriter_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE bgwriter_stat_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.bgwriter_stat_id_seq OWNER TO postgres;
+
+--
+-- Name: bgwriter_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE bgwriter_stat_id_seq OWNED BY bgwriter_stat.id;
+
 
 --
 -- Name: database_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -312,6 +355,7 @@ ALTER SEQUENCE database_name_id_seq OWNED BY database_name.id;
 --
 
 CREATE TABLE database_stat (
+    id bigint NOT NULL,
     dn_id integer NOT NULL,
     time_id integer NOT NULL,
     db_size bigint,
@@ -328,6 +372,27 @@ CREATE TABLE database_stat (
 
 
 ALTER TABLE public.database_stat OWNER TO postgres;
+
+--
+-- Name: database_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE database_stat_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.database_stat_id_seq OWNER TO postgres;
+
+--
+-- Name: database_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE database_stat_id_seq OWNED BY database_stat.id;
+
 
 --
 -- Name: function_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -374,6 +439,7 @@ ALTER SEQUENCE function_name_id_seq OWNED BY function_name.id;
 --
 
 CREATE TABLE function_stat (
+    id bigint NOT NULL,
     fn_id integer NOT NULL,
     time_id integer NOT NULL,
     func_calls bigint,
@@ -383,6 +449,27 @@ CREATE TABLE function_stat (
 
 
 ALTER TABLE public.function_stat OWNER TO postgres;
+
+--
+-- Name: function_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE function_stat_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.function_stat_id_seq OWNER TO postgres;
+
+--
+-- Name: function_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE function_stat_id_seq OWNED BY function_stat.id;
+
 
 --
 -- Name: host_cluster; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -471,8 +558,10 @@ ALTER SEQUENCE index_name_id_seq OWNED BY index_name.id;
 --
 
 CREATE TABLE index_stat (
+    id bigint NOT NULL,
     in_id integer NOT NULL,
     time_id integer NOT NULL,
+    idx_size bigint,
     idx_scan bigint,
     idx_tup_read bigint,
     idx_tup_fetch bigint,
@@ -484,10 +573,32 @@ CREATE TABLE index_stat (
 ALTER TABLE public.index_stat OWNER TO postgres;
 
 --
+-- Name: index_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE index_stat_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.index_stat_id_seq OWNER TO postgres;
+
+--
+-- Name: index_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE index_stat_id_seq OWNED BY index_stat.id;
+
+
+--
 -- Name: index_toast_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
 CREATE TABLE index_toast_name (
+    id integer NOT NULL,
     tn_id integer NOT NULL,
     obj_oid integer NOT NULL,
     alive boolean DEFAULT true NOT NULL,
@@ -498,12 +609,35 @@ CREATE TABLE index_toast_name (
 ALTER TABLE public.index_toast_name OWNER TO postgres;
 
 --
+-- Name: index_toast_name_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE index_toast_name_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.index_toast_name_id_seq OWNER TO postgres;
+
+--
+-- Name: index_toast_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE index_toast_name_id_seq OWNED BY index_toast_name.id;
+
+
+--
 -- Name: index_toast_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
 CREATE TABLE index_toast_stat (
+    id bigint NOT NULL,
     tn_id integer NOT NULL,
     time_id integer NOT NULL,
+    tidx_size bigint,
     tidx_scan bigint,
     tidx_tup_read bigint,
     tidx_tup_fetch bigint,
@@ -513,6 +647,27 @@ CREATE TABLE index_toast_stat (
 
 
 ALTER TABLE public.index_toast_stat OWNER TO postgres;
+
+--
+-- Name: index_toast_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE index_toast_stat_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.index_toast_stat_id_seq OWNER TO postgres;
+
+--
+-- Name: index_toast_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE index_toast_stat_id_seq OWNED BY index_toast_stat.id;
+
 
 --
 -- Name: log_time; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -628,10 +783,10 @@ ALTER SEQUENCE table_name_id_seq OWNED BY table_name.id;
 --
 
 CREATE TABLE table_stat (
+    id bigint NOT NULL,
     tn_id integer NOT NULL,
     time_id integer NOT NULL,
     tbl_size bigint,
-    tbl_total_size bigint,
     tbl_tuples bigint,
     seq_scan bigint,
     seq_tup_read bigint,
@@ -650,10 +805,32 @@ CREATE TABLE table_stat (
 ALTER TABLE public.table_stat OWNER TO postgres;
 
 --
+-- Name: table_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE table_stat_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.table_stat_id_seq OWNER TO postgres;
+
+--
+-- Name: table_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE table_stat_id_seq OWNED BY table_stat.id;
+
+
+--
 -- Name: table_toast_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
 CREATE TABLE table_toast_name (
+    id integer NOT NULL,
     tn_id integer NOT NULL,
     obj_oid integer NOT NULL,
     alive boolean DEFAULT true NOT NULL,
@@ -664,12 +841,35 @@ CREATE TABLE table_toast_name (
 ALTER TABLE public.table_toast_name OWNER TO postgres;
 
 --
+-- Name: table_toast_name_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE table_toast_name_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.table_toast_name_id_seq OWNER TO postgres;
+
+--
+-- Name: table_toast_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE table_toast_name_id_seq OWNED BY table_toast_name.id;
+
+
+--
 -- Name: table_toast_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
 CREATE TABLE table_toast_stat (
+    id bigint NOT NULL,
     tn_id integer NOT NULL,
     time_id integer NOT NULL,
+    ttbl_size bigint,
     seq_scan bigint,
     seq_tup_read bigint,
     seq_tup_fetch bigint,
@@ -687,10 +887,32 @@ CREATE TABLE table_toast_stat (
 ALTER TABLE public.table_toast_stat OWNER TO postgres;
 
 --
+-- Name: table_toast_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE table_toast_stat_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.table_toast_stat_id_seq OWNER TO postgres;
+
+--
+-- Name: table_toast_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE table_toast_stat_id_seq OWNED BY table_toast_stat.id;
+
+
+--
 -- Name: table_va_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
 CREATE TABLE table_va_stat (
+    id bigint NOT NULL,
     tn_id integer NOT NULL,
     time_id integer NOT NULL,
     last_vacuum timestamp without time zone,
@@ -703,52 +925,151 @@ CREATE TABLE table_va_stat (
 ALTER TABLE public.table_va_stat OWNER TO postgres;
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: table_va_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-ALTER TABLE database_name ALTER COLUMN id SET DEFAULT nextval('database_name_id_seq'::regclass);
+CREATE SEQUENCE table_va_stat_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE function_name ALTER COLUMN id SET DEFAULT nextval('function_name_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE host_cluster ALTER COLUMN id SET DEFAULT nextval('host_cluster_id_seq'::regclass);
-
+ALTER TABLE public.table_va_stat_id_seq OWNER TO postgres;
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: table_va_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER TABLE index_name ALTER COLUMN id SET DEFAULT nextval('index_name_id_seq'::regclass);
+ALTER SEQUENCE table_va_stat_id_seq OWNED BY table_va_stat.id;
 
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE log_time ALTER COLUMN id SET DEFAULT nextval('log_time_id_seq'::regclass);
+ALTER TABLE ONLY bgwriter_stat ALTER COLUMN id SET DEFAULT nextval('bgwriter_stat_id_seq'::regclass);
 
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE schema_name ALTER COLUMN id SET DEFAULT nextval('schema_name_id_seq'::regclass);
+ALTER TABLE ONLY database_name ALTER COLUMN id SET DEFAULT nextval('database_name_id_seq'::regclass);
 
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE table_name ALTER COLUMN id SET DEFAULT nextval('table_name_id_seq'::regclass);
+ALTER TABLE ONLY database_stat ALTER COLUMN id SET DEFAULT nextval('database_stat_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY function_name ALTER COLUMN id SET DEFAULT nextval('function_name_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY function_stat ALTER COLUMN id SET DEFAULT nextval('function_stat_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY host_cluster ALTER COLUMN id SET DEFAULT nextval('host_cluster_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY index_name ALTER COLUMN id SET DEFAULT nextval('index_name_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY index_stat ALTER COLUMN id SET DEFAULT nextval('index_stat_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY index_toast_name ALTER COLUMN id SET DEFAULT nextval('index_toast_name_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY index_toast_stat ALTER COLUMN id SET DEFAULT nextval('index_toast_stat_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY log_time ALTER COLUMN id SET DEFAULT nextval('log_time_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY schema_name ALTER COLUMN id SET DEFAULT nextval('schema_name_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY table_name ALTER COLUMN id SET DEFAULT nextval('table_name_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY table_stat ALTER COLUMN id SET DEFAULT nextval('table_stat_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY table_toast_name ALTER COLUMN id SET DEFAULT nextval('table_toast_name_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY table_toast_stat ALTER COLUMN id SET DEFAULT nextval('table_toast_stat_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY table_va_stat ALTER COLUMN id SET DEFAULT nextval('table_va_stat_id_seq'::regclass);
+
+
+--
+-- Name: bgwriter_stat_hc_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY bgwriter_stat
+    ADD CONSTRAINT bgwriter_stat_hc_id_time_id_key UNIQUE (hc_id, time_id);
 
 
 --
@@ -756,7 +1077,7 @@ ALTER TABLE table_name ALTER COLUMN id SET DEFAULT nextval('table_name_id_seq'::
 --
 
 ALTER TABLE ONLY bgwriter_stat
-    ADD CONSTRAINT bgwriter_stat_pkey PRIMARY KEY (hc_id, time_id);
+    ADD CONSTRAINT bgwriter_stat_pkey PRIMARY KEY (id);
 
 
 --
@@ -768,11 +1089,19 @@ ALTER TABLE ONLY database_name
 
 
 --
+-- Name: database_stat_dn_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY database_stat
+    ADD CONSTRAINT database_stat_dn_id_time_id_key UNIQUE (dn_id, time_id);
+
+
+--
 -- Name: database_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
 ALTER TABLE ONLY database_stat
-    ADD CONSTRAINT database_stat_pkey PRIMARY KEY (dn_id, time_id);
+    ADD CONSTRAINT database_stat_pkey PRIMARY KEY (id);
 
 
 --
@@ -792,11 +1121,19 @@ ALTER TABLE ONLY function_name
 
 
 --
+-- Name: function_stat_fn_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY function_stat
+    ADD CONSTRAINT function_stat_fn_id_time_id_key UNIQUE (fn_id, time_id);
+
+
+--
 -- Name: function_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
 ALTER TABLE ONLY function_stat
-    ADD CONSTRAINT function_stat_pkey PRIMARY KEY (fn_id, time_id);
+    ADD CONSTRAINT function_stat_pkey PRIMARY KEY (id);
 
 
 --
@@ -808,14 +1145,6 @@ ALTER TABLE ONLY host_cluster
 
 
 --
--- Name: index_basic_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY index_stat
-    ADD CONSTRAINT index_basic_stat_pkey PRIMARY KEY (in_id, time_id);
-
-
---
 -- Name: index_name_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -824,11 +1153,27 @@ ALTER TABLE ONLY index_name
 
 
 --
+-- Name: index_stat_in_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY index_stat
+    ADD CONSTRAINT index_stat_in_id_time_id_key UNIQUE (in_id, time_id);
+
+
+--
+-- Name: index_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY index_stat
+    ADD CONSTRAINT index_stat_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: index_toast_name_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
 ALTER TABLE ONLY index_toast_name
-    ADD CONSTRAINT index_toast_name_pkey PRIMARY KEY (tn_id);
+    ADD CONSTRAINT index_toast_name_pkey PRIMARY KEY (id);
 
 
 --
@@ -836,15 +1181,15 @@ ALTER TABLE ONLY index_toast_name
 --
 
 ALTER TABLE ONLY index_toast_stat
-    ADD CONSTRAINT index_toast_stat_pkey PRIMARY KEY (tn_id, time_id);
+    ADD CONSTRAINT index_toast_stat_pkey PRIMARY KEY (id);
 
 
 --
--- Name: log_time_hour_truncate_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: index_toast_stat_tn_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
---ALTER TABLE ONLY log_time
---    ADD CONSTRAINT log_time_hour_truncate_key UNIQUE (hour_truncate);
+ALTER TABLE ONLY index_toast_stat
+    ADD CONSTRAINT index_toast_stat_tn_id_time_id_key UNIQUE (tn_id, time_id);
 
 
 --
@@ -864,14 +1209,6 @@ ALTER TABLE ONLY schema_name
 
 
 --
--- Name: table_basic_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY table_stat
-    ADD CONSTRAINT table_basic_stat_pkey PRIMARY KEY (tn_id, time_id);
-
-
---
 -- Name: table_name_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -880,11 +1217,27 @@ ALTER TABLE ONLY table_name
 
 
 --
+-- Name: table_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY table_stat
+    ADD CONSTRAINT table_stat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: table_stat_tn_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY table_stat
+    ADD CONSTRAINT table_stat_tn_id_time_id_key UNIQUE (tn_id, time_id);
+
+
+--
 -- Name: table_toast_name_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
 ALTER TABLE ONLY table_toast_name
-    ADD CONSTRAINT table_toast_name_pkey PRIMARY KEY (tn_id);
+    ADD CONSTRAINT table_toast_name_pkey PRIMARY KEY (id);
 
 
 --
@@ -892,7 +1245,15 @@ ALTER TABLE ONLY table_toast_name
 --
 
 ALTER TABLE ONLY table_toast_stat
-    ADD CONSTRAINT table_toast_stat_pkey PRIMARY KEY (tn_id, time_id);
+    ADD CONSTRAINT table_toast_stat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: table_toast_stat_tn_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY table_toast_stat
+    ADD CONSTRAINT table_toast_stat_tn_id_time_id_key UNIQUE (tn_id, time_id);
 
 
 --
@@ -900,7 +1261,15 @@ ALTER TABLE ONLY table_toast_stat
 --
 
 ALTER TABLE ONLY table_va_stat
-    ADD CONSTRAINT table_va_stat_pkey PRIMARY KEY (tn_id, time_id);
+    ADD CONSTRAINT table_va_stat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: table_va_stat_tn_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY table_va_stat
+    ADD CONSTRAINT table_va_stat_tn_id_time_id_key UNIQUE (tn_id, time_id);
 
 
 --
@@ -939,17 +1308,17 @@ CREATE TRIGGER remove_functions_cascade AFTER UPDATE ON schema_name FOR EACH ROW
 
 
 --
+-- Name: remove_index_cascade; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER remove_index_cascade AFTER UPDATE ON table_toast_name FOR EACH ROW EXECUTE PROCEDURE remove_toas_indexes();
+
+
+--
 -- Name: remove_indexes_cascade; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER remove_indexes_cascade AFTER UPDATE ON table_name FOR EACH ROW EXECUTE PROCEDURE remove_indexes();
-
-
---
--- Name: remove_indexes_cascade; Type: TRIGGER; Schema: public; Owner: postgres
---
-
-CREATE TRIGGER remove_indexes_cascade AFTER UPDATE ON table_toast_name FOR EACH ROW EXECUTE PROCEDURE remove_toas_indexes();
 
 
 --
@@ -1129,7 +1498,7 @@ ALTER TABLE ONLY index_name
 --
 
 ALTER TABLE ONLY index_toast_name
-    ADD CONSTRAINT index_toast_name_tn_id_fkey FOREIGN KEY (tn_id) REFERENCES table_toast_name(tn_id) ON DELETE CASCADE;
+    ADD CONSTRAINT index_toast_name_tn_id_fkey FOREIGN KEY (tn_id) REFERENCES table_toast_name(id);
 
 
 --
@@ -1145,7 +1514,7 @@ ALTER TABLE ONLY index_toast_stat
 --
 
 ALTER TABLE ONLY index_toast_stat
-    ADD CONSTRAINT index_toast_stat_tn_id_fkey FOREIGN KEY (tn_id) REFERENCES index_toast_name(tn_id) ON DELETE CASCADE;
+    ADD CONSTRAINT index_toast_stat_tn_id_fkey FOREIGN KEY (tn_id) REFERENCES index_toast_name(id);
 
 
 --
@@ -1201,7 +1570,7 @@ ALTER TABLE ONLY table_toast_stat
 --
 
 ALTER TABLE ONLY table_toast_stat
-    ADD CONSTRAINT table_toast_stat_tn_id_fkey FOREIGN KEY (tn_id) REFERENCES table_toast_name(tn_id) ON DELETE CASCADE;
+    ADD CONSTRAINT table_toast_stat_tn_id_fkey FOREIGN KEY (tn_id) REFERENCES table_toast_name(id);
 
 
 --
