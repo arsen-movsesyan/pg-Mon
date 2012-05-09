@@ -249,24 +249,6 @@ END$$;
 
 ALTER FUNCTION public.terminate_change() OWNER TO postgres;
 
---
--- Name: test_log_time(); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION test_log_time() RETURNS boolean
-    LANGUAGE plpgsql
-    AS $$BEGIN
-	PERFORM 1 FROM log_time WHERE hour_truncate=(SELECT date_trunc('hour',now())::timestamp without time zone);
-	IF FOUND THEN
-		RETURN FALSE;
-	END IF;
-	RETURN TRUE;
-END
-	$$;
-
-
-ALTER FUNCTION public.test_log_time() OWNER TO postgres;
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -635,7 +617,7 @@ ALTER SEQUENCE index_toast_name_id_seq OWNED BY index_toast_name.id;
 
 CREATE TABLE index_toast_stat (
     id bigint NOT NULL,
-    tn_id integer NOT NULL,
+    tin_id integer NOT NULL,
     time_id integer NOT NULL,
     tidx_size bigint,
     tidx_scan bigint,
@@ -704,6 +686,63 @@ ALTER SEQUENCE log_time_id_seq OWNED BY log_time.id;
 
 
 --
+-- Name: pm_last_hour_bgwriter_stat; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW pm_last_hour_bgwriter_stat AS
+    SELECT hc.hostname, hc.ip_address, hc.is_master,
+    (last.checkpoints_timed - first.checkpoints_timed) AS checkpoints_timed,
+    (last.checkpoints_req - first.checkpoints_req) AS checkpoints_req,
+    (last.buffers_checkpoint - first.buffers_checkpoint) AS buffers_checkpoint,
+    (last.buffers_clean - first.buffers_clean) AS buffers_clean,
+    (last.maxwritten_clean - first.maxwritten_clean) AS maxwritten_clean,
+    (last.buffers_backend - first.buffers_backend) AS buffers_backend,
+    (last.buffers_alloc - first.buffers_alloc) AS buffers_alloc
+    FROM ((((host_cluster hc
+    JOIN bgwriter_stat first ON ((hc.id = first.hc_id)))
+    JOIN bgwriter_stat last ON ((hc.id = last.hc_id)))
+    JOIN log_time a ON ((a.id = first.time_id)))
+    JOIN log_time b ON ((b.id = last.time_id)))
+    WHERE (((hc.alive
+    AND hc.observable)
+    AND (a.hour_truncate = (date_trunc('hour'::text, (now() - '01:00:00'::interval)))::timestamp without time zone))
+    AND (b.hour_truncate = (date_trunc('hour'::text, now()))::timestamp without time zone));
+
+
+ALTER TABLE public.pm_last_hour_bgwriter_stat OWNER TO postgres;
+
+--
+-- Name: pm_last_hour_database_stat; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW pm_last_hour_database_stat AS
+    SELECT hc.hostname, hc.ip_address, hc.is_master, dn.db_name,
+    (last.db_size - first.db_size) AS db_size,
+    (last.xact_commit - first.xact_commit) AS xact_commit,
+    (last.xact_rollback - first.xact_rollback) AS xact_rollback,
+    (last.blks_fetch - first.blks_fetch) AS blks_fetch,
+    (last.blks_hit - first.blks_hit) AS blks_hit,
+    (last.tup_returned - first.tup_returned) AS tup_returned,
+    (last.tup_fetched - first.tup_fetched) AS tup_fetched,
+    (last.tup_inserted - first.tup_inserted) AS tup_inserted,
+    (last.tup_updated - first.tup_updated) AS tup_updated,
+    (last.tup_deleted - first.tup_deleted) AS tup_deleted
+    FROM (((((host_cluster hc
+    JOIN database_name dn ON ((hc.id = dn.hc_id)))
+    JOIN database_stat first ON ((dn.id = first.dn_id)))
+    JOIN database_stat last ON ((dn.id = last.dn_id)))
+    JOIN log_time a ON ((a.id = first.time_id)))
+    JOIN log_time b ON ((b.id = last.time_id)))
+    WHERE ((((hc.observable
+    AND dn.alive)
+    AND dn.observable)
+    AND (a.hour_truncate = (date_trunc('hour'::text, (now() - '01:00:00'::interval)))::timestamp without time zone))
+    AND (b.hour_truncate = (date_trunc('hour'::text, now()))::timestamp without time zone));
+
+
+ALTER TABLE public.pm_last_hour_database_stat OWNER TO postgres;
+
+--
 -- Name: schema_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -721,25 +760,31 @@ CREATE TABLE schema_name (
 ALTER TABLE public.schema_name OWNER TO postgres;
 
 --
--- Name: schema_name_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: pm_last_hour_function_stat; Type: VIEW; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE schema_name_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+CREATE VIEW pm_last_hour_function_stat AS
+    SELECT hc.hostname, hc.ip_address, hc.is_master, dn.db_name, sn.sch_name, fn.func_name,
+    (last.func_calls - first.func_calls) AS func_calls,
+    (last.total_time - first.total_time) AS total_time,
+    (last.self_time - first.self_time) AS self_time
+    FROM (((((((host_cluster hc
+    JOIN database_name dn ON ((hc.id = dn.hc_id)))
+    JOIN schema_name sn ON ((dn.id = sn.dn_id)))
+    JOIN function_name fn ON ((sn.id = fn.sn_id)))
+    JOIN function_stat first ON ((fn.id = first.fn_id)))
+    JOIN function_stat last ON ((fn.id = last.fn_id)))
+    JOIN log_time a ON ((a.id = first.time_id)))
+    JOIN log_time b ON ((b.id = last.time_id)))
+    WHERE (((((hc.observable
+    AND dn.observable)
+    AND sn.observable)
+    AND fn.alive)
+    AND (a.hour_truncate = (date_trunc('hour'::text, (now() - '01:00:00'::interval)))::timestamp without time zone))
+    AND (b.hour_truncate = (date_trunc('hour'::text, now()))::timestamp without time zone));
 
 
-ALTER TABLE public.schema_name_id_seq OWNER TO postgres;
-
---
--- Name: schema_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE schema_name_id_seq OWNED BY schema_name.id;
-
+ALTER TABLE public.pm_last_hour_function_stat OWNER TO postgres;
 
 --
 -- Name: table_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -758,25 +803,82 @@ CREATE TABLE table_name (
 ALTER TABLE public.table_name OWNER TO postgres;
 
 --
--- Name: table_name_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: pm_last_hour_index_stat; Type: VIEW; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE table_name_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+CREATE VIEW pm_last_hour_index_stat AS
+    SELECT hc.hostname, hc.ip_address, hc.is_master, dn.db_name, sn.sch_name, tn.tbl_name, ind.idx_name,
+    (last.idx_size - first.idx_size) AS idx_size,
+    (last.idx_scan - first.idx_scan) AS idx_scan,
+    (last.idx_tup_read - first.idx_tup_read) AS idx_tup_read,
+    (last.idx_tup_fetch - first.idx_tup_fetch) AS idx_tup_fetch,
+    (last.idx_blks_fetch - first.idx_blks_fetch) AS idx_blks_fetch,
+    (last.idx_blks_hit - first.idx_blks_hit) AS idx_blks_hit
+    FROM ((((((((host_cluster hc
+    JOIN database_name dn ON ((hc.id = dn.hc_id)))
+    JOIN schema_name sn ON ((dn.id = sn.dn_id)))
+    JOIN table_name tn ON ((sn.id = tn.sn_id)))
+    JOIN index_name ind ON ((tn.id = ind.tn_id)))
+    JOIN index_stat first ON ((ind.id = first.in_id)))
+    JOIN index_stat last ON ((ind.id = last.in_id)))
+    JOIN log_time a ON ((a.id = first.time_id)))
+    JOIN log_time b ON ((b.id = last.time_id)))
+    WHERE (((((hc.observable
+    AND dn.observable)
+    AND sn.observable)
+    AND ind.alive)
+    AND (a.hour_truncate = (date_trunc('hour'::text, (now() - '01:00:00'::interval)))::timestamp without time zone))
+    AND (b.hour_truncate = (date_trunc('hour'::text, now()))::timestamp without time zone));
 
 
-ALTER TABLE public.table_name_id_seq OWNER TO postgres;
+ALTER TABLE public.pm_last_hour_index_stat OWNER TO postgres;
 
 --
--- Name: table_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: table_toast_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
-ALTER SEQUENCE table_name_id_seq OWNED BY table_name.id;
+CREATE TABLE table_toast_name (
+    id integer NOT NULL,
+    tn_id integer NOT NULL,
+    obj_oid integer NOT NULL,
+    alive boolean DEFAULT true NOT NULL,
+    tbl_name character varying NOT NULL
+);
 
+
+ALTER TABLE public.table_toast_name OWNER TO postgres;
+
+--
+-- Name: pm_last_hour_index_toast_stat; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW pm_last_hour_index_toast_stat AS
+    SELECT hc.hostname, hc.ip_address, hc.is_master, dn.db_name, sn.sch_name, tn.tbl_name, ttn.tbl_name AS toast_tbl_name, tind.idx_name AS toast_idx_name,
+    (last.tidx_size - first.tidx_size) AS tidx_size,
+    (last.tidx_scan - first.tidx_scan) AS tidx_scan,
+    (last.tidx_tup_read - first.tidx_tup_read) AS tidx_tup_read,
+    (last.tidx_tup_fetch - first.tidx_tup_fetch) AS tidx_tup_fetch,
+    (last.tidx_blks_fetch - first.tidx_blks_fetch) AS tidx_blks_fetch,
+    (last.tidx_blks_hit - first.tidx_blks_hit) AS tidx_blks_hit
+    FROM (((((((((host_cluster hc
+    JOIN database_name dn ON ((hc.id = dn.hc_id)))
+    JOIN schema_name sn ON ((dn.id = sn.dn_id)))
+    JOIN table_name tn ON ((sn.id = tn.sn_id)))
+    JOIN table_toast_name ttn ON ((tn.id = ttn.tn_id)))
+    JOIN index_toast_name tind ON ((ttn.id = tind.tn_id)))
+    JOIN index_toast_stat first ON ((tind.id = first.tin_id)))
+    JOIN index_toast_stat last ON ((tind.id = last.tin_id)))
+    JOIN log_time a ON ((a.id = first.time_id)))
+    JOIN log_time b ON ((b.id = last.time_id)))
+    WHERE (((((hc.observable
+    AND dn.observable)
+    AND sn.observable)
+    AND tind.alive)
+    AND (a.hour_truncate = (date_trunc('hour'::text, (now() - '01:00:00'::interval)))::timestamp without time zone))
+    AND (b.hour_truncate = (date_trunc('hour'::text, now()))::timestamp without time zone));
+
+
+ALTER TABLE public.pm_last_hour_index_toast_stat OWNER TO postgres;
 
 --
 -- Name: table_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -805,6 +907,149 @@ CREATE TABLE table_stat (
 ALTER TABLE public.table_stat OWNER TO postgres;
 
 --
+-- Name: pm_last_hour_table_stat; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW pm_last_hour_table_stat AS
+    SELECT hc.hostname, hc.ip_address, hc.is_master, dn.db_name, sn.sch_name, tn.tbl_name,
+    (last.tbl_size - first.tbl_size) AS tbl_size,
+    (last.tbl_tuples - first.tbl_tuples) AS tbl_tuples,
+    (last.seq_scan - first.seq_scan) AS seq_scan,
+    (last.seq_tup_read - first.seq_tup_read) AS seq_tup_read,
+    (last.seq_tup_fetch - first.seq_tup_fetch) AS seq_tup_fetch,
+    (last.n_tup_ins - first.n_tup_ins) AS n_tup_ins,
+    (last.n_tup_upd - first.n_tup_upd) AS n_tup_upd,
+    (last.n_tup_del - first.n_tup_del) AS n_tup_del,
+    (last.n_tup_hot_upd - first.n_tup_hot_upd) AS n_tup_hot_upd,
+    (last.n_live_tup - first.n_live_tup) AS n_live_tup,
+    (last.n_dead_tup - first.n_dead_tup) AS n_dead_tup,
+    (last.heap_blks_fetch - first.heap_blks_fetch) AS heap_blks_fetch,
+    (last.heap_blks_hit - first.heap_blks_hit) AS heap_blks_hit
+    FROM (((((((host_cluster hc
+    JOIN database_name dn ON ((hc.id = dn.hc_id)))
+    JOIN schema_name sn ON ((dn.id = sn.dn_id)))
+    JOIN table_name tn ON ((sn.id = tn.sn_id)))
+    JOIN table_stat first ON ((tn.id = first.tn_id)))
+    JOIN table_stat last ON ((tn.id = last.tn_id)))
+    JOIN log_time a ON ((a.id = first.time_id)))
+    JOIN log_time b ON ((b.id = last.time_id)))
+    WHERE (((((hc.observable
+    AND dn.observable)
+    AND sn.observable)
+    AND tn.alive)
+    AND (a.hour_truncate = (date_trunc('hour'::text, (now() - '01:00:00'::interval)))::timestamp without time zone))
+    AND (b.hour_truncate = (date_trunc('hour'::text, now()))::timestamp without time zone));
+
+
+ALTER TABLE public.pm_last_hour_table_stat OWNER TO postgres;
+
+--
+-- Name: table_toast_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE table_toast_stat (
+    id bigint NOT NULL,
+    ttn_id integer NOT NULL,
+    time_id integer NOT NULL,
+    ttbl_size bigint,
+    seq_scan bigint,
+    seq_tup_read bigint,
+    seq_tup_fetch bigint,
+    n_tup_ins bigint,
+    n_tup_upd bigint,
+    n_tup_del bigint,
+    n_tup_hot_upd bigint,
+    n_live_tup bigint,
+    n_dead_tup bigint,
+    heap_blks_fetch bigint,
+    heap_blks_hit bigint
+);
+
+
+ALTER TABLE public.table_toast_stat OWNER TO postgres;
+
+--
+-- Name: pm_last_hour_table_toast_stat; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW pm_last_hour_table_toast_stat AS
+    SELECT hc.hostname, hc.ip_address, hc.is_master, dn.db_name, sn.sch_name, tn.tbl_name, ttn.tbl_name AS toast_tbl_name,
+    (last.ttbl_size - first.ttbl_size) AS ttbl_size,
+    (last.seq_scan - first.seq_scan) AS seq_scan,
+    (last.seq_tup_read - first.seq_tup_read) AS seq_tup_read,
+    (last.seq_tup_fetch - first.seq_tup_fetch) AS seq_tup_fetch,
+    (last.n_tup_ins - first.n_tup_ins) AS n_tup_ins,
+    (last.n_tup_upd - first.n_tup_upd) AS n_tup_upd,
+    (last.n_tup_del - first.n_tup_del) AS n_tup_del,
+    (last.n_tup_hot_upd - first.n_tup_hot_upd) AS n_tup_hot_upd,
+    (last.n_live_tup - first.n_live_tup) AS n_live_tup,
+    (last.n_dead_tup - first.n_dead_tup) AS n_dead_tup,
+    (last.heap_blks_fetch - first.heap_blks_fetch) AS heap_blks_fetch,
+    (last.heap_blks_hit - first.heap_blks_hit)
+    AS heap_blks_hit
+    FROM ((((((((host_cluster hc
+    JOIN database_name dn
+    ON ((hc.id = dn.hc_id)))
+    JOIN schema_name sn ON ((dn.id = sn.dn_id)))
+    JOIN table_name tn ON ((sn.id = tn.sn_id)))
+    JOIN table_toast_name ttn ON ((tn.id = ttn.tn_id)))
+    JOIN table_toast_stat first ON ((ttn.id = first.ttn_id)))
+    JOIN table_toast_stat last ON ((ttn.id = last.ttn_id)))
+    JOIN log_time a ON ((a.id = first.time_id)))
+    JOIN log_time b ON ((b.id = last.time_id)))
+    WHERE (((((hc.observable
+    AND dn.observable)
+    AND sn.observable)
+    AND ttn.alive)
+    AND (a.hour_truncate = (date_trunc('hour'::text, (now() - '01:00:00'::interval)))::timestamp without time zone))
+    AND (b.hour_truncate = (date_trunc('hour'::text, now()))::timestamp without time zone));
+
+
+ALTER TABLE public.pm_last_hour_table_toast_stat OWNER TO postgres;
+
+--
+-- Name: schema_name_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE schema_name_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.schema_name_id_seq OWNER TO postgres;
+
+--
+-- Name: schema_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE schema_name_id_seq OWNED BY schema_name.id;
+
+
+--
+-- Name: table_name_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE table_name_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.table_name_id_seq OWNER TO postgres;
+
+--
+-- Name: table_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE table_name_id_seq OWNED BY table_name.id;
+
+
+--
 -- Name: table_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -826,21 +1071,6 @@ ALTER SEQUENCE table_stat_id_seq OWNED BY table_stat.id;
 
 
 --
--- Name: table_toast_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE table_toast_name (
-    id integer NOT NULL,
-    tn_id integer NOT NULL,
-    obj_oid integer NOT NULL,
-    alive boolean DEFAULT true NOT NULL,
-    tbl_name character varying NOT NULL
-);
-
-
-ALTER TABLE public.table_toast_name OWNER TO postgres;
-
---
 -- Name: table_toast_name_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -860,31 +1090,6 @@ ALTER TABLE public.table_toast_name_id_seq OWNER TO postgres;
 
 ALTER SEQUENCE table_toast_name_id_seq OWNED BY table_toast_name.id;
 
-
---
--- Name: table_toast_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE table_toast_stat (
-    id bigint NOT NULL,
-    tn_id integer NOT NULL,
-    time_id integer NOT NULL,
-    ttbl_size bigint,
-    seq_scan bigint,
-    seq_tup_read bigint,
-    seq_tup_fetch bigint,
-    n_tup_ins bigint,
-    n_tup_upd bigint,
-    n_tup_del bigint,
-    n_tup_hot_upd bigint,
-    n_live_tup bigint,
-    n_dead_tup bigint,
-    heap_blks_fetch bigint,
-    heap_blks_hit bigint
-);
-
-
-ALTER TABLE public.table_toast_stat OWNER TO postgres;
 
 --
 -- Name: table_toast_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1189,7 +1394,7 @@ ALTER TABLE ONLY index_toast_stat
 --
 
 ALTER TABLE ONLY index_toast_stat
-    ADD CONSTRAINT index_toast_stat_tn_id_time_id_key UNIQUE (tn_id, time_id);
+    ADD CONSTRAINT index_toast_stat_tn_id_time_id_key UNIQUE (tin_id, time_id);
 
 
 --
@@ -1253,7 +1458,7 @@ ALTER TABLE ONLY table_toast_stat
 --
 
 ALTER TABLE ONLY table_toast_stat
-    ADD CONSTRAINT table_toast_stat_tn_id_time_id_key UNIQUE (tn_id, time_id);
+    ADD CONSTRAINT table_toast_stat_tn_id_time_id_key UNIQUE (ttn_id, time_id);
 
 
 --
@@ -1514,7 +1719,7 @@ ALTER TABLE ONLY index_toast_stat
 --
 
 ALTER TABLE ONLY index_toast_stat
-    ADD CONSTRAINT index_toast_stat_tn_id_fkey FOREIGN KEY (tn_id) REFERENCES index_toast_name(id);
+    ADD CONSTRAINT index_toast_stat_tn_id_fkey FOREIGN KEY (tin_id) REFERENCES index_toast_name(id);
 
 
 --
@@ -1570,7 +1775,7 @@ ALTER TABLE ONLY table_toast_stat
 --
 
 ALTER TABLE ONLY table_toast_stat
-    ADD CONSTRAINT table_toast_stat_tn_id_fkey FOREIGN KEY (tn_id) REFERENCES table_toast_name(id);
+    ADD CONSTRAINT table_toast_stat_tn_id_fkey FOREIGN KEY (ttn_id) REFERENCES table_toast_name(id);
 
 
 --

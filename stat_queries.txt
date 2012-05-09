@@ -1,0 +1,67 @@
+============================================================================================
+SELECT last.$field - first.$field 
+FROM $observe_stat first
+JOIN $observe_stat last ON first.$name_field_id=last.$name_field_id
+JOIN $observe_name observe ON observe.id=start.$name_field_id
+WHERE first.time_id=(SELECT MAX(id) FROM log_time WHERE hour_truncate <= date_trunc('hour',now()-interval '$first_offset hour'))
+AND last.time_id=(SELECT MAX(id) FROM log_time WHERE hour_truncate <= date_trunc('hour',now()-interval '$last_offset hour'))
+AND $observe_name='$actual_name'
+
+==============================================================================================
+$field - observation field name:
+n_tup_ins
+idx_scan
+last_autovacuum
+func_calls
+...
+
+$observe_stat - observation table:
+table_stat
+index_stat
+table_toast_stat
+index_toast_stat
+table_va_stat
+function_stat
+
+
+$name_field_id - FK object relation field name:
+tn_id (for table_stat)
+fn_id (for function_stat)
+in_id	(for index_stat
+ttn_id (for table_toast_stat)
+tin_id (for index_toast_stat)
+
+$observe_name - FK object relation table name:
+table_name
+function_name
+index_name
+table_toast_nam
+index_toast_name
+
+$first_offset, $last_offset - time offsets fron now in hours:
+48,24 (for the day before)
+24,0 (for last 24 hours)
+...
+
+
+$actual_name - observable object actual name:
+'users'
+'geo_location'
+'map_user_address'
+'idx_malware_analyses_username'
+'bot_dns_map_pkey'
+'pg_toast_16970'
+...
+
+
+EXAMPLE:
+
+SELECT last.seq_scan-first.seq_scan
+FROM table_stat first
+JOIN table_stat last ON first.tn_id=last.tn_id
+JOIN table_name observe  ON observe.id=start.tn_id
+WHERE first.time_id=(SELECT MAX(id) FROM log_time WHERE hour_truncate <= date_trunc('hour',now()-interval '48 hour'))
+AND last.time_id=(SELECT MAX(id) FROM log_time WHERE hour_truncate <= date_trunc('hour',now()-interval '24 hour'))
+AND table_name='users'
+
+

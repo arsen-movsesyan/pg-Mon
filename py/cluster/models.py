@@ -1067,7 +1067,7 @@ class IndexStat(models.Model):
 
 
 class TableToastStat(models.Model):
-    tn = models.ForeignKey(TableToastName)
+    ttn = models.ForeignKey(TableToastName)
     time = models.ForeignKey(LogTime)
 #    time = models.IntegerField()
     ttbl_size = models.BigIntegerField()
@@ -1089,7 +1089,7 @@ class TableToastStat(models.Model):
 
 
 class IndexToastStat(models.Model):
-    tn = models.ForeignKey(IndexToastName)
+    tin = models.ForeignKey(IndexToastName)
     time = models.ForeignKey(LogTime)
 #    time = models.IntegerField()
     tidx_size = models.BigIntegerField()
