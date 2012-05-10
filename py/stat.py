@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python
 
 import settings
 import os
@@ -29,4 +29,5 @@ for hc in HostCluster.objects.filter(alive=True,observable=True):
 		    tt[0].tbl_toast_stat(lt.id,prod_conn)
 		    tidx=tt[0].indextoastname_set.filter(alive=True)
 		    tidx[0].idx_toast_stat(lt.id,prod_conn)
+	prod_conn.close()
 

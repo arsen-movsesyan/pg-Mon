@@ -136,12 +136,12 @@ class HostCluster(models.Model):
     def get_self_db_conn(self):
 	if self.conn_test():
 	    try:
-		conn=psycopg2.connect(self.get_conn_string())
+		self.db_conn=psycopg2.connect(self.get_conn_string())
 	    except Exception, e:
 		logger.warning("Cannot connect to postgres: {0}".format(self.get_conn_string()))
 		logger.warning("Details: {0}{1}".format(e.pgcode,e.pgerror))
 		return False
-	    self.db_conn=conn
+#	    self.db_conn=conn
 	    logger.debug('Connection to DB for host "{0}" obtained succsessfully'.format(self.hostname))
 	    return True
 	else:
@@ -318,6 +318,7 @@ class DatabaseName(models.Model):
 	l_cursor.execute("SELECT get_conn_string({0},{1})".format(self.hc_id,self.id))
 	conn_string=l_cursor.fetchone()[0]
 	l_cursor.close()
+	connection.close()
 	return conn_string
 
 
@@ -949,10 +950,11 @@ class LogTime(models.Model):
     date_trunc('hour',LOCALTIMESTAMP) as hour_truncate"""
 	cursor.execute(time_check_query)
 	time_data=cursor.fetchone()
+	cursor.close()
+	connection.close()
 	if time_data[0] is None:
 	    logger.critical('Appropriate record for "{0}" already exists'.format(time_data[1]))
-#	    print 'Appropriate record for "{0}" already exists'.format(time_data[1])
-
+#	    raise
 	    exit()
 	logger.debug('Log time obtained. Actual Time: {0}\tHour Truncate: {1}'.format(time_data[0],time_data[1]))
 	kwargs['actual_time']=time_data[0]
