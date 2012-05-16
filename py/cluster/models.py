@@ -70,7 +70,7 @@ class HostCluster(models.Model):
 
     def set_non_alive(self):
 	self.alive=False
-	logger.info('Hostcluster "{0}" disabled. Set "alive=False"'.format(self.hostcluster))
+	logger.info('Hostcluster "{0}" disabled. Set "alive=False"'.format(self.hostname))
 	self.save()
 
 
@@ -81,7 +81,7 @@ class HostCluster(models.Model):
 	    obs='FALSE'
 	else:
 	    self.observable=True
-	logger.info('Hostcluster "{0}" observable set to "{1}"'.format(self.hostcluster,obs))
+	logger.info('Hostcluster "{0}" observable set to "{1}"'.format(self.hostname,obs))
 	self.save()
 
 
