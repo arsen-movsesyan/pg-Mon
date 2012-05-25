@@ -12,7 +12,7 @@ SET client_min_messages = warning;
 -- Name: pg_mon; Type: DATABASE; Schema: -; Owner: postgres
 --
 
-CREATE DATABASE pg_mon WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'C' LC_CTYPE = 'C';
+CREATE DATABASE pg_mon WITH TEMPLATE = template0 ENCODING = 'SQL_ASCII' LC_COLLATE = 'C' LC_CTYPE = 'C';
 
 
 ALTER DATABASE pg_mon OWNER TO postgres;
@@ -441,7 +441,7 @@ ALTER FUNCTION public.remove_tables() OWNER TO postgres;
 CREATE FUNCTION remove_toas_indexes() RETURNS trigger
     LANGUAGE plpgsql
     AS $$BEGIN
-	UPDATE index_toast_name SET alive='f' WHERE NEW.alive='f' AND tn_id=OLD.tn_id AND alive='t';
+	UPDATE index_toast_name SET alive='f' WHERE NEW.alive='f' AND ttn_id=OLD.tn_id AND alive='t';
 	RETURN NEW;
 END$$;
 
@@ -824,10 +824,10 @@ ALTER SEQUENCE index_stat_id_seq OWNED BY index_stat.id;
 
 CREATE TABLE index_toast_name (
     id integer NOT NULL,
-    tn_id integer NOT NULL,
+    ttn_id integer NOT NULL,
     obj_oid integer NOT NULL,
     alive boolean DEFAULT true NOT NULL,
-    idx_name character varying NOT NULL
+    tidx_name character varying NOT NULL
 );
 
 
@@ -1023,7 +1023,7 @@ CREATE TABLE table_toast_name (
     tn_id integer NOT NULL,
     obj_oid integer NOT NULL,
     alive boolean DEFAULT true NOT NULL,
-    tbl_name character varying NOT NULL
+    ttbl_name character varying NOT NULL
 );
 
 
@@ -1059,7 +1059,7 @@ ALTER TABLE public.table_toast_stat OWNER TO postgres;
 --
 
 CREATE VIEW pm_table_size_lookup AS
-    SELECT hc.hostname, dn.db_name, sn.sch_name, __tmp_tn.tbl_name, __tmp_tn.tbl_tuples, __tmp_tn.tbl_size, __tmp_in.idx_size AS sum_idx_size, __tmp_ttn.ttbl_size AS tbl_toast_size, __tmp_itn.tidx_size AS idx_toast_size, (((((__tmp_tn.tbl_size + COALESCE(__tmp_ttn.ttbl_size, (0)::bigint)) + COALESCE(__tmp_itn.tidx_size, (0)::bigint)))::numeric + COALESCE(__tmp_in.idx_size, (0)::numeric)))::bigint AS tbl_total_size, pg_size_pretty((((((__tmp_tn.tbl_size + COALESCE(__tmp_ttn.ttbl_size, (0)::bigint)) + COALESCE(__tmp_itn.tidx_size, (0)::bigint)))::numeric + COALESCE(__tmp_in.idx_size, (0)::numeric)))::bigint) AS tbl_total_size_pretty FROM (((((((log_time lt JOIN (SELECT tn.id, tn.sn_id, tn.tbl_name, ts.tbl_tuples, ts.tbl_size, ts.time_id FROM (table_name tn JOIN table_stat ts ON ((tn.id = ts.tn_id))) WHERE tn.alive) __tmp_tn ON ((lt.id = __tmp_tn.time_id))) LEFT JOIN (SELECT ttn.id, ttn.tn_id, ttn.tbl_name, tts.ttbl_size, tts.time_id FROM (table_toast_name ttn JOIN table_toast_stat tts ON ((ttn.id = tts.ttn_id))) WHERE ttn.alive) __tmp_ttn ON (((lt.id = __tmp_ttn.time_id) AND (__tmp_tn.id = __tmp_ttn.tn_id)))) LEFT JOIN (SELECT itn.tn_id, its.tidx_size, its.time_id FROM (index_toast_name itn JOIN index_toast_stat its ON ((itn.id = its.tin_id))) WHERE itn.alive) __tmp_itn ON (((lt.id = __tmp_itn.time_id) AND (__tmp_ttn.id = __tmp_itn.tn_id)))) LEFT JOIN (SELECT inn.tn_id, ins.time_id, sum(ins.idx_size) AS idx_size FROM (index_name inn JOIN index_stat ins ON ((inn.id = ins.in_id))) WHERE inn.alive GROUP BY inn.tn_id, ins.time_id) __tmp_in ON (((lt.id = __tmp_in.time_id) AND (__tmp_tn.id = __tmp_in.tn_id)))) JOIN schema_name sn ON ((sn.id = __tmp_tn.sn_id))) JOIN database_name dn ON ((dn.id = sn.dn_id))) JOIN host_cluster hc ON ((dn.hc_id = hc.id))) WHERE (lt.id = (SELECT log_time.id FROM log_time WHERE (log_time.hour_truncate = date_trunc('hour'::text, now()))));
+    SELECT hc.hostname, dn.db_name, sn.sch_name, __tmp_tn.tbl_name, __tmp_tn.tbl_tuples, __tmp_tn.tbl_size, __tmp_in.idx_size AS sum_idx_size, __tmp_ttn.ttbl_size AS tbl_toast_size, __tmp_itn.tidx_size AS idx_toast_size, (((((__tmp_tn.tbl_size + COALESCE(__tmp_ttn.ttbl_size, (0)::bigint)) + COALESCE(__tmp_itn.tidx_size, (0)::bigint)))::numeric + COALESCE(__tmp_in.idx_size, (0)::numeric)))::bigint AS tbl_total_size, pg_size_pretty((((((__tmp_tn.tbl_size + COALESCE(__tmp_ttn.ttbl_size, (0)::bigint)) + COALESCE(__tmp_itn.tidx_size, (0)::bigint)))::numeric + COALESCE(__tmp_in.idx_size, (0)::numeric)))::bigint) AS tbl_total_size_pretty FROM (((((((log_time lt JOIN (SELECT tn.id, tn.sn_id, tn.tbl_name, ts.tbl_tuples, ts.tbl_size, ts.time_id FROM (table_name tn JOIN table_stat ts ON ((tn.id = ts.tn_id))) WHERE tn.alive) __tmp_tn ON ((lt.id = __tmp_tn.time_id))) LEFT JOIN (SELECT ttn.id, ttn.tn_id, ttn.ttbl_name AS tbl_name, tts.ttbl_size, tts.time_id FROM (table_toast_name ttn JOIN table_toast_stat tts ON ((ttn.id = tts.ttn_id))) WHERE ttn.alive) __tmp_ttn ON (((lt.id = __tmp_ttn.time_id) AND (__tmp_tn.id = __tmp_ttn.tn_id)))) LEFT JOIN (SELECT itn.ttn_id AS tn_id, its.tidx_size, its.time_id FROM (index_toast_name itn JOIN index_toast_stat its ON ((itn.id = its.tin_id))) WHERE itn.alive) __tmp_itn ON (((lt.id = __tmp_itn.time_id) AND (__tmp_ttn.id = __tmp_itn.tn_id)))) LEFT JOIN (SELECT inn.tn_id, ins.time_id, sum(ins.idx_size) AS idx_size FROM (index_name inn JOIN index_stat ins ON ((inn.id = ins.in_id))) WHERE inn.alive GROUP BY inn.tn_id, ins.time_id) __tmp_in ON (((lt.id = __tmp_in.time_id) AND (__tmp_tn.id = __tmp_in.tn_id)))) JOIN schema_name sn ON ((sn.id = __tmp_tn.sn_id))) JOIN database_name dn ON ((dn.id = sn.dn_id))) JOIN host_cluster hc ON ((dn.hc_id = hc.id))) WHERE (lt.id = (SELECT log_time.id FROM log_time WHERE (log_time.hour_truncate = date_trunc('hour'::text, now()))));
 
 
 ALTER TABLE public.pm_table_size_lookup OWNER TO postgres;
@@ -1743,7 +1743,7 @@ ALTER TABLE ONLY index_name
 --
 
 ALTER TABLE ONLY index_toast_name
-    ADD CONSTRAINT index_toast_name_tn_id_fkey FOREIGN KEY (tn_id) REFERENCES table_toast_name(id) ON DELETE CASCADE;
+    ADD CONSTRAINT index_toast_name_tn_id_fkey FOREIGN KEY (ttn_id) REFERENCES table_toast_name(id) ON DELETE CASCADE;
 
 
 --
@@ -1755,11 +1755,11 @@ ALTER TABLE ONLY index_toast_stat
 
 
 --
--- Name: index_toast_stat_tin_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: index_toast_stat_tn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY index_toast_stat
-    ADD CONSTRAINT index_toast_stat_tin_id_fkey FOREIGN KEY (tin_id) REFERENCES index_toast_name(id) ON DELETE CASCADE;
+    ADD CONSTRAINT index_toast_stat_tn_id_fkey FOREIGN KEY (tin_id) REFERENCES index_toast_name(id) ON DELETE CASCADE;
 
 
 --
@@ -1811,11 +1811,11 @@ ALTER TABLE ONLY table_toast_stat
 
 
 --
--- Name: table_toast_stat_ttn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: table_toast_stat_tn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY table_toast_stat
-    ADD CONSTRAINT table_toast_stat_ttn_id_fkey FOREIGN KEY (ttn_id) REFERENCES table_toast_name(id) ON DELETE CASCADE;
+    ADD CONSTRAINT table_toast_stat_tn_id_fkey FOREIGN KEY (ttn_id) REFERENCES table_toast_name(id) ON DELETE CASCADE;
 
 
 --
