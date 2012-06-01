@@ -2,6 +2,7 @@ from table import genericName,genericStat
 from Logger import logger
 import psycopg2
 
+from schemaname import SchemaName
 
 class DatabaseName(genericName):
     table='database_name'
@@ -75,3 +76,37 @@ WHERE oid ={0}""".format(self.db_fields['obj_oid'])
 	if self.prod_conn:
 	    if not self.prod_conn.closed:
 		self.prod_conn.close()
+
+
+    def discover_schemas(self):
+	if not self.get_self_db_conn():
+	    return
+	cur=self.prod_conn.cursor()
+	try:
+	    cur.execute("SELECT oid,nspname FROM pg_namespace WHERE nspname NOT IN ('pg_catalog', 'information_schema') AND nspname !~ '^pg_toast' AND nspname !~ '^pg_temp'")
+	except Exception as e:
+	    logger.error("Canot get schema info for database {0}".format(self.db_fields['db_name']))
+	    cur.close()
+	    return
+	prod_schs=cur.fetchall()
+	cur.close()
+	self.cursor.execute("SELECT obj_oid,sch_name,id FROM schema_name WHERE dn_id={0} AND alive".format(self.id))
+	local_schs=self.cursor.fetchall()
+	for l_sch in local_schs:
+	    for p_sch in prod_schs:
+		if l_sch[0]==p_sch[0] and l_sch[1]==p_sch[1]:
+		    break
+	    else:
+		logger.info("Retired schema {0} in database {1}".format(l_sch[1],self.db_fields['db_name']))
+		old.sch=SchemaName(l_sch[2])
+		old_sch.retire()
+	for p_sch in prod_schs:
+	    for l_sch in local_schs:
+		if l_sch[0]==p_sch[0] and l_sch[1]==p_sch[1]:
+		    break
+	    else:
+		logger.info("Create new schema {0} in database {1}".format(p_sch[1],self.db_fields['db_name']))
+		new_sch=SchemaName()
+		new_sch.set_fields(dn=self.id,obj_oid=p_sch[0],sch_name=p_sch[1])
+		new_sch.create()
+		new_sch.truncate()
