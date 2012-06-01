@@ -160,6 +160,14 @@ class genericName(generic):
 		return
 
 
+    def set_description(self,desc):
+	upd_stat=self.cursor.mogrify("UPDATE {0} SET description=%s WHERE id={1}".format(self.table,self.id),(desc,))
+	try:
+	    self.cursor.execute(upd_stat)
+	except Exception as e:
+	    logger.error("Cannot update table {0}. {1}".format(self.table,e.pgerror))
+		return
+
 class genericEnum(generic):
 #    id_field=None
 #    name_field=None
