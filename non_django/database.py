@@ -13,4 +13,5 @@ def make_dsn():
     return "host="+host+" dbname="+dbname+" port="+port+" user="+user+" password="+password+" sslmode="+sslmode
 
 db_conn=psycopg2.connect(make_dsn())
+db_conn.autocommit=True
 

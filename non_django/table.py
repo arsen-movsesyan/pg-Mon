@@ -41,33 +41,6 @@ class generic(object):
 	self.table=table_name
 
 
-##############################
-# retired function
-#############################
-    def old_create(self):
-	new_dict={}
-	for k,v in self.db_fields.iteritems():
-	    if v != None:
-		new_dict[k]=v
-	if not self.id:
-	    ins_stat="INSERT INTO {0} (".format(self.table)
-	    fields=new_dict.keys()
-	    for column in fields:
-		ins_stat+=column+','
-	    ins_stat=ins_stat[:-1]+") VALUES ("
-	    for column in fields:
-		ins_stat+="'{0}',".format(new_dict[column])
-	    ins_stat=ins_stat[:-1]+") RETURNING id"
-	    try:
-		self.cursor.execute(ins_stat)
-	    except Exception as e:
-		logger.error("Cannot create stat record: {0}".format(e.pgerror))
-		return
-	    database.db_conn.commit()
-#	    self.id=self.cursor.fetchone()[0]
-#############################
-
-
     def create(self):
 	if not self.id:
 	    ins_stat="INSERT INTO {0} (".format(self.table)
@@ -85,8 +58,8 @@ class generic(object):
 		logger.error("Cannot create record: {0}".format(e.pgerror))
 		return
 	    logger.debug("Created new object with statement: {0}".format(stat))
-	    database.db_conn.commit()
 	    self.id=self.cursor.fetchone()[0]
+
 
     def truncate(self):
 	self.db_fields.clear()
@@ -146,13 +119,13 @@ class genericName(generic):
 
 
     def get_dependants(self,obs=None):
-	select_stat="""SELECT id FROM {0} WHERE {1}={2} AND alive""".format(self.sub_table,self.sub_fk,self.id)
+	select_stat="SELECT id FROM {0} WHERE {1}={2} AND alive".format(self.sub_table,self.sub_fk,self.id)
 	if obs:
 	    select_stat+=" AND observable"
 	try:
 	    self.cursor.execute(select_stat)
 	except Exception as e:
-	    logger.error(e)
+	    logger.error(e.pgerror)
 	    return
 	ids=[]
 	for ref in self.cursor.fetchall():
@@ -160,6 +133,12 @@ class genericName(generic):
 	return ids
 
 
+    def update_record(self,upd_stat):
+	try:
+	    self.cursor.execute(upd_stat)
+	except Exception as e:
+	    logger.error("Cannot update {0}\nDetails: {1}\nQuery: {2}".format(self.table,e.pgerror,upd_stat))
+	    return
 
     def retire(self):
 	if self.id:
@@ -170,5 +149,54 @@ class genericName(generic):
 	    except Exception as e:
 		logger.error("Cannot retire table {0}. {1}".format(self.table,e.pgerror))
 		return
-	    database.db_conn.commit()
+
+    def toggle_observable(self,obs=True):
+	if self.id:
+	    upd_stat="UPDATE {0} SET observable={1} WHERE id={2}".format(self.table,obs,self.id)
+	    try:
+		self.cursor.execute(upd_stat)
+	    except Exception as e:
+		logger.error("Cannot update table {0}. {1}".format(self.table,e.pgerror))
+		return
+
+
+class genericEnum(generic):
+#    id_field=None
+#    name_field=None
+#    desc_field=None
+
+    def __init__(self,en_table):
+	self.set_table_name(en_table)
+	self.cursor.execute("SELECT * FROM {0}".format(en_table))
+	self.data_array=self.cursor.fetchall()
+	names=self.cursor.description
+#	self.id_field=names[0]['name']
+#	self.name_field=names[1]['name']
+#	self.desc_field=names[2]['name']
+
+
+    def set_fields(self,*args,**kwargs):
+	pass
+
+    def set_field_dict(self,dictionary):
+	pass
+
+    def create(self):
+	pass
+
+    def truncate(self):
+	pass
+
+
+    def get_id_by_name(self,seek_name):
+	for row in self.data_array:
+	    if row[1] == seek_name:
+		return row[0]
+	return None
+
+    def get_name_by_id(self,seek_id):
+	for row in self.data_array:
+	    if row[0] == seek_id:
+		return row[1]
+	return None
 

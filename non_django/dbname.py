@@ -8,28 +8,33 @@ class DatabaseName(genericName):
     prod_conn=None
     sub_table='schema_name'
     sub_fk='dn_id'
+    conn_string=None
 
-    def __init__(self,id=None):
+    def __init__(self,id=None,conn_string=None):
+	self.conn_string=conn_string
 	if id:
-	    super(DatabaseName,self).__init__(id)
+	    if not conn_string:
+		logger.error("No connection string provided for database id {0} during init".format(id))
+	    else:
+		super(DatabaseName,self).__init__(id)
+		self.conn_string=conn_string
 	else:
 	    super(DatabaseName,self).__init__()
 	self.stat_obj.set_fk_field('dn_id')
 	self.stat_obj.set_table_name('database_stat')
 
-    def get_conn_string(self):
-	self.cursor.execute("SELECT get_conn_string({0},{1})".format(self.db_fields['hc_id'],self.id))
-	string=self.cursor.fetchone()
-	return string[0]
+#    def get_conn_string(self):
+#	self.cursor.execute("SELECT get_conn_string({0},{1})".format(self.db_fields['hc_id'],self.id))
+#	string=self.cursor.fetchone()
+#	return string[0]
 
     def get_self_db_conn(self):
 	if not self.prod_conn:
 	    try:
-		self.prod_conn=psycopg2.connect(self.get_conn_string())
+		self.prod_conn=psycopg2.connect(self.conn_string)
 	    except Exception, e:
 		logger.warning("Cannot connect to postgres: {0}".format(self.get_conn_string()))
 		logger.warning("Details: {0}".format(e))
-#		logger.warning("Details: {0}{1}".format(e.pgcode,e.pgerror))
 		return False
 #	    logger.debug('Connection to DB "{0}" obtained succsessfully'.format(self.db_fields['db_name']))
 	    return True
@@ -41,7 +46,6 @@ class DatabaseName(genericName):
 	    if self.get_self_db_conn():
 		return self.prod_conn.cursor()
 	    else:
-#		sys.exit()
 		return None
 	else:
 	    return self.prod_conn.cursor()

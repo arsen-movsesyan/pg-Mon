@@ -1,3 +1,4 @@
+APPLICATION_NAME= 'pg_mon'
 
 DATABASE = {
     'DBNAME': 'pg_mon',
@@ -29,7 +30,7 @@ LOGGING = {
     'loggers': {
 	'pg_mon_logger': {
 	    'handlers': ['main_file_handler'],
-	    'level': 'DEBUG',
+	    'level': 'INFO',
 	    'propagate': True,
 	}
     },

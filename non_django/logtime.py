@@ -28,7 +28,7 @@ class LogTime():
 	self.hour_truncate=time_data[1]
 	self.cursor.execute("INSERT INTO log_time (hour_truncate,actual_time) VALUES ('{0}','{1}') RETURNING id".format(time_data[1],time_data[0]))
 	self.id=self.cursor.fetchone()[0]
-	database.db_conn.commit()
+#	database.db_conn.commit()
 
 
     def __del__(self):

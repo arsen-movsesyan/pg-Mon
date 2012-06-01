@@ -12,7 +12,7 @@ SET client_min_messages = warning;
 -- Name: pg_mon; Type: DATABASE; Schema: -; Owner: postgres
 --
 
-CREATE DATABASE pg_mon WITH TEMPLATE = template0 ENCODING = 'SQL_ASCII' LC_COLLATE = 'C' LC_CTYPE = 'C';
+CREATE DATABASE pg_mon WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'C' LC_CTYPE = 'C';
 
 
 ALTER DATABASE pg_mon OWNER TO postgres;
@@ -53,73 +53,6 @@ CREATE TYPE track_functions_state AS ENUM (
 
 
 ALTER TYPE public.track_functions_state OWNER TO postgres;
-
---
--- Name: get_conn_string(integer); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION get_conn_string(hc_id integer) RETURNS character varying
-    LANGUAGE plpgsql
-    AS $$DECLARE
-	conn_string VARCHAR:='';
-	single_param VARCHAR;
-BEGIN
-	FOR single_param IN SELECT unnest(conn_param) FROM host_cluster WHERE id=hc_id LOOP
-		conn_string:=conn_string||single_param||' ';
-	END LOOP;
-	RETURN trim(conn_string);
-END$$;
-
-
-ALTER FUNCTION public.get_conn_string(hc_id integer) OWNER TO postgres;
-
---
--- Name: get_conn_string(integer, character varying); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION get_conn_string(hc_id integer, db_name character varying) RETURNS character varying
-    LANGUAGE plpgsql
-    AS $$DECLARE
-	conn_string VARCHAR:='';
-	single_param VARCHAR;
-BEGIN
-	FOR single_param IN SELECT unnest(conn_param) FROM host_cluster WHERE id=hc_id LOOP
-		IF single_param = 'dbname=postgres' THEN
-			conn_string:=conn_string||'dbname='||db_name||' ';
-		ELSE
-			conn_string:=conn_string||single_param||' ';
-		END IF;
-	END LOOP;
-	RETURN trim(conn_string);
-END$$;
-
-
-ALTER FUNCTION public.get_conn_string(hc_id integer, db_name character varying) OWNER TO postgres;
-
---
--- Name: get_conn_string(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION get_conn_string(hc_id integer, dn_id integer) RETURNS character varying
-    LANGUAGE plpgsql
-    AS $$DECLARE
-	conn_string VARCHAR:='';
-	single_param VARCHAR;
-	d_n VARCHAR;
-BEGIN
-	FOR single_param IN SELECT unnest(conn_param) FROM host_cluster WHERE id=hc_id LOOP
-		IF single_param = 'dbname=postgres' THEN
-			SELECT INTO d_n db_name FROM database_name WHERE id=dn_id;
-			conn_string:=conn_string||'dbname='||d_n||' ';
-		ELSE
-			conn_string:=conn_string||single_param||' ';
-		END IF;
-	END LOOP;
-	RETURN trim(conn_string);
-END$$;
-
-
-ALTER FUNCTION public.get_conn_string(hc_id integer, dn_id integer) OWNER TO postgres;
 
 --
 -- Name: pm_bgwriter_stat_diff(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
@@ -545,7 +478,7 @@ CREATE TABLE database_name (
     id integer NOT NULL,
     hc_id integer NOT NULL,
     obj_oid integer NOT NULL,
-    observable boolean NOT NULL,
+    observable boolean DEFAULT false NOT NULL,
     alive boolean DEFAULT true NOT NULL,
     db_name character varying NOT NULL,
     description text
@@ -618,6 +551,32 @@ ALTER TABLE public.database_stat_id_seq OWNER TO postgres;
 
 ALTER SEQUENCE database_stat_id_seq OWNED BY database_stat.id;
 
+
+--
+-- Name: enum_sslmode; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE enum_sslmode (
+    id integer NOT NULL,
+    sslmode character varying NOT NULL,
+    description text
+);
+
+
+ALTER TABLE public.enum_sslmode OWNER TO postgres;
+
+--
+-- Name: enum_track_functions; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE enum_track_functions (
+    id integer NOT NULL,
+    track_value character varying NOT NULL,
+    description text
+);
+
+
+ALTER TABLE public.enum_track_functions OWNER TO postgres;
 
 --
 -- Name: function_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -702,18 +661,22 @@ ALTER SEQUENCE function_stat_id_seq OWNED BY function_stat.id;
 
 CREATE TABLE host_cluster (
     id integer NOT NULL,
-    ip_address inet NOT NULL,
-    hostname character varying NOT NULL,
-    is_master boolean NOT NULL,
+    track_function_id integer DEFAULT 1 NOT NULL,
+    param_sslmode_id integer DEFAULT 3 NOT NULL,
+    param_port integer DEFAULT 5432 NOT NULL,
+    param_ip_address inet NOT NULL,
+    is_master boolean DEFAULT true NOT NULL,
     observable boolean DEFAULT true NOT NULL,
     alive boolean DEFAULT true NOT NULL,
-    track_counts boolean,
-    track_functions track_functions_state,
+    track_counts boolean DEFAULT true,
+    param_maintenance_dbname character varying DEFAULT 'postgres'::character varying NOT NULL,
+    param_user character varying DEFAULT 'postgres'::character varying NOT NULL,
+    hostname character varying NOT NULL,
     pg_version character varying,
     pg_data_path character varying,
     fqdn character varying,
-    spec_comments character varying,
-    conn_param character varying[]
+    param_password character varying,
+    description text
 );
 
 
@@ -1358,6 +1321,22 @@ ALTER TABLE ONLY host_cluster
 
 
 --
+-- Name: enum_sslmode_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY enum_sslmode
+    ADD CONSTRAINT enum_sslmode_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: enum_track_functions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY enum_track_functions
+    ADD CONSTRAINT enum_track_functions_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: function_name_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1386,7 +1365,7 @@ ALTER TABLE ONLY function_stat
 --
 
 ALTER TABLE ONLY host_cluster
-    ADD CONSTRAINT host_cluster_ip_address_pg_data_path_key UNIQUE (ip_address, pg_data_path);
+    ADD CONSTRAINT host_cluster_ip_address_pg_data_path_key UNIQUE (param_ip_address, pg_data_path);
 
 
 --
@@ -1712,6 +1691,22 @@ ALTER TABLE ONLY function_stat
 
 ALTER TABLE ONLY function_stat
     ADD CONSTRAINT function_stat_time_id_fkey FOREIGN KEY (time_id) REFERENCES log_time(id) ON DELETE CASCADE;
+
+
+--
+-- Name: host_cluster_sslmode_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY host_cluster
+    ADD CONSTRAINT host_cluster_sslmode_id_fkey FOREIGN KEY (param_sslmode_id) REFERENCES enum_sslmode(id);
+
+
+--
+-- Name: host_cluster_track_function_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY host_cluster
+    ADD CONSTRAINT host_cluster_track_function_id_fkey FOREIGN KEY (track_function_id) REFERENCES enum_track_functions(id);
 
 
 --
