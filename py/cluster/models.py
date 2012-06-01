@@ -885,7 +885,7 @@ FROM pg_class WHERE oid=%s""",(self.obj_oid,))
 		pass
 	    logger.info("Created TOAST index {0} for relation {1}".format(new_it[1],self.tbl_name))
 	elif not new_it and exist_it:
-	    exist_tt[0].set_non_alive()
+	    exist_it[0].set_non_alive()
 	r_cursor.close()
 
 ###################################################################################################
