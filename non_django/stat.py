@@ -24,7 +24,7 @@ work_cursor.execute("SELECT id FROM host_cluster WHERE alive AND observable")
 
 for hc_id in work_cursor.fetchall():
     hc=HostCluster(hc_id[0])
-
+    hc.discover_cluster_params()
     hc.stat(lt.id)
     for dbs in hc.get_dependants(obs=True):
 	db_conn_string=hc.return_conn_string(dbs['db_name'])

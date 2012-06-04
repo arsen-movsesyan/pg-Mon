@@ -71,28 +71,40 @@ class HostCluster(genericName):
 	except Exception as e:
 	    logger.error("Cannot get 'server_version' param for {0}. Details: {1}".format(self.db_fields['hostname'],e.pgerror))
 	else:
-	    params['pg_version']=cur.fetchone()[0]
+	    pg_ver=cur.fetchone()[0]
+	    if self.db_fields['pg_version'] != pg_ver:
+		logger.info("Updated parameter 'pg_version' set to '{0}' for hostcluster {1}".format(pg_ver,self.db_fields['hostname']))
+		params['pg_version']=pg_ver
 	try:
 	    cur.execute("SELECT current_setting('data_directory') AS pg_data_path")
 	except Exception as e:
 	    logger.error("Cannot get 'data_directory' param for {0}. Details: {1}".format(self.db_fields['hostname'],e.pgerror))
 	else:
-	    params['pg_data_path']=cur.fetchone()[0]
+	    data_path=cur.fetchone()[0]
+	    if self.db_fields['pg_data_path'] != data_path:
+		logger.info("Updated parameter 'pg_data_path' set to '{0}' for hostcluster {1}".format(data_path,self.db_fields['hostname']))
+		params['pg_data_path']=data_path
 	try:
 	    cur.execute("SELECT CASE WHEN current_setting('track_counts')='on' THEN 't'::boolean ELSE 'f'::boolean END AS track_counts")
 	except Exception as e:
 	    logger.error("Cannot get 'track_counts' param for {0}. Details: {1}".format(self.db_fields['hostname'],e.pgerror))
 	else:
-	    params['track_counts']=cur.fetchone()[0]
+	    t_c=cur.fetchone()[0]
+	    if self.db_fields['track_counts'] != t_c:
+		logger.info("Updated parameter 'track_counts' set to '{0}' for hostcluster {1}".format(t_c,self.db_fields['hostname']))
+		params['track_counts']=t_c
 	try:
 	    cur.execute("SELECT current_setting('track_functions') AS track_functions")
 	except Exception as e:
 	    logger.error("Cannot get 'track_functions' param for {0}. Details: {1}".format(self.db_fields['hostname'],e.pgerror))
 	else:
-	    track_function=cur.fetchone()[0]
+	    t_f=cur.fetchone()[0]
 	    tf=genericEnum('enum_track_functions')
-	    tf_id=tf.get_id_by_name(track_function)
-	    params['track_function_id']=tf_id
+	    tf_id=tf.get_id_by_name(t_f)
+
+	    if self.db_fields['track_function_id'] != tf_id:
+		logger.info("Updated parameter 'track_functions' set to '{0}' for hostcluster {1}".format(t_f,self.db_fields['hostname']))
+		params['track_function_id']=tf_id
 	cur.close()
 	if len(params) > 0:
 	    update_stat="UPDATE {0} SET ".format(self.table)
@@ -100,11 +112,10 @@ class HostCluster(genericName):
 		update_stat+="{0}='{1}',".format(k,params[k])
 	    update_stat=update_stat[:-1]+" WHERE id={0}".format(self.id)
 	    self.update_record(update_stat)
-	    logger.info("Updated {0}\nDetails: {1}".format(self.db_fields['hostname'],update_stat))
 	    self.truncate()
 	    self._populate()
 	else:
-	    logger.debug("No data obtained during discover for hostcluster {0}".format(self.db_fields['hostname']))
+	    logger.debug("No new data obtained during discover for hostcluster {0}".format(self.db_fields['hostname']))
 
 
     def discover_cluster_databases(self):

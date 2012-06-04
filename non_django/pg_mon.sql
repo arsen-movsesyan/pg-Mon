@@ -42,19 +42,6 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET search_path = public, pg_catalog;
 
 --
--- Name: track_functions_state; Type: TYPE; Schema: public; Owner: postgres
---
-
-CREATE TYPE track_functions_state AS ENUM (
-    'none',
-    'pl',
-    'all'
-);
-
-
-ALTER TYPE public.track_functions_state OWNER TO postgres;
-
---
 -- Name: pm_bgwriter_stat_diff(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
