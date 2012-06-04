@@ -2,6 +2,7 @@
 
 
 import database
+
 from logtime import LogTime
 from hostcluster import HostCluster
 from dbname import DatabaseName
@@ -12,44 +13,52 @@ from indexname import IndexName
 from tabletoastname import TableToastName
 from indextoastname import IndexToastName
 
+
+
 lt=LogTime()
-time_id=lt.get_id()
 
-hc=HostCluster(1)
+work_cursor=database.db_conn.cursor()
+work_cursor.execute("SELECT id FROM host_cluster WHERE alive AND observable")
 
-hc.stat(time_id)
-for db_id in hc.get_dependants(obs=True):
-    dn=DatabaseName(db_id)
-    dn.stat(time_id)
-    db_cursor=dn.get_prod_cursor()
-    if db_cursor:
-	for sn_id in dn.get_dependants(obs=True):
-	    sn=SchemaName(sn_id)
-	    sn.discover_tables(db_cursor)
-	    sn.discover_functions(db_cursor)
-	    for tn_id in sn.get_tables():
-		tn=TableName(tn_id)
-		tn.stat(time_id,db_cursor)
-		tn.va_stat(time_id,db_cursor)
-		tn.discover_indexes(db_cursor)
-		tn.discover_toast(db_cursor)
 
-		for in_id in tn.get_dependants():
-		    ind=IndexName(in_id)
-		    ind.stat(time_id,db_cursor)
-		ttn_id=tn.get_toast_id()
-		if ttn_id:
-		    ttn=TableToastName(ttn_id)
-		    ttn.stat(time_id,db_cursor)
-		    ttn.discover_index(db_cursor)
-		    tidx_id=ttn.get_tindex_id()
-		    if tidx_id:
-			tindx=IndexToastName(tidx_id)
-			tindx.stat(time_id,db_cursor)
 
-	    if hc.get_field('track_functions') != 'none':
-		for fn_id in sn.get_functions():
-		    print "Fuct {0}".format(fn_id)
-	db_cursor.close()
+for hc_id in work_cursor.fetchall():
+    hc=HostCluster(hc_id[0])
+
+    hc.stat(lt.id)
+    for dbs in hc.get_dependants(obs=True):
+	db_conn_string=hc.return_conn_string(dbs['db_name'])
+	dn=DatabaseName(dbs['id'],db_conn_string)
+	dn.stat(lt.id)
+	db_cursor=dn.get_prod_cursor()
+	if db_cursor:
+	    for sn_id in dn.get_dependants():
+		sn=SchemaName(sn_id)
+		sn.discover_tables(db_cursor)
+		sn.discover_functions(db_cursor)
+		for tbl_id in sn.get_tables():
+		    tn=TableName(tbl_id)
+		    tn.stat(lt.id,db_cursor)
+		    tn.va_stat(lt.id,db_cursor)
+		    tn.discover_indexes(db_cursor)
+		    for ind_id in tn.get_dependants():
+			ind=IndexName(ind_id)
+			ind.stat(lt.id,db_cursor)
+		    tn.discover_toast(db_cursor)
+		    toast_id=tn.get_toast_id()
+		    if toast_id:
+			ttn=TableToastName(toast_id)
+			ttn.stat(lt.id,db_cursor)
+			ttn.discover_index(db_cursor)
+			tin=IndexToastName(ttn.get_tindex_id())
+			tin.stat(lt.id,db_cursor)
+		if hc.get_track_function():
+		    for fnc_id in sn.get_functions():
+			func=FunctionName(fnc_id)
+			func.stat(lt.id,db_cursor)
+	    if not db_cursor.closed:
+		db_cursor.close()
+
+work_cursor.close()
 database.db_conn.close()
 

@@ -60,7 +60,6 @@ class generic(object):
 	    logger.debug("Created new object with statement: {0}".format(stat))
 	    self.id=self.cursor.fetchone()[0]
 
-
     def truncate(self):
 	self.db_fields.clear()
 
@@ -82,7 +81,7 @@ class genericName(generic):
     sub_table=None
     sub_fk=None
     prod_cursor=None
-#    stat_obj=genericStat()
+    stat_obj=genericStat()
 
     def __init__(self,id=None):
 	self.stat_obj=genericStat()
@@ -99,8 +98,13 @@ class genericName(generic):
 	except Exception as e:
 	    logger.error(e)
 	    return
+	self.truncate()
 	res=self.cursor.fetchone()
 	self.db_fields=zip_field_names(res,self.cursor.description)
+
+    def create(self):
+	super(genericName,self).create()
+	self._populate()
 
 
     def create_stat(self,time_id,stat_sql,cur):
@@ -166,7 +170,7 @@ class genericName(generic):
 	    self.cursor.execute(upd_stat)
 	except Exception as e:
 	    logger.error("Cannot update table {0}. {1}".format(self.table,e.pgerror))
-		return
+	    return
 
 class genericEnum(generic):
 #    id_field=None

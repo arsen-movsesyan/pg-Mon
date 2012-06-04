@@ -15,7 +15,8 @@ class FunctionName(genericName):
 	self.stat_obj.set_table_name('function_stat')
 
 
-#    def stat(self,time_id,prod_cursor):
+    def stat(self,time_id,prod_cursor):
+	pass
 #	sql_stat="""SELECT
 #pg_relation_size(oid) AS relsize,
 #reltuples::bigint,

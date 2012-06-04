@@ -128,25 +128,34 @@ class HostCluster(genericName):
 		if l_db[0]==p_db[0] and l_db[1]==p_db[1]:
 		    break
 	    else:
-		logger.info("Retired database {0} in cluster {1}".format(l_db[1],self.db_fields['hostname']))
-		old_db=DatabaseName(l_db[2])
+		old_db=DatabaseName(l_db[2],self.return_conn_string(dbname=l_db[1]))
 		old_db.retire()
+		logger.info("Retired database {0} in cluster {1}".format(l_db[1],self.db_fields['hostname']))
 	for p_db in prod_dbs:
 	    for l_db in local_dbs:
 		if l_db[0]==p_db[0] and l_db[1]==p_db[1]:
 		    break
 	    else:
-		logger.info("Create new database {0} for cluster {1}".format(p_db[1],self.db_fields['hostname']))
 		new_db=DatabaseName()
 		new_db.set_fields(hc_id=self.id,obj_oid=p_db[0],db_name=p_db[1])
 		new_db.create()
 		new_db.truncate()
+		logger.info("Create new database {0} for cluster {1}".format(p_db[1],self.db_fields['hostname']))
+
+
+    def get_track_function(self):
+	if self.id:
+	    tf=genericEnum('enum_track_functions')
+	    return tf.get_name_by_id(self.db_fields['track_function_id'])
+	return None
 
 
     def stat(self,time_id):
-	if not self.get_self_db_conn():
-	    return
-	cur=self.prod_conn.cursor()
+	if not self.__prod_conn:
+	    if not self.__set_self_db_conn():
+		logger.error("Did not obtain Prod database conection for cluster {0} in discover_cluster_databases method ".format(self.db_fields['hostname']))
+		return
+	cur=self.__prod_conn.cursor()
 	sql_stat="""SELECT
 pg_stat_get_bgwriter_timed_checkpoints() AS checkpoints_timed,
 pg_stat_get_bgwriter_requested_checkpoints() AS checkpoints_req,
@@ -159,9 +168,9 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 	cur.close()
 
     def __del__(self):
-	if self.prod_conn:
-	    if not self.prod_conn.closed:
-		self.prod_conn.close()
+	if self.__prod_conn:
+	    if not self.__prod_conn.closed:
+		self.__prod_conn.close()
 
 
     def get_dependants(self,obs=None):
