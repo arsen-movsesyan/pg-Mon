@@ -32,7 +32,7 @@ for hc_id in work_cursor.fetchall():
 	dn.stat(lt.id)
 	db_cursor=dn.get_prod_cursor()
 	if db_cursor:
-	    for sn_id in dn.get_dependants():
+	    for sn_id in dn.get_dependants(obs=True):
 		sn=SchemaName(sn_id)
 		sn.discover_tables(db_cursor)
 		sn.discover_functions(db_cursor)
@@ -56,8 +56,8 @@ for hc_id in work_cursor.fetchall():
 		    for fnc_id in sn.get_functions():
 			func=FunctionName(fnc_id)
 			func.stat(lt.id,db_cursor)
-	    if not db_cursor.closed:
-		db_cursor.close()
+	if not db_cursor.closed:
+	    db_cursor.close()
 
 work_cursor.close()
 database.db_conn.close()

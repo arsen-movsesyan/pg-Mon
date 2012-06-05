@@ -933,7 +933,7 @@ ALTER TABLE public.table_va_stat OWNER TO postgres;
 --
 
 CREATE VIEW pm_last_va_stat AS
-    SELECT hc.hostname, dn.db_name, sn.sch_name, tn.tbl_name, (now() - (tvas.lv)::timestamp with time zone) AS last_vacuum, (now() - (tvas.lav)::timestamp with time zone) AS last_autovacuum, (now() - (tvas.la)::timestamp with time zone) AS last_analyze, (now() - (tvas.laa)::timestamp with time zone) AS last_autoanalyze FROM ((((host_cluster hc JOIN database_name dn ON ((hc.id = dn.hc_id))) JOIN schema_name sn ON ((dn.id = sn.dn_id))) JOIN table_name tn ON ((sn.id = tn.sn_id))) JOIN (SELECT table_va_stat.tn_id, max(table_va_stat.last_vacuum) AS lv, max(table_va_stat.last_autovacuum) AS lav, max(table_va_stat.last_analyze) AS la, max(table_va_stat.last_autoanalyze) AS laa FROM table_va_stat GROUP BY table_va_stat.tn_id) tvas ON ((tn.id = tvas.tn_id))) WHERE (((hc.observable AND dn.observable) AND sn.observable) AND tn.alive);
+    SELECT hc.hostname, dn.db_name, sn.sch_name, tn.tbl_name, (now() - (tvas.lv)::timestamp with time zone) AS last_vacuum, (now() - (tvas.lav)::timestamp with time zone) AS last_autovacuum, (now() - (tvas.la)::timestamp with time zone) AS last_analyze, (now() - (tvas.laa)::timestamp with time zone) AS last_autoanalyze FROM ((((host_cluster hc JOIN database_name dn ON ((hc.id = dn.hc_id))) JOIN schema_name sn ON ((dn.id = sn.dn_id))) JOIN table_name tn ON ((sn.id = tn.sn_id))) JOIN (SELECT table_va_stat.tn_id, max(table_va_stat.last_vacuum) AS lv, max(table_va_stat.last_autovacuum) AS lav, max(table_va_stat.last_analyze) AS la, max(table_va_stat.last_autoanalyze) AS laa FROM table_va_stat GROUP BY table_va_stat.tn_id) tvas ON ((tn.id = tvas.tn_id))) WHERE (sn.observable AND tn.alive);
 
 
 ALTER TABLE public.pm_last_va_stat OWNER TO postgres;
@@ -1348,11 +1348,27 @@ ALTER TABLE ONLY function_stat
 
 
 --
+-- Name: host_cluster_fqdn_param_port_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY host_cluster
+    ADD CONSTRAINT host_cluster_fqdn_param_port_key UNIQUE (fqdn, param_port);
+
+
+--
 -- Name: host_cluster_ip_address_pg_data_path_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
 ALTER TABLE ONLY host_cluster
     ADD CONSTRAINT host_cluster_ip_address_pg_data_path_key UNIQUE (param_ip_address, pg_data_path);
+
+
+--
+-- Name: host_cluster_param_ip_address_param_port_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY host_cluster
+    ADD CONSTRAINT host_cluster_param_ip_address_param_port_key UNIQUE (param_ip_address, param_port);
 
 
 --
