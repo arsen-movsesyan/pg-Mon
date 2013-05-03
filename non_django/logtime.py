@@ -12,7 +12,7 @@ class LogTime():
     def __init__(self):
 	time_check_query="""SELECT CASE
     WHEN (SELECT COUNT(1) FROM log_time WHERE hour_truncate=(SELECT date_trunc('hour',now())::timestamp without time zone)) > 0 
-	THEN NULl
+	THEN NULL
     ELSE 
 	LOCALTIMESTAMP END AS actual_time,date_trunc('hour',LOCALTIMESTAMP) AS hour_truncate"""
 	self.cursor.execute(time_check_query)

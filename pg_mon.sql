@@ -42,86 +42,6 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET search_path = public, pg_catalog;
 
 --
--- Name: track_functions_state; Type: TYPE; Schema: public; Owner: postgres
---
-
-CREATE TYPE track_functions_state AS ENUM (
-    'none',
-    'pl',
-    'all'
-);
-
-
-ALTER TYPE public.track_functions_state OWNER TO postgres;
-
---
--- Name: get_conn_string(integer); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION get_conn_string(hc_id integer) RETURNS character varying
-    LANGUAGE plpgsql
-    AS $$DECLARE
-	conn_string VARCHAR:='';
-	single_param VARCHAR;
-BEGIN
-	FOR single_param IN SELECT unnest(conn_param) FROM host_cluster WHERE id=hc_id LOOP
-		conn_string:=conn_string||single_param||' ';
-	END LOOP;
-	RETURN trim(conn_string);
-END$$;
-
-
-ALTER FUNCTION public.get_conn_string(hc_id integer) OWNER TO postgres;
-
---
--- Name: get_conn_string(integer, character varying); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION get_conn_string(hc_id integer, db_name character varying) RETURNS character varying
-    LANGUAGE plpgsql
-    AS $$DECLARE
-	conn_string VARCHAR:='';
-	single_param VARCHAR;
-BEGIN
-	FOR single_param IN SELECT unnest(conn_param) FROM host_cluster WHERE id=hc_id LOOP
-		IF single_param = 'dbname=postgres' THEN
-			conn_string:=conn_string||'dbname='||db_name||' ';
-		ELSE
-			conn_string:=conn_string||single_param||' ';
-		END IF;
-	END LOOP;
-	RETURN trim(conn_string);
-END$$;
-
-
-ALTER FUNCTION public.get_conn_string(hc_id integer, db_name character varying) OWNER TO postgres;
-
---
--- Name: get_conn_string(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION get_conn_string(hc_id integer, dn_id integer) RETURNS character varying
-    LANGUAGE plpgsql
-    AS $$DECLARE
-	conn_string VARCHAR:='';
-	single_param VARCHAR;
-	d_n VARCHAR;
-BEGIN
-	FOR single_param IN SELECT unnest(conn_param) FROM host_cluster WHERE id=hc_id LOOP
-		IF single_param = 'dbname=postgres' THEN
-			SELECT INTO d_n db_name FROM database_name WHERE id=dn_id;
-			conn_string:=conn_string||'dbname='||d_n||' ';
-		ELSE
-			conn_string:=conn_string||single_param||' ';
-		END IF;
-	END LOOP;
-	RETURN trim(conn_string);
-END$$;
-
-
-ALTER FUNCTION public.get_conn_string(hc_id integer, dn_id integer) OWNER TO postgres;
-
---
 -- Name: pm_bgwriter_stat_diff(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -441,7 +361,7 @@ ALTER FUNCTION public.remove_tables() OWNER TO postgres;
 CREATE FUNCTION remove_toas_indexes() RETURNS trigger
     LANGUAGE plpgsql
     AS $$BEGIN
-	UPDATE index_toast_name SET alive='f' WHERE NEW.alive='f' AND tn_id=OLD.tn_id AND alive='t';
+	UPDATE index_toast_name SET alive='f' WHERE NEW.alive='f' AND ttn_id=OLD.tn_id AND alive='t';
 	RETURN NEW;
 END$$;
 
@@ -545,7 +465,7 @@ CREATE TABLE database_name (
     id integer NOT NULL,
     hc_id integer NOT NULL,
     obj_oid integer NOT NULL,
-    observable boolean NOT NULL,
+    observable boolean DEFAULT false NOT NULL,
     alive boolean DEFAULT true NOT NULL,
     db_name character varying NOT NULL,
     description text
@@ -618,6 +538,32 @@ ALTER TABLE public.database_stat_id_seq OWNER TO postgres;
 
 ALTER SEQUENCE database_stat_id_seq OWNED BY database_stat.id;
 
+
+--
+-- Name: enum_sslmode; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE enum_sslmode (
+    id integer NOT NULL,
+    sslmode character varying NOT NULL,
+    description text
+);
+
+
+ALTER TABLE public.enum_sslmode OWNER TO postgres;
+
+--
+-- Name: enum_track_functions; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE enum_track_functions (
+    id integer NOT NULL,
+    track_value character varying NOT NULL,
+    description text
+);
+
+
+ALTER TABLE public.enum_track_functions OWNER TO postgres;
 
 --
 -- Name: function_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -702,18 +648,22 @@ ALTER SEQUENCE function_stat_id_seq OWNED BY function_stat.id;
 
 CREATE TABLE host_cluster (
     id integer NOT NULL,
-    ip_address inet NOT NULL,
-    hostname character varying NOT NULL,
-    is_master boolean NOT NULL,
+    track_function_id integer DEFAULT 1 NOT NULL,
+    param_sslmode_id integer DEFAULT 3 NOT NULL,
+    param_port integer DEFAULT 5432 NOT NULL,
+    param_ip_address inet NOT NULL,
+    is_master boolean DEFAULT true NOT NULL,
     observable boolean DEFAULT true NOT NULL,
     alive boolean DEFAULT true NOT NULL,
-    track_counts boolean,
-    track_functions track_functions_state,
+    track_counts boolean DEFAULT true,
+    param_maintenance_dbname character varying DEFAULT 'postgres'::character varying NOT NULL,
+    param_user character varying DEFAULT 'postgres'::character varying NOT NULL,
+    hostname character varying NOT NULL,
     pg_version character varying,
     pg_data_path character varying,
     fqdn character varying,
-    spec_comments character varying,
-    conn_param character varying[]
+    param_password character varying,
+    description text
 );
 
 
@@ -824,10 +774,10 @@ ALTER SEQUENCE index_stat_id_seq OWNED BY index_stat.id;
 
 CREATE TABLE index_toast_name (
     id integer NOT NULL,
-    tn_id integer NOT NULL,
+    ttn_id integer NOT NULL,
     obj_oid integer NOT NULL,
     alive boolean DEFAULT true NOT NULL,
-    idx_name character varying NOT NULL
+    tidx_name character varying NOT NULL
 );
 
 
@@ -936,7 +886,7 @@ CREATE TABLE schema_name (
     id integer NOT NULL,
     dn_id integer NOT NULL,
     obj_oid integer NOT NULL,
-    observable boolean NOT NULL,
+    observable boolean DEFAULT false NOT NULL,
     alive boolean DEFAULT true NOT NULL,
     sch_name character varying NOT NULL,
     description text
@@ -983,7 +933,7 @@ ALTER TABLE public.table_va_stat OWNER TO postgres;
 --
 
 CREATE VIEW pm_last_va_stat AS
-    SELECT hc.hostname, dn.db_name, sn.sch_name, tn.tbl_name, (now() - (tvas.lv)::timestamp with time zone) AS last_vacuum, (now() - (tvas.lav)::timestamp with time zone) AS last_autovacuum, (now() - (tvas.la)::timestamp with time zone) AS last_analyze, (now() - (tvas.laa)::timestamp with time zone) AS last_autoanalyze FROM ((((host_cluster hc JOIN database_name dn ON ((hc.id = dn.hc_id))) JOIN schema_name sn ON ((dn.id = sn.dn_id))) JOIN table_name tn ON ((sn.id = tn.sn_id))) JOIN (SELECT table_va_stat.tn_id, max(table_va_stat.last_vacuum) AS lv, max(table_va_stat.last_autovacuum) AS lav, max(table_va_stat.last_analyze) AS la, max(table_va_stat.last_autoanalyze) AS laa FROM table_va_stat GROUP BY table_va_stat.tn_id) tvas ON ((tn.id = tvas.tn_id))) WHERE (((hc.observable AND dn.observable) AND sn.observable) AND tn.alive);
+    SELECT hc.hostname, dn.db_name, sn.sch_name, tn.tbl_name, (now() - (tvas.lv)::timestamp with time zone) AS last_vacuum, (now() - (tvas.lav)::timestamp with time zone) AS last_autovacuum, (now() - (tvas.la)::timestamp with time zone) AS last_analyze, (now() - (tvas.laa)::timestamp with time zone) AS last_autoanalyze FROM ((((host_cluster hc JOIN database_name dn ON ((hc.id = dn.hc_id))) JOIN schema_name sn ON ((dn.id = sn.dn_id))) JOIN table_name tn ON ((sn.id = tn.sn_id))) JOIN (SELECT table_va_stat.tn_id, max(table_va_stat.last_vacuum) AS lv, max(table_va_stat.last_autovacuum) AS lav, max(table_va_stat.last_analyze) AS la, max(table_va_stat.last_autoanalyze) AS laa FROM table_va_stat GROUP BY table_va_stat.tn_id) tvas ON ((tn.id = tvas.tn_id))) WHERE (sn.observable AND tn.alive);
 
 
 ALTER TABLE public.pm_last_va_stat OWNER TO postgres;
@@ -1023,7 +973,7 @@ CREATE TABLE table_toast_name (
     tn_id integer NOT NULL,
     obj_oid integer NOT NULL,
     alive boolean DEFAULT true NOT NULL,
-    tbl_name character varying NOT NULL
+    ttbl_name character varying NOT NULL
 );
 
 
@@ -1059,7 +1009,7 @@ ALTER TABLE public.table_toast_stat OWNER TO postgres;
 --
 
 CREATE VIEW pm_table_size_lookup AS
-    SELECT hc.hostname, dn.db_name, sn.sch_name, __tmp_tn.tbl_name, __tmp_tn.tbl_tuples, __tmp_tn.tbl_size, __tmp_in.idx_size AS sum_idx_size, __tmp_ttn.ttbl_size AS tbl_toast_size, __tmp_itn.tidx_size AS idx_toast_size, (((((__tmp_tn.tbl_size + COALESCE(__tmp_ttn.ttbl_size, (0)::bigint)) + COALESCE(__tmp_itn.tidx_size, (0)::bigint)))::numeric + COALESCE(__tmp_in.idx_size, (0)::numeric)))::bigint AS tbl_total_size, pg_size_pretty((((((__tmp_tn.tbl_size + COALESCE(__tmp_ttn.ttbl_size, (0)::bigint)) + COALESCE(__tmp_itn.tidx_size, (0)::bigint)))::numeric + COALESCE(__tmp_in.idx_size, (0)::numeric)))::bigint) AS tbl_total_size_pretty FROM (((((((log_time lt JOIN (SELECT tn.id, tn.sn_id, tn.tbl_name, ts.tbl_tuples, ts.tbl_size, ts.time_id FROM (table_name tn JOIN table_stat ts ON ((tn.id = ts.tn_id))) WHERE tn.alive) __tmp_tn ON ((lt.id = __tmp_tn.time_id))) LEFT JOIN (SELECT ttn.id, ttn.tn_id, ttn.tbl_name, tts.ttbl_size, tts.time_id FROM (table_toast_name ttn JOIN table_toast_stat tts ON ((ttn.id = tts.ttn_id))) WHERE ttn.alive) __tmp_ttn ON (((lt.id = __tmp_ttn.time_id) AND (__tmp_tn.id = __tmp_ttn.tn_id)))) LEFT JOIN (SELECT itn.tn_id, its.tidx_size, its.time_id FROM (index_toast_name itn JOIN index_toast_stat its ON ((itn.id = its.tin_id))) WHERE itn.alive) __tmp_itn ON (((lt.id = __tmp_itn.time_id) AND (__tmp_ttn.id = __tmp_itn.tn_id)))) LEFT JOIN (SELECT inn.tn_id, ins.time_id, sum(ins.idx_size) AS idx_size FROM (index_name inn JOIN index_stat ins ON ((inn.id = ins.in_id))) WHERE inn.alive GROUP BY inn.tn_id, ins.time_id) __tmp_in ON (((lt.id = __tmp_in.time_id) AND (__tmp_tn.id = __tmp_in.tn_id)))) JOIN schema_name sn ON ((sn.id = __tmp_tn.sn_id))) JOIN database_name dn ON ((dn.id = sn.dn_id))) JOIN host_cluster hc ON ((dn.hc_id = hc.id))) WHERE (lt.id = (SELECT log_time.id FROM log_time WHERE (log_time.hour_truncate = date_trunc('hour'::text, now()))));
+    SELECT hc.hostname, dn.db_name, sn.sch_name, __tmp_tn.tbl_name, __tmp_tn.tbl_tuples, __tmp_tn.tbl_size, __tmp_in.idx_size AS sum_idx_size, __tmp_ttn.ttbl_size AS tbl_toast_size, __tmp_itn.tidx_size AS idx_toast_size, (((((__tmp_tn.tbl_size + COALESCE(__tmp_ttn.ttbl_size, (0)::bigint)) + COALESCE(__tmp_itn.tidx_size, (0)::bigint)))::numeric + COALESCE(__tmp_in.idx_size, (0)::numeric)))::bigint AS tbl_total_size, pg_size_pretty((((((__tmp_tn.tbl_size + COALESCE(__tmp_ttn.ttbl_size, (0)::bigint)) + COALESCE(__tmp_itn.tidx_size, (0)::bigint)))::numeric + COALESCE(__tmp_in.idx_size, (0)::numeric)))::bigint) AS tbl_total_size_pretty FROM (((((((log_time lt JOIN (SELECT tn.id, tn.sn_id, tn.tbl_name, ts.tbl_tuples, ts.tbl_size, ts.time_id FROM (table_name tn JOIN table_stat ts ON ((tn.id = ts.tn_id))) WHERE tn.alive) __tmp_tn ON ((lt.id = __tmp_tn.time_id))) LEFT JOIN (SELECT ttn.id, ttn.tn_id, ttn.ttbl_name AS tbl_name, tts.ttbl_size, tts.time_id FROM (table_toast_name ttn JOIN table_toast_stat tts ON ((ttn.id = tts.ttn_id))) WHERE ttn.alive) __tmp_ttn ON (((lt.id = __tmp_ttn.time_id) AND (__tmp_tn.id = __tmp_ttn.tn_id)))) LEFT JOIN (SELECT itn.ttn_id AS tn_id, its.tidx_size, its.time_id FROM (index_toast_name itn JOIN index_toast_stat its ON ((itn.id = its.tin_id))) WHERE itn.alive) __tmp_itn ON (((lt.id = __tmp_itn.time_id) AND (__tmp_ttn.id = __tmp_itn.tn_id)))) LEFT JOIN (SELECT inn.tn_id, ins.time_id, sum(ins.idx_size) AS idx_size FROM (index_name inn JOIN index_stat ins ON ((inn.id = ins.in_id))) WHERE inn.alive GROUP BY inn.tn_id, ins.time_id) __tmp_in ON (((lt.id = __tmp_in.time_id) AND (__tmp_tn.id = __tmp_in.tn_id)))) JOIN schema_name sn ON ((sn.id = __tmp_tn.sn_id))) JOIN database_name dn ON ((dn.id = sn.dn_id))) JOIN host_cluster hc ON ((dn.hc_id = hc.id))) WHERE (lt.id = (SELECT log_time.id FROM log_time WHERE (log_time.hour_truncate = date_trunc('hour'::text, now()))));
 
 
 ALTER TABLE public.pm_table_size_lookup OWNER TO postgres;
@@ -1358,6 +1308,22 @@ ALTER TABLE ONLY host_cluster
 
 
 --
+-- Name: enum_sslmode_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY enum_sslmode
+    ADD CONSTRAINT enum_sslmode_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: enum_track_functions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY enum_track_functions
+    ADD CONSTRAINT enum_track_functions_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: function_name_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1382,11 +1348,27 @@ ALTER TABLE ONLY function_stat
 
 
 --
+-- Name: host_cluster_fqdn_param_port_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY host_cluster
+    ADD CONSTRAINT host_cluster_fqdn_param_port_key UNIQUE (fqdn, param_port);
+
+
+--
 -- Name: host_cluster_ip_address_pg_data_path_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
 ALTER TABLE ONLY host_cluster
-    ADD CONSTRAINT host_cluster_ip_address_pg_data_path_key UNIQUE (ip_address, pg_data_path);
+    ADD CONSTRAINT host_cluster_ip_address_pg_data_path_key UNIQUE (param_ip_address, pg_data_path);
+
+
+--
+-- Name: host_cluster_param_ip_address_param_port_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY host_cluster
+    ADD CONSTRAINT host_cluster_param_ip_address_param_port_key UNIQUE (param_ip_address, param_port);
 
 
 --
@@ -1715,6 +1697,22 @@ ALTER TABLE ONLY function_stat
 
 
 --
+-- Name: host_cluster_sslmode_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY host_cluster
+    ADD CONSTRAINT host_cluster_sslmode_id_fkey FOREIGN KEY (param_sslmode_id) REFERENCES enum_sslmode(id);
+
+
+--
+-- Name: host_cluster_track_function_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY host_cluster
+    ADD CONSTRAINT host_cluster_track_function_id_fkey FOREIGN KEY (track_function_id) REFERENCES enum_track_functions(id);
+
+
+--
 -- Name: index_basic_stat_in_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1743,7 +1741,7 @@ ALTER TABLE ONLY index_name
 --
 
 ALTER TABLE ONLY index_toast_name
-    ADD CONSTRAINT index_toast_name_tn_id_fkey FOREIGN KEY (tn_id) REFERENCES table_toast_name(id) ON DELETE CASCADE;
+    ADD CONSTRAINT index_toast_name_tn_id_fkey FOREIGN KEY (ttn_id) REFERENCES table_toast_name(id) ON DELETE CASCADE;
 
 
 --
@@ -1755,11 +1753,11 @@ ALTER TABLE ONLY index_toast_stat
 
 
 --
--- Name: index_toast_stat_tin_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: index_toast_stat_tn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY index_toast_stat
-    ADD CONSTRAINT index_toast_stat_tin_id_fkey FOREIGN KEY (tin_id) REFERENCES index_toast_name(id) ON DELETE CASCADE;
+    ADD CONSTRAINT index_toast_stat_tn_id_fkey FOREIGN KEY (tin_id) REFERENCES index_toast_name(id) ON DELETE CASCADE;
 
 
 --
@@ -1811,11 +1809,11 @@ ALTER TABLE ONLY table_toast_stat
 
 
 --
--- Name: table_toast_stat_ttn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: table_toast_stat_tn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY table_toast_stat
-    ADD CONSTRAINT table_toast_stat_ttn_id_fkey FOREIGN KEY (ttn_id) REFERENCES table_toast_name(id) ON DELETE CASCADE;
+    ADD CONSTRAINT table_toast_stat_tn_id_fkey FOREIGN KEY (ttn_id) REFERENCES table_toast_name(id) ON DELETE CASCADE;
 
 
 --
@@ -1847,4 +1845,20 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 --
 -- PostgreSQL database dump complete
 --
+
+COPY enum_sslmode (id, sslmode, description) FROM stdin;
+1	disable	Only try a non-SSL connection
+2	allow	First try a non-SSL connection; if that fails, try an SSL connection
+3	prefer	First try an SSL connection; if that fails, try a non-SSL connection
+4	require	Only try an SSL connection. If a root CA file is present, verify the certificate in the same way as if verify-ca was specified
+5	verify-ca	Only try an SSL connection, and verify that the server certificate is issued by a trusted certificate authority (CA)
+6	verify-full	Only try an SSL connection, verify that the server certificate is issued by a trusted CA and that the server host name matches that in the certificate
+\.
+
+
+COPY enum_track_functions (id, track_value, description) FROM stdin;
+1	none	Functions statistic tracking disabled
+2	pl	Track only procedural-language functions
+3	all	Track SQL, C and procedural-language functions
+\.
 
