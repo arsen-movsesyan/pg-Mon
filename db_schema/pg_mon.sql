@@ -48,7 +48,7 @@ SET search_path = public, pg_catalog;
 CREATE FUNCTION pm_bgwriter_stat_diff(first integer DEFAULT 1, last integer DEFAULT 0) RETURNS TABLE(hostname character varying, ip_address inet, is_master boolean, checkpoints_timed bigint, checkpoints_req bigint, buffers_checkpoint bigint, buffers_clean bigint, maxwritten_clean bigint, buffers_backend bigint, buffers_alloc bigint)
     LANGUAGE sql
     AS $_$
-SELECT hc.hostname,hc.ip_address,hc.is_master,
+SELECT hc.hostname,hc.param_ip_address,hc.is_master,
 last.checkpoints_timed - first.checkpoints_timed AS checkpoints_timed,
 last.checkpoints_req - first.checkpoints_req AS checkpoints_req,
 last.buffers_checkpoint - first.buffers_checkpoint AS buffers_checkpoint,
@@ -77,7 +77,7 @@ ALTER FUNCTION public.pm_bgwriter_stat_diff(first integer, last integer) OWNER T
 CREATE FUNCTION pm_database_stat_diff(first integer DEFAULT 1, last integer DEFAULT 0) RETURNS TABLE(hostname character varying, ip_address inet, is_master boolean, db_name character varying, db_size bigint, xact_commit bigint, xact_rollback bigint, blks_fetch bigint, blks_hit bigint, tup_returned bigint, tup_fetched bigint, tup_inserted bigint, tup_updated bigint, tup_deleted bigint)
     LANGUAGE sql
     AS $_$
-SELECT hc.hostname, hc.ip_address, hc.is_master, dn.db_name, 
+SELECT hc.hostname, hc.param_ip_address, hc.is_master, dn.db_name, 
 last.db_size - first.db_size AS db_size, 
 last.xact_commit - first.xact_commit AS xact_commit, 
 last.xact_rollback - first.xact_rollback AS xact_rollback, 
@@ -111,7 +111,7 @@ ALTER FUNCTION public.pm_database_stat_diff(first integer, last integer) OWNER T
 CREATE FUNCTION pm_function_stat_diff(first integer DEFAULT 1, last integer DEFAULT 0) RETURNS TABLE(hostname character varying, ip_address inet, is_master boolean, db_name character varying, sch_name character varying, func_name character varying, func_calls bigint, total_time bigint, self_time bigint)
     LANGUAGE sql
     AS $_$
-SELECT hc.hostname,hc.ip_address,hc.is_master,dn.db_name,sn.sch_name,fn.func_name,
+SELECT hc.hostname,hc.param_ip_address,hc.is_master,dn.db_name,sn.sch_name,fn.func_name,
 last.func_calls - first.func_calls AS func_calls,
 last.total_time - first.total_time AS total_time,
 last.self_time - first.self_time AS self_time
@@ -141,7 +141,7 @@ ALTER FUNCTION public.pm_function_stat_diff(first integer, last integer) OWNER T
 CREATE FUNCTION pm_index_stat_diff(first integer DEFAULT 1, last integer DEFAULT 0) RETURNS TABLE(hostname character varying, ip_address inet, is_master boolean, db_name character varying, sch_name character varying, tbl_name character varying, idx_name character varying, idx_size bigint, idx_scan bigint, idx_tup_read bigint, idx_tup_fetch bigint, idx_blks_fetch bigint, idx_blks_hit bigint)
     LANGUAGE sql
     AS $_$
-SELECT hc.hostname,hc.ip_address,hc.is_master,dn.db_name,sn.sch_name,tn.tbl_name,ind.idx_name,
+SELECT hc.hostname,hc.param_ip_address,hc.is_master,dn.db_name,sn.sch_name,tn.tbl_name,ind.idx_name,
 last.idx_size - first.idx_size AS idx_size,
 last.idx_scan - first.idx_scan AS idx_scan,
 last.idx_tup_read - first.idx_tup_read AS idx_tup_read,
@@ -175,7 +175,7 @@ ALTER FUNCTION public.pm_index_stat_diff(first integer, last integer) OWNER TO p
 CREATE FUNCTION pm_index_toast_stat_diff(first integer DEFAULT 1, last integer DEFAULT 0) RETURNS TABLE(hostname character varying, ip_address inet, is_master boolean, db_name character varying, sch_name character varying, tbl_name character varying, toast_tbl_name character varying, tidx_name character varying, tidx_size bigint, tidx_scan bigint, tidx_tup_read bigint, tidx_tup_fetch bigint, tidx_blks_fetch bigint, tidx_blks_hit bigint)
     LANGUAGE sql
     AS $_$
-SELECT hc.hostname,hc.ip_address,hc.is_master,dn.db_name,sn.sch_name,tn.tbl_name,ttn.tbl_name AS toast_tbl_name,tind.idx_name AS toast_idx_name,
+SELECT hc.hostname,hc.param_ip_address,hc.is_master,dn.db_name,sn.sch_name,tn.tbl_name,ttn.ttbl_name AS toast_tbl_name,tind.tidx_name AS toast_idx_name,
 last.tidx_size - first.tidx_size AS tidx_size,
 last.tidx_scan - first.tidx_scan AS tidx_scan,
 last.tidx_tup_read - first.tidx_tup_read AS tidx_tup_read,
@@ -187,7 +187,7 @@ JOIN database_name dn ON hc.id=dn.hc_id
 JOIN schema_name sn ON dn.id=sn.dn_id
 JOIN table_name tn ON sn.id=tn.sn_id
 JOIN table_toast_name ttn ON tn.id=ttn.tn_id
-JOIN index_toast_name tind ON ttn.id=tind.tn_id
+JOIN index_toast_name tind ON ttn.id=tind.ttn_id
 JOIN index_toast_stat first ON tind.id=first.tin_id
 JOIN index_toast_stat last ON tind.id=last.tin_id
 JOIN log_time a ON a.id=first.time_id
@@ -211,7 +211,7 @@ ALTER FUNCTION public.pm_index_toast_stat_diff(first integer, last integer) OWNE
 CREATE FUNCTION pm_table_stat_diff(first integer DEFAULT 1, last integer DEFAULT 0) RETURNS TABLE(hostname character varying, ip_address inet, is_master boolean, db_name character varying, sch_name character varying, tbl_name character varying, tbl_size bigint, tbl_tuples bigint, seq_scan bigint, seq_tup_read bigint, seq_tup_fetch bigint, n_tup_ins bigint, n_tup_upd bigint, n_tup_del bigint, n_tup_hot_upd bigint, n_live_tup bigint, n_dead_tup bigint, heap_blks_fetch bigint, heap_blks_hit bigint)
     LANGUAGE sql
     AS $_$
-SELECT hc.hostname,hc.ip_address,hc.is_master,dn.db_name,sn.sch_name,tn.tbl_name,
+SELECT hc.hostname,hc.param_ip_address,hc.is_master,dn.db_name,sn.sch_name,tn.tbl_name,
 last.tbl_size - first.tbl_size AS tbl_size,
 last.tbl_tuples - first.tbl_tuples AS tbl_tuples,
 last.seq_scan - first.seq_scan AS seq_scan,
@@ -251,7 +251,7 @@ ALTER FUNCTION public.pm_table_stat_diff(first integer, last integer) OWNER TO p
 CREATE FUNCTION pm_table_toast_stat_diff(first integer DEFAULT 1, last integer DEFAULT 0) RETURNS TABLE(hostname character varying, ip_address inet, is_master boolean, db_name character varying, sch_name character varying, tbl_name character varying, toast_tbl_name character varying, ttbl_size bigint, seq_scan bigint, seq_tup_read bigint, eq_tup_fetch bigint, n_tup_ins bigint, n_tup_upd bigint, n_tup_del bigint, n_tup_hot_upd bigint, n_live_tup bigint, n_dead_tup bigint, heap_blks_fetch bigint, heap_blks_hit bigint)
     LANGUAGE sql
     AS $_$
-SELECT hc.hostname,hc.ip_address,hc.is_master,dn.db_name,sn.sch_name,tn.tbl_name,ttn.tbl_name AS toast_tbl_name,
+SELECT hc.hostname,hc.param_ip_address,hc.is_master,dn.db_name,sn.sch_name,tn.tbl_name,ttn.ttbl_name AS toast_tbl_name,
 last.ttbl_size - first.ttbl_size AS ttbl_size,
 last.seq_scan - first.seq_scan AS seq_scan,
 last.seq_tup_read - first.seq_tup_read AS seq_tup_read,
