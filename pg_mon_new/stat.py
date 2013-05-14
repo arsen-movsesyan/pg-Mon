@@ -40,7 +40,7 @@ for hc_id in hc_ids:
 	db_dsn=dbs['db_dsn']
 	dn=DatabaseName(conn,db_dsn,dbs['id'])
 	dn.stat(lt.get_id())
-	for sn in dn.get_dependants():
+	for sn in dn.get_dependants(True):
 	    sn=SchemaName(conn,db_dsn,sn)
 	    sn.discover_tables()
 	    sn.discover_functions()
