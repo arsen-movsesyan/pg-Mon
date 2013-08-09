@@ -1,0 +1,116 @@
+from time import time
+from pprint import pprint
+from binascii import crc32
+from os import remove
+from os.path import isfile
+from sys import exit
+
+from settings import BUFF_FILE,READY_FILE,TRANS_TEMPLATE,MAX_KEEP_READY_FILES
+
+import cPickle
+
+timestamp=int(time())
+
+
+
+class Transfer:
+
+    def __init__(self):
+	self.local_file=''
+	self.trans=dict()
+	self._load_from_file()
+
+    def _set_time(self):
+	self.trans['header']['transfer_timestamp']=int(time())
+
+
+    def _serialise(self,field):
+	return cPickle.dumps(field,cPickle.HIGHEST_PROTOCOL)
+
+
+    def _flush(self):
+	try:
+	    remove(BUFF_FILE)
+	except:
+	    pass
+	self.trans.clear()
+	self.trans.update(TRANS_TEMPLATE)
+
+
+    def _load_from_file(self):
+	try:
+	    buffer_src=open(BUFF_FILE,'rb')
+	except:
+	    self.trans.update(TRANS_TEMPLATE)
+	else:
+	    self.trans.update(cPickle.load(buffer_src))
+	    buffer_src.close()
+
+    def _dump_to_file(self):
+	try:
+	    buffer_src=open(BUFF_FILE,'wb')
+	except IOError:
+	    logger.critical("Canot open {0} for writing!")
+	    exit(1)
+	cPickle.dump(self.trans,buffer_src,cPickle.HIGHEST_PROTOCOL)
+	buffer_src.close()
+
+    def _ready_file_open(self):
+	counter=0
+	while counter < MAX_KEEP_READY_FILES:
+#	for counter in range(0,MAX_KEEP_READY_FILES):
+	    file_path=READY_FILE+'.'+str(counter).zfill(3)
+	    if not isfile(file_path):
+		return file_path
+	    counter=counter+1
+	return False
+
+
+
+
+    def pp(self):
+#	self._set_time()
+	pprint(self.trans)
+
+
+    def set_custom(self,module,field,format):
+	counter=self.trans['custom']['counter']
+	container_name='append_'+str(counter).zfill(4)
+	if format == 'b':
+	    a_field=self._serialise(field)
+	    fmt='serialised'
+	else:
+	    a_field=field
+	    fmt='plain'
+	self.trans['custom'][container_name]=dict(module=module,data=a_field,append_time=int(time()),format=fmt)
+	counter=counter+1
+	self.trans['custom']['counter']=counter
+	self._dump_to_file()
+
+
+
+    def set_db_data(self,data):
+	counter=self.trans['stat_content']['db_stat']['counter']
+	container_name='append_'+str(counter).zfill(4)
+	self.trans['stat_content']['db_stat'][container_name]=cPickle.dumps(data,cPickle.HIGHEST_PROTOCOL)
+	counter=counter+1
+	self.trans['stat_content']['db_stat']['counter']=counter
+	self._dump_to_file()
+
+
+    def set_ready(self):
+	self._set_time()
+	ready_str=cPickle.dumps(self.trans,cPickle.HIGHEST_PROTOCOL)
+	crc_checksum=crc32(ready_str) & 0xffffffff
+#	self.trans['crc_checksum']=crc32(ready_str) & 0xffffffff
+	self.trans['crc_checksum']=crc_checksum
+	ready_file_name=self._ready_file_open()
+	if ready_file_name:
+	    try:
+		dst=open(ready_file_name,'wb')
+	    except IOError:
+		logger.critical("Cannot open {0} for writing! Exiting".format(ready_file_name))
+		exit(1)
+	    cPickle.dump(self.trans,dst,cPickle.HIGHEST_PROTOCOL)
+	    dst.close()
+	    self._flush()
