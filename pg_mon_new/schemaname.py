@@ -116,8 +116,8 @@ AND n.oid={0}""".format(self.db_fields['obj_oid']))
 
     def get_tables(self,obs=False):
 	self.sub_table='table_name'
-	return self.get_dependants(obs)
+	return self.get_dependants(True)
 
     def get_functions(self,obs=False):
 	self.sub_table='function_name'
-	return self.get_dependants(obs)
+	return self.get_dependants(True)

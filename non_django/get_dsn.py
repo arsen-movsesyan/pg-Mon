@@ -74,7 +74,7 @@ for param, value in a:
 	string_output=False
 
 cur=database.db_conn.cursor()
-get_stat=cur.mogrify("SELECT id FROM host_cluster WHERE {0}=%s AND param_port=%s".format(host_search,port),(host,port))
+get_stat=cur.mogrify("SELECT id FROM host_cluster WHERE {0}=%s AND param_port=%s".format(host_search),(host,port))
 cur.execute(get_stat)
 res_id=cur.fetchone()
 
