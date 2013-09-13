@@ -15,7 +15,7 @@ class SchemaName(genericName):
 	    super(SchemaName,self).__init__()
 
 
-    def discover_tables(self,prod_cursor):
+    def discover_tables(self,prod_cursor,make_observable=True):
 	self.cursor.execute("SELECT obj_oid,tbl_name,id FROM table_name WHERE {0}={1} AND alive".format(self.sub_fk,self.id))
 	local_tbls=self.cursor.fetchall()
 	try:
@@ -45,13 +45,13 @@ AND r.relnamespace={0}""".format(self.db_fields['obj_oid']))
 	    else:
 		logger.info("Created new table: {0} in schema {1}".format(p_table[1],self.db_fields['sch_name']))
 		new_table=TableName()
-		new_table.set_fields(sn_id=self.id,tbl_name=p_table[1],obj_oid=p_table[0],has_parent=p_table[2])
+		new_table.set_fields(sn_id=self.id,tbl_name=p_table[1],obj_oid=p_table[0],has_parent=p_table[2],observable=make_observable)
 		new_table.create()
 		new_table.truncate()
 
 
 
-    def discover_functions(self,prod_cursor):
+    def discover_functions(self,prod_cursor,make_observable=True):
 	self.cursor.execute("SELECT pro_oid,func_name,id FROM function_name WHERE {0}={1} AND alive".format(self.sub_fk,self.id))
 	local_funcs=self.cursor.fetchall()
 #	print local_funcs
@@ -83,7 +83,7 @@ AND n.oid={0}""".format(self.db_fields['obj_oid']))
 	    else:
 		logger.info("Created new function: {0} in schema {1}".format(p_func[1],self.db_fields['sch_name']))
 		new_func=FunctionName()
-		new_func.set_fields(sn_id=self.id,pro_oid=p_func[0],func_name=p_func[1],proretset=p_func[2],prorettype=p_func[3],prolang=p_func[4])
+		new_func.set_fields(sn_id=self.id,pro_oid=p_func[0],func_name=p_func[1],proretset=p_func[2],prorettype=p_func[3],prolang=p_func[4],observable=make_observable)
 		new_func.create()
 		new_func.truncate()
 

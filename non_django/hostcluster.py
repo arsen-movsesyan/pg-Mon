@@ -118,7 +118,7 @@ class HostCluster(genericName):
 	    logger.debug("No new data obtained during discover for hostcluster {0}".format(self.db_fields['hostname']))
 
 
-    def discover_cluster_databases(self):
+    def discover_cluster_databases(self,make_observable=True):
 	if not self.__prod_conn:
 	    if not self.__set_self_db_conn():
 		logger.error("Did not obtain Prod database conection for cluster {0} in discover_cluster_databases method ".format(self.db_fields['hostname']))
@@ -148,7 +148,7 @@ class HostCluster(genericName):
 		    break
 	    else:
 		new_db=DatabaseName()
-		new_db.set_fields(hc_id=self.id,obj_oid=p_db[0],db_name=p_db[1])
+		new_db.set_fields(hc_id=self.id,obj_oid=p_db[0],db_name=p_db[1],observable=make_observable)
 		new_db.create()
 		new_db.truncate()
 		logger.info("Create new database {0} for cluster {1}".format(p_db[1],self.db_fields['hostname']))

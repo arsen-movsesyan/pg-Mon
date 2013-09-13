@@ -612,7 +612,7 @@ CREATE TABLE database_name (
     id integer NOT NULL,
     hc_id integer NOT NULL,
     obj_oid integer NOT NULL,
-    observable boolean DEFAULT false NOT NULL,
+    observable boolean DEFAULT true NOT NULL,
     alive boolean DEFAULT true NOT NULL,
     db_name character varying NOT NULL,
     description text
@@ -1075,7 +1075,7 @@ CREATE TABLE schema_name (
     id integer NOT NULL,
     dn_id integer NOT NULL,
     obj_oid integer NOT NULL,
-    observable boolean DEFAULT false NOT NULL,
+    observable boolean DEFAULT true NOT NULL,
     alive boolean DEFAULT true NOT NULL,
     sch_name character varying NOT NULL,
     description text
