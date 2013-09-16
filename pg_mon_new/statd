@@ -1,0 +1,26 @@
+#!/usr/bin/python -B
+
+import stat_daemon
+import sys
+#from signal import SIGHUP
+from settings import *
+
+
+daemon = stat_daemon.StatDaemon(DAEMON_SETTINGS['pidfile'],stdin=DAEMON_SETTINGS['stdin'],
+	stdout=DAEMON_SETTINGS['stdout'],stderr=DAEMON_SETTINGS['stderr'])
+
+if len(sys.argv) == 2:
+    if 'start' == sys.argv[1]:
+	daemon.start()
+    elif 'stop' == sys.argv[1]:
+	daemon.stop()
+    elif 'restart' == sys.argv[1]:
+	daemon.restart()
+#    elif sys.argv[1] == 'reload':
+#	daemon.re_load()
+    else:
+	print "Unknown command"
+	sys.exit(0)
+else:
+    print "usage: %s start|stop|restart|reload" % sys.argv[0]
+    sys.exit(2)

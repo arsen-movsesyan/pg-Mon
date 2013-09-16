@@ -62,3 +62,15 @@ def custom_dsn(db_handler):
 	    password=portion['PASSWORD']
 	    sslmode=portion['SSLMODE']
 	    return "host="+host+" dbname="+dbname+" port="+port+" user="+user+" password="+password+" sslmode="+sslmode
+
+
+
+DAEMON_SETTINGS = {
+    'pidfile':'/tmp/distro_worker.pid',
+    'stdin':'/dev/null',
+    'stdout':'/dev/null',
+    'stderr':'/tmp/distro_worker.err',
+}
+
+runtime_stat_interval=1
+regular_stat_interval=60
