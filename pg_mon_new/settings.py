@@ -66,11 +66,11 @@ def custom_dsn(db_handler):
 
 
 DAEMON_SETTINGS = {
-    'pidfile':'/tmp/distro_worker.pid',
+    'pidfile':'/tmp/stat_daemon.pid',
     'stdin':'/dev/null',
     'stdout':'/dev/null',
-    'stderr':'/tmp/distro_worker.err',
+    'stderr':'/tmp/stat_daemon.err',
 }
 
-runtime_stat_interval=1
-regular_stat_interval=60
+runtime_stat_interval=5		# in minutes
+regular_stat_interval=60	# in minutes

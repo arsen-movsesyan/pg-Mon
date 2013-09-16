@@ -95,11 +95,13 @@ class genericName(generic):
     def __init__(self,in_db_conn,in_id=None):
 	super(genericName,self).__init__(in_db_conn)
 	self.stat_obj=None
+	self.runtime_stat_obj=None
 	self.sub_table=None
 	self.sub_fk=None
 	if in_id:
 	    self.id=in_id
 	self.stat_query=None
+	self.runtime_stat_query=None
 
 
 
@@ -164,6 +166,21 @@ class genericName(generic):
 #	if self.stat_obj._create():
 	    self.db_conn.commit()
 
+    def runtime_stat(self,in_time_id):
+	if not self.prod_conn or self.prod_conn.closed:
+	    if not self.set_prod_conn():
+		return False
+	cur=self.prod_conn.cursor()
+	try:
+	    cur.execute(self.runtime_stat_query)
+	except Exception as e:
+	    logger.error("Canot get runtime statistic info: {0}".format(e.pgerror))
+	    return
+	self.runtime_stat_obj.set_field_dict(zip_field_names(cur.fetchone(),cur.description))
+	self.runtime_stat_obj.set_field('time_id',in_time_id)
+	cur.close()
+	if self.runtime_stat_obj._create(self.db_conn.cursor()):
+	    self.db_conn.commit()
 
 
     def retire(self):
@@ -175,7 +192,6 @@ class genericName(generic):
 	    except Exception as e:
 		logger.error("Cannot retire object from table {0}. {1}".format(self.table,e.pgerror))
 	    cur.close()
-
 
 
 

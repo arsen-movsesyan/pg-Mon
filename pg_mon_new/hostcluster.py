@@ -10,12 +10,17 @@ class HostCluster(table.genericName):
 	super(HostCluster,self).__init__(in_db_conn,in_id)
 	self.table='host_cluster'
 	if in_id:
-	    self._populate()
-	    self.prod_dsn=self.get_conn_string()
-	    self.stat_obj=table.genericStat('bgwriter_stat','hc_id',in_id)
-	    self.sub_table='database_name'
-	    self.sub_fk='hc_id'
-	    self.stat_query="""SELECT
+	    self._initialyze(in_id)
+
+
+    def _initialyze(self,in_id):
+	self._populate()
+	self.prod_dsn=self.get_conn_string()
+	self.stat_obj=table.genericStat('bgwriter_stat','hc_id',in_id)
+	self.runtime_stat_obj=table.genericStat('cluster_runtime_stat','hc_id',in_id)
+	self.sub_table='database_name'
+	self.sub_fk='hc_id'
+	self.stat_query="""SELECT
 pg_stat_get_bgwriter_timed_checkpoints() AS checkpoints_timed,
 pg_stat_get_bgwriter_requested_checkpoints() AS checkpoints_req,
 pg_stat_get_bgwriter_buf_written_checkpoints() AS buffers_checkpoint,
@@ -23,6 +28,8 @@ pg_stat_get_bgwriter_buf_written_clean() AS buffers_clean,
 pg_stat_get_bgwriter_maxwritten_clean() AS maxwritten_clean,
 pg_stat_get_buf_written_backend() AS buffers_backend,
 pg_stat_get_buf_alloc() AS buffers_alloc"""
+	self.runtime_stat_query="""SELECT current_setting('max_connections') AS conn_total,COUNT(*) AS conn_used 
+	FROM pg_stat_activity GROUP BY 1"""
 
 
     def get_conn_string(self,in_db_name=None):
@@ -43,15 +50,17 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 #	return self.conn_string
 
 
-#    def add(self,ip_address,hostname,*args,**kwargs):
-#	self.db_fields['param_ip_address']=ip_address
-#	self.db_fields['hostname']=hostname
-#	for k in kwargs.keys():
-#	    self.db_fields[k]=kwargs[k]
-#	logger.info("Created new hostcluster {0} ip address: {1}".format(ip_address,hostname))
-#	self.create()
-#	self.truncate()
-#	self._populate()
+    def add(self,ip_address,hostname,*args,**kwargs):
+	self.db_fields['param_ip_address']=ip_address
+	self.db_fields['hostname']=hostname
+	for k in kwargs.keys():
+	    self.db_fields[k]=kwargs[k]
+	if self._create():
+	    self.db_conn.commit()
+	    logger.info("Created new hostcluster {0} ip address: {1}".format(ip_address,hostname))
+	    self._initialyze(self.id)
+	else:
+	    logger.critical("Cannot create new hostcluster {0} with ip address: {1}".format(ip_address,hostname))
 
 
 

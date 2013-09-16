@@ -1,12 +1,12 @@
-#!/usr/bin/python -B
+#!/usr/local/bin/python -B
 
-import stat_daemon
+import pg_mon_daemon
 import sys
 #from signal import SIGHUP
 from settings import *
 
 
-daemon = stat_daemon.StatDaemon(DAEMON_SETTINGS['pidfile'],stdin=DAEMON_SETTINGS['stdin'],
+daemon = pg_mon_daemon.PgmonDaemon(DAEMON_SETTINGS['pidfile'],stdin=DAEMON_SETTINGS['stdin'],
 	stdout=DAEMON_SETTINGS['stdout'],stderr=DAEMON_SETTINGS['stderr'])
 
 if len(sys.argv) == 2:

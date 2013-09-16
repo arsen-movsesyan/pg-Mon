@@ -7,7 +7,7 @@ from settings import logger,custom_dsn
 class LogTimeMain(object):
 
     def __init__(self):
-	self.id=None
+	self.reset_id()
 #	self.actual_time=None
 #	self.hour_truncate=None
 	self.db_conn=None
@@ -41,6 +41,8 @@ class LogTimeMain(object):
 	cur.close()
 	return True
 
+    def reset_id(self):
+	self.id=None
 
     def get_id(self):
 	if not self.id:

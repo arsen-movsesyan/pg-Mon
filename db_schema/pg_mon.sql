@@ -2,21 +2,16 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.1.3
--- Dumped by pg_dump version 9.2.2
--- Started on 2013-09-06 16:24:31 PDT
-
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
-DROP DATABASE pg_mon;
 --
--- TOC entry 2159 (class 1262 OID 24981)
 -- Name: pg_mon; Type: DATABASE; Schema: -; Owner: postgres
 --
+DROP DATABASE IF EXISTS pg_mon;
 
 CREATE DATABASE pg_mon WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'C' LC_CTYPE = 'C';
 
@@ -32,26 +27,6 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --
--- TOC entry 6 (class 2615 OID 2200)
--- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
---
-
-CREATE SCHEMA public;
-
-
-ALTER SCHEMA public OWNER TO postgres;
-
---
--- TOC entry 2160 (class 0 OID 0)
--- Dependencies: 6
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON SCHEMA public IS 'standard public schema';
-
-
---
--- TOC entry 203 (class 3079 OID 11638)
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
@@ -59,8 +34,6 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- TOC entry 2162 (class 0 OID 0)
--- Dependencies: 203
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
 
@@ -70,7 +43,6 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET search_path = public, pg_catalog;
 
 --
--- TOC entry 226 (class 1255 OID 24982)
 -- Name: pm_bgwriter_stat_diff(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -100,7 +72,6 @@ $_$;
 ALTER FUNCTION public.pm_bgwriter_stat_diff(first integer, last integer) OWNER TO postgres;
 
 --
--- TOC entry 215 (class 1255 OID 24983)
 -- Name: pm_database_stat_diff(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -135,7 +106,6 @@ $_$;
 ALTER FUNCTION public.pm_database_stat_diff(first integer, last integer) OWNER TO postgres;
 
 --
--- TOC entry 227 (class 1255 OID 24984)
 -- Name: pm_function_stat_diff(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -166,7 +136,6 @@ $_$;
 ALTER FUNCTION public.pm_function_stat_diff(first integer, last integer) OWNER TO postgres;
 
 --
--- TOC entry 230 (class 1255 OID 33221)
 -- Name: pm_index_stat_diff(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -194,7 +163,6 @@ $_$;
 ALTER FUNCTION public.pm_index_stat_diff(first integer, last integer) OWNER TO postgres;
 
 --
--- TOC entry 228 (class 1255 OID 24986)
 -- Name: pm_index_toast_stat_diff(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -231,7 +199,6 @@ $_$;
 ALTER FUNCTION public.pm_index_toast_stat_diff(first integer, last integer) OWNER TO postgres;
 
 --
--- TOC entry 229 (class 1255 OID 33219)
 -- Name: pm_table_stat_diff(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -267,7 +234,6 @@ $_$;
 ALTER FUNCTION public.pm_table_stat_diff(first integer, last integer) OWNER TO postgres;
 
 --
--- TOC entry 225 (class 1255 OID 24988)
 -- Name: pm_table_toast_stat_diff(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -308,7 +274,6 @@ $_$;
 ALTER FUNCTION public.pm_table_toast_stat_diff(first integer, last integer) OWNER TO postgres;
 
 --
--- TOC entry 216 (class 1255 OID 24989)
 -- Name: remove_databases(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -323,7 +288,6 @@ END$$;
 ALTER FUNCTION public.remove_databases() OWNER TO postgres;
 
 --
--- TOC entry 217 (class 1255 OID 24990)
 -- Name: remove_functions(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -338,7 +302,6 @@ END$$;
 ALTER FUNCTION public.remove_functions() OWNER TO postgres;
 
 --
--- TOC entry 218 (class 1255 OID 24991)
 -- Name: remove_indexes(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -353,7 +316,6 @@ END$$;
 ALTER FUNCTION public.remove_indexes() OWNER TO postgres;
 
 --
--- TOC entry 219 (class 1255 OID 24992)
 -- Name: remove_schemas(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -368,7 +330,6 @@ END$$;
 ALTER FUNCTION public.remove_schemas() OWNER TO postgres;
 
 --
--- TOC entry 220 (class 1255 OID 24993)
 -- Name: remove_tables(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -383,7 +344,6 @@ END$$;
 ALTER FUNCTION public.remove_tables() OWNER TO postgres;
 
 --
--- TOC entry 221 (class 1255 OID 24994)
 -- Name: remove_toas_indexes(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -398,7 +358,6 @@ END$$;
 ALTER FUNCTION public.remove_toas_indexes() OWNER TO postgres;
 
 --
--- TOC entry 222 (class 1255 OID 24995)
 -- Name: remove_toast_tables(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -413,7 +372,6 @@ END$$;
 ALTER FUNCTION public.remove_toast_tables() OWNER TO postgres;
 
 --
--- TOC entry 223 (class 1255 OID 24996)
 -- Name: suspend_schemas(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -428,7 +386,6 @@ END$$;
 ALTER FUNCTION public.suspend_schemas() OWNER TO postgres;
 
 --
--- TOC entry 224 (class 1255 OID 24997)
 -- Name: terminate_change(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -445,7 +402,6 @@ END$$;
 ALTER FUNCTION public.terminate_change() OWNER TO postgres;
 
 --
--- TOC entry 231 (class 1255 OID 33224)
 -- Name: vw_hot_update_pct(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -465,7 +421,6 @@ $_$;
 ALTER FUNCTION public.vw_hot_update_pct(first integer, last integer) OWNER TO postgres;
 
 --
--- TOC entry 233 (class 1255 OID 33223)
 -- Name: vw_index_pct(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -494,7 +449,6 @@ $_$;
 ALTER FUNCTION public.vw_index_pct(first integer, last integer) OWNER TO postgres;
 
 --
--- TOC entry 235 (class 1255 OID 33228)
 -- Name: vw_table_hip_pct(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -513,7 +467,6 @@ $_$;
 ALTER FUNCTION public.vw_table_hip_pct(first integer, last integer) OWNER TO postgres;
 
 --
--- TOC entry 234 (class 1255 OID 33227)
 -- Name: vw_table_idx_hip_pct(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -535,7 +488,6 @@ $_$;
 ALTER FUNCTION public.vw_table_idx_hip_pct(first integer, last integer) OWNER TO postgres;
 
 --
--- TOC entry 232 (class 1255 OID 33225)
 -- Name: vw_table_modify_pct(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -559,7 +511,6 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- TOC entry 161 (class 1259 OID 24998)
 -- Name: bgwriter_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -580,7 +531,6 @@ CREATE TABLE bgwriter_stat (
 ALTER TABLE public.bgwriter_stat OWNER TO postgres;
 
 --
--- TOC entry 162 (class 1259 OID 25001)
 -- Name: bgwriter_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -595,8 +545,6 @@ CREATE SEQUENCE bgwriter_stat_id_seq
 ALTER TABLE public.bgwriter_stat_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2163 (class 0 OID 0)
--- Dependencies: 162
 -- Name: bgwriter_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -604,7 +552,42 @@ ALTER SEQUENCE bgwriter_stat_id_seq OWNED BY bgwriter_stat.id;
 
 
 --
--- TOC entry 163 (class 1259 OID 25003)
+-- Name: cluster_runtime_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE cluster_runtime_stat (
+    id bigint NOT NULL,
+    hc_id integer NOT NULL,
+    time_id bigint NOT NULL,
+    conn_total integer,
+    conn_used integer
+);
+
+
+ALTER TABLE public.cluster_runtime_stat OWNER TO postgres;
+
+--
+-- Name: cluster_runtime_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE cluster_runtime_stat_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.cluster_runtime_stat_id_seq OWNER TO postgres;
+
+--
+-- Name: cluster_runtime_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE cluster_runtime_stat_id_seq OWNED BY cluster_runtime_stat.id;
+
+
+--
 -- Name: database_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -622,7 +605,6 @@ CREATE TABLE database_name (
 ALTER TABLE public.database_name OWNER TO postgres;
 
 --
--- TOC entry 164 (class 1259 OID 25011)
 -- Name: database_name_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -637,8 +619,6 @@ CREATE SEQUENCE database_name_id_seq
 ALTER TABLE public.database_name_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2164 (class 0 OID 0)
--- Dependencies: 164
 -- Name: database_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -646,7 +626,6 @@ ALTER SEQUENCE database_name_id_seq OWNED BY database_name.id;
 
 
 --
--- TOC entry 165 (class 1259 OID 25013)
 -- Name: database_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -670,7 +649,6 @@ CREATE TABLE database_stat (
 ALTER TABLE public.database_stat OWNER TO postgres;
 
 --
--- TOC entry 166 (class 1259 OID 25016)
 -- Name: database_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -685,8 +663,6 @@ CREATE SEQUENCE database_stat_id_seq
 ALTER TABLE public.database_stat_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2165 (class 0 OID 0)
--- Dependencies: 166
 -- Name: database_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -694,7 +670,45 @@ ALTER SEQUENCE database_stat_id_seq OWNED BY database_stat.id;
 
 
 --
--- TOC entry 167 (class 1259 OID 25018)
+-- Name: db_runtime_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE db_runtime_stat (
+    id bigint NOT NULL,
+    dn_id integer NOT NULL,
+    time_id bigint NOT NULL,
+    max_interval_query_dur interval,
+    avg_interval_query_dur interval,
+    max_sec_query_dur integer,
+    avg_sec_query_dur integer,
+    tx_max_age integer
+);
+
+
+ALTER TABLE public.db_runtime_stat OWNER TO postgres;
+
+--
+-- Name: db_runtime_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE db_runtime_stat_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.db_runtime_stat_id_seq OWNER TO postgres;
+
+--
+-- Name: db_runtime_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE db_runtime_stat_id_seq OWNED BY db_runtime_stat.id;
+
+
+--
 -- Name: enum_sslmode; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -708,7 +722,6 @@ CREATE TABLE enum_sslmode (
 ALTER TABLE public.enum_sslmode OWNER TO postgres;
 
 --
--- TOC entry 168 (class 1259 OID 25024)
 -- Name: enum_track_functions; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -722,7 +735,6 @@ CREATE TABLE enum_track_functions (
 ALTER TABLE public.enum_track_functions OWNER TO postgres;
 
 --
--- TOC entry 169 (class 1259 OID 25030)
 -- Name: function_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -742,7 +754,6 @@ CREATE TABLE function_name (
 ALTER TABLE public.function_name OWNER TO postgres;
 
 --
--- TOC entry 170 (class 1259 OID 25037)
 -- Name: function_name_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -757,8 +768,6 @@ CREATE SEQUENCE function_name_id_seq
 ALTER TABLE public.function_name_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2166 (class 0 OID 0)
--- Dependencies: 170
 -- Name: function_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -766,7 +775,6 @@ ALTER SEQUENCE function_name_id_seq OWNED BY function_name.id;
 
 
 --
--- TOC entry 171 (class 1259 OID 25039)
 -- Name: function_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -783,7 +791,6 @@ CREATE TABLE function_stat (
 ALTER TABLE public.function_stat OWNER TO postgres;
 
 --
--- TOC entry 172 (class 1259 OID 25042)
 -- Name: function_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -798,8 +805,6 @@ CREATE SEQUENCE function_stat_id_seq
 ALTER TABLE public.function_stat_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2167 (class 0 OID 0)
--- Dependencies: 172
 -- Name: function_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -807,7 +812,6 @@ ALTER SEQUENCE function_stat_id_seq OWNED BY function_stat.id;
 
 
 --
--- TOC entry 173 (class 1259 OID 25044)
 -- Name: host_cluster; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -835,7 +839,6 @@ CREATE TABLE host_cluster (
 ALTER TABLE public.host_cluster OWNER TO postgres;
 
 --
--- TOC entry 174 (class 1259 OID 25059)
 -- Name: host_cluster_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -850,8 +853,6 @@ CREATE SEQUENCE host_cluster_id_seq
 ALTER TABLE public.host_cluster_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2168 (class 0 OID 0)
--- Dependencies: 174
 -- Name: host_cluster_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -859,7 +860,6 @@ ALTER SEQUENCE host_cluster_id_seq OWNED BY host_cluster.id;
 
 
 --
--- TOC entry 175 (class 1259 OID 25061)
 -- Name: index_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -877,7 +877,6 @@ CREATE TABLE index_name (
 ALTER TABLE public.index_name OWNER TO postgres;
 
 --
--- TOC entry 176 (class 1259 OID 25068)
 -- Name: index_name_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -892,8 +891,6 @@ CREATE SEQUENCE index_name_id_seq
 ALTER TABLE public.index_name_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2169 (class 0 OID 0)
--- Dependencies: 176
 -- Name: index_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -901,7 +898,6 @@ ALTER SEQUENCE index_name_id_seq OWNED BY index_name.id;
 
 
 --
--- TOC entry 177 (class 1259 OID 25070)
 -- Name: index_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -921,7 +917,6 @@ CREATE TABLE index_stat (
 ALTER TABLE public.index_stat OWNER TO postgres;
 
 --
--- TOC entry 178 (class 1259 OID 25073)
 -- Name: index_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -936,8 +931,6 @@ CREATE SEQUENCE index_stat_id_seq
 ALTER TABLE public.index_stat_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2170 (class 0 OID 0)
--- Dependencies: 178
 -- Name: index_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -945,7 +938,6 @@ ALTER SEQUENCE index_stat_id_seq OWNED BY index_stat.id;
 
 
 --
--- TOC entry 179 (class 1259 OID 25075)
 -- Name: index_toast_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -961,7 +953,6 @@ CREATE TABLE index_toast_name (
 ALTER TABLE public.index_toast_name OWNER TO postgres;
 
 --
--- TOC entry 180 (class 1259 OID 25082)
 -- Name: index_toast_name_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -976,8 +967,6 @@ CREATE SEQUENCE index_toast_name_id_seq
 ALTER TABLE public.index_toast_name_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2171 (class 0 OID 0)
--- Dependencies: 180
 -- Name: index_toast_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -985,7 +974,6 @@ ALTER SEQUENCE index_toast_name_id_seq OWNED BY index_toast_name.id;
 
 
 --
--- TOC entry 181 (class 1259 OID 25084)
 -- Name: index_toast_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1005,7 +993,6 @@ CREATE TABLE index_toast_stat (
 ALTER TABLE public.index_toast_stat OWNER TO postgres;
 
 --
--- TOC entry 182 (class 1259 OID 25087)
 -- Name: index_toast_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1020,8 +1007,6 @@ CREATE SEQUENCE index_toast_stat_id_seq
 ALTER TABLE public.index_toast_stat_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2172 (class 0 OID 0)
--- Dependencies: 182
 -- Name: index_toast_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -1029,7 +1014,6 @@ ALTER SEQUENCE index_toast_stat_id_seq OWNED BY index_toast_stat.id;
 
 
 --
--- TOC entry 183 (class 1259 OID 25089)
 -- Name: log_time; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1043,7 +1027,6 @@ CREATE TABLE log_time (
 ALTER TABLE public.log_time OWNER TO postgres;
 
 --
--- TOC entry 184 (class 1259 OID 25094)
 -- Name: log_time_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1058,8 +1041,6 @@ CREATE SEQUENCE log_time_id_seq
 ALTER TABLE public.log_time_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2173 (class 0 OID 0)
--- Dependencies: 184
 -- Name: log_time_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -1067,7 +1048,40 @@ ALTER SEQUENCE log_time_id_seq OWNED BY log_time.id;
 
 
 --
--- TOC entry 185 (class 1259 OID 25096)
+-- Name: log_time_mt; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE log_time_mt (
+    id bigint NOT NULL,
+    actual_time timestamp without time zone DEFAULT now() NOT NULL,
+    minute_truncate timestamp without time zone DEFAULT date_trunc('minute'::text, now()) NOT NULL
+);
+
+
+ALTER TABLE public.log_time_mt OWNER TO postgres;
+
+--
+-- Name: log_time_mt_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE log_time_mt_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.log_time_mt_id_seq OWNER TO postgres;
+
+--
+-- Name: log_time_mt_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE log_time_mt_id_seq OWNED BY log_time_mt.id;
+
+
+--
 -- Name: schema_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1085,7 +1099,6 @@ CREATE TABLE schema_name (
 ALTER TABLE public.schema_name OWNER TO postgres;
 
 --
--- TOC entry 186 (class 1259 OID 25104)
 -- Name: table_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1102,7 +1115,6 @@ CREATE TABLE table_name (
 ALTER TABLE public.table_name OWNER TO postgres;
 
 --
--- TOC entry 198 (class 1259 OID 33190)
 -- Name: pm_master_table_lookup_view; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1113,7 +1125,6 @@ CREATE VIEW pm_master_table_lookup_view AS
 ALTER TABLE public.pm_master_table_lookup_view OWNER TO postgres;
 
 --
--- TOC entry 201 (class 1259 OID 33210)
 -- Name: pm_master_index_lookup_view; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1124,7 +1135,6 @@ CREATE VIEW pm_master_index_lookup_view AS
 ALTER TABLE public.pm_master_index_lookup_view OWNER TO postgres;
 
 --
--- TOC entry 202 (class 1259 OID 33214)
 -- Name: pm_index_size_view; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1135,7 +1145,6 @@ CREATE VIEW pm_index_size_view AS
 ALTER TABLE public.pm_index_size_view OWNER TO postgres;
 
 --
--- TOC entry 187 (class 1259 OID 25112)
 -- Name: table_va_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1153,7 +1162,6 @@ CREATE TABLE table_va_stat (
 ALTER TABLE public.table_va_stat OWNER TO postgres;
 
 --
--- TOC entry 188 (class 1259 OID 25115)
 -- Name: pm_last_va_stat; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1164,7 +1172,6 @@ CREATE VIEW pm_last_va_stat AS
 ALTER TABLE public.pm_last_va_stat OWNER TO postgres;
 
 --
--- TOC entry 199 (class 1259 OID 33200)
 -- Name: pm_master_function_lookup_view; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1175,7 +1182,6 @@ CREATE VIEW pm_master_function_lookup_view AS
 ALTER TABLE public.pm_master_function_lookup_view OWNER TO postgres;
 
 --
--- TOC entry 189 (class 1259 OID 25120)
 -- Name: table_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1202,7 +1208,6 @@ CREATE TABLE table_stat (
 ALTER TABLE public.table_stat OWNER TO postgres;
 
 --
--- TOC entry 190 (class 1259 OID 25123)
 -- Name: table_toast_name; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1218,7 +1223,6 @@ CREATE TABLE table_toast_name (
 ALTER TABLE public.table_toast_name OWNER TO postgres;
 
 --
--- TOC entry 191 (class 1259 OID 25130)
 -- Name: table_toast_stat; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1244,7 +1248,6 @@ CREATE TABLE table_toast_stat (
 ALTER TABLE public.table_toast_stat OWNER TO postgres;
 
 --
--- TOC entry 200 (class 1259 OID 33205)
 -- Name: pm_table_size_view; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1255,7 +1258,6 @@ CREATE VIEW pm_table_size_view AS
 ALTER TABLE public.pm_table_size_view OWNER TO postgres;
 
 --
--- TOC entry 192 (class 1259 OID 25138)
 -- Name: schema_name_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1270,8 +1272,6 @@ CREATE SEQUENCE schema_name_id_seq
 ALTER TABLE public.schema_name_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2174 (class 0 OID 0)
--- Dependencies: 192
 -- Name: schema_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -1279,7 +1279,6 @@ ALTER SEQUENCE schema_name_id_seq OWNED BY schema_name.id;
 
 
 --
--- TOC entry 193 (class 1259 OID 25140)
 -- Name: table_name_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1294,8 +1293,6 @@ CREATE SEQUENCE table_name_id_seq
 ALTER TABLE public.table_name_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2175 (class 0 OID 0)
--- Dependencies: 193
 -- Name: table_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -1303,7 +1300,6 @@ ALTER SEQUENCE table_name_id_seq OWNED BY table_name.id;
 
 
 --
--- TOC entry 194 (class 1259 OID 25142)
 -- Name: table_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1318,8 +1314,6 @@ CREATE SEQUENCE table_stat_id_seq
 ALTER TABLE public.table_stat_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2176 (class 0 OID 0)
--- Dependencies: 194
 -- Name: table_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -1327,7 +1321,6 @@ ALTER SEQUENCE table_stat_id_seq OWNED BY table_stat.id;
 
 
 --
--- TOC entry 195 (class 1259 OID 25144)
 -- Name: table_toast_name_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1342,8 +1335,6 @@ CREATE SEQUENCE table_toast_name_id_seq
 ALTER TABLE public.table_toast_name_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2177 (class 0 OID 0)
--- Dependencies: 195
 -- Name: table_toast_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -1351,7 +1342,6 @@ ALTER SEQUENCE table_toast_name_id_seq OWNED BY table_toast_name.id;
 
 
 --
--- TOC entry 196 (class 1259 OID 25146)
 -- Name: table_toast_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1366,8 +1356,6 @@ CREATE SEQUENCE table_toast_stat_id_seq
 ALTER TABLE public.table_toast_stat_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2178 (class 0 OID 0)
--- Dependencies: 196
 -- Name: table_toast_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -1375,7 +1363,6 @@ ALTER SEQUENCE table_toast_stat_id_seq OWNED BY table_toast_stat.id;
 
 
 --
--- TOC entry 197 (class 1259 OID 25148)
 -- Name: table_va_stat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1390,8 +1377,6 @@ CREATE SEQUENCE table_va_stat_id_seq
 ALTER TABLE public.table_va_stat_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2179 (class 0 OID 0)
--- Dependencies: 197
 -- Name: table_va_stat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -1399,7 +1384,6 @@ ALTER SEQUENCE table_va_stat_id_seq OWNED BY table_va_stat.id;
 
 
 --
--- TOC entry 2013 (class 2604 OID 25150)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1407,7 +1391,13 @@ ALTER TABLE ONLY bgwriter_stat ALTER COLUMN id SET DEFAULT nextval('bgwriter_sta
 
 
 --
--- TOC entry 2016 (class 2604 OID 25151)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY cluster_runtime_stat ALTER COLUMN id SET DEFAULT nextval('cluster_runtime_stat_id_seq'::regclass);
+
+
+--
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1415,7 +1405,6 @@ ALTER TABLE ONLY database_name ALTER COLUMN id SET DEFAULT nextval('database_nam
 
 
 --
--- TOC entry 2017 (class 2604 OID 25152)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1423,7 +1412,13 @@ ALTER TABLE ONLY database_stat ALTER COLUMN id SET DEFAULT nextval('database_sta
 
 
 --
--- TOC entry 2019 (class 2604 OID 25153)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY db_runtime_stat ALTER COLUMN id SET DEFAULT nextval('db_runtime_stat_id_seq'::regclass);
+
+
+--
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1431,7 +1426,6 @@ ALTER TABLE ONLY function_name ALTER COLUMN id SET DEFAULT nextval('function_nam
 
 
 --
--- TOC entry 2020 (class 2604 OID 25154)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1439,7 +1433,6 @@ ALTER TABLE ONLY function_stat ALTER COLUMN id SET DEFAULT nextval('function_sta
 
 
 --
--- TOC entry 2030 (class 2604 OID 25155)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1447,7 +1440,6 @@ ALTER TABLE ONLY host_cluster ALTER COLUMN id SET DEFAULT nextval('host_cluster_
 
 
 --
--- TOC entry 2032 (class 2604 OID 25156)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1455,7 +1447,6 @@ ALTER TABLE ONLY index_name ALTER COLUMN id SET DEFAULT nextval('index_name_id_s
 
 
 --
--- TOC entry 2033 (class 2604 OID 25157)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1463,7 +1454,6 @@ ALTER TABLE ONLY index_stat ALTER COLUMN id SET DEFAULT nextval('index_stat_id_s
 
 
 --
--- TOC entry 2035 (class 2604 OID 25158)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1471,7 +1461,6 @@ ALTER TABLE ONLY index_toast_name ALTER COLUMN id SET DEFAULT nextval('index_toa
 
 
 --
--- TOC entry 2036 (class 2604 OID 25159)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1479,7 +1468,6 @@ ALTER TABLE ONLY index_toast_stat ALTER COLUMN id SET DEFAULT nextval('index_toa
 
 
 --
--- TOC entry 2039 (class 2604 OID 25160)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1487,7 +1475,13 @@ ALTER TABLE ONLY log_time ALTER COLUMN id SET DEFAULT nextval('log_time_id_seq':
 
 
 --
--- TOC entry 2042 (class 2604 OID 25161)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY log_time_mt ALTER COLUMN id SET DEFAULT nextval('log_time_mt_id_seq'::regclass);
+
+
+--
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1495,7 +1489,6 @@ ALTER TABLE ONLY schema_name ALTER COLUMN id SET DEFAULT nextval('schema_name_id
 
 
 --
--- TOC entry 2045 (class 2604 OID 25162)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1503,7 +1496,6 @@ ALTER TABLE ONLY table_name ALTER COLUMN id SET DEFAULT nextval('table_name_id_s
 
 
 --
--- TOC entry 2047 (class 2604 OID 25163)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1511,7 +1503,6 @@ ALTER TABLE ONLY table_stat ALTER COLUMN id SET DEFAULT nextval('table_stat_id_s
 
 
 --
--- TOC entry 2049 (class 2604 OID 25164)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1519,7 +1510,6 @@ ALTER TABLE ONLY table_toast_name ALTER COLUMN id SET DEFAULT nextval('table_toa
 
 
 --
--- TOC entry 2050 (class 2604 OID 25165)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1527,7 +1517,6 @@ ALTER TABLE ONLY table_toast_stat ALTER COLUMN id SET DEFAULT nextval('table_toa
 
 
 --
--- TOC entry 2046 (class 2604 OID 25166)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1535,7 +1524,6 @@ ALTER TABLE ONLY table_va_stat ALTER COLUMN id SET DEFAULT nextval('table_va_sta
 
 
 --
--- TOC entry 2052 (class 2606 OID 25168)
 -- Name: bgwriter_stat_hc_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1544,7 +1532,6 @@ ALTER TABLE ONLY bgwriter_stat
 
 
 --
--- TOC entry 2054 (class 2606 OID 25170)
 -- Name: bgwriter_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1553,7 +1540,14 @@ ALTER TABLE ONLY bgwriter_stat
 
 
 --
--- TOC entry 2056 (class 2606 OID 25172)
+-- Name: cluster_runtime_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY cluster_runtime_stat
+    ADD CONSTRAINT cluster_runtime_stat_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: database_name_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1562,7 +1556,6 @@ ALTER TABLE ONLY database_name
 
 
 --
--- TOC entry 2058 (class 2606 OID 25174)
 -- Name: database_stat_dn_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1571,7 +1564,6 @@ ALTER TABLE ONLY database_stat
 
 
 --
--- TOC entry 2060 (class 2606 OID 25176)
 -- Name: database_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1580,7 +1572,14 @@ ALTER TABLE ONLY database_stat
 
 
 --
--- TOC entry 2072 (class 2606 OID 25178)
+-- Name: db_runtime_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY db_runtime_stat
+    ADD CONSTRAINT db_runtime_stat_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: dbhost_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1589,7 +1588,6 @@ ALTER TABLE ONLY host_cluster
 
 
 --
--- TOC entry 2062 (class 2606 OID 25180)
 -- Name: enum_sslmode_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1598,7 +1596,6 @@ ALTER TABLE ONLY enum_sslmode
 
 
 --
--- TOC entry 2064 (class 2606 OID 25182)
 -- Name: enum_track_functions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1607,7 +1604,6 @@ ALTER TABLE ONLY enum_track_functions
 
 
 --
--- TOC entry 2066 (class 2606 OID 25184)
 -- Name: function_name_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1616,7 +1612,6 @@ ALTER TABLE ONLY function_name
 
 
 --
--- TOC entry 2068 (class 2606 OID 25186)
 -- Name: function_stat_fn_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1625,7 +1620,6 @@ ALTER TABLE ONLY function_stat
 
 
 --
--- TOC entry 2070 (class 2606 OID 25188)
 -- Name: function_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1634,7 +1628,6 @@ ALTER TABLE ONLY function_stat
 
 
 --
--- TOC entry 2074 (class 2606 OID 25190)
 -- Name: host_cluster_fqdn_param_port_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1643,7 +1636,6 @@ ALTER TABLE ONLY host_cluster
 
 
 --
--- TOC entry 2076 (class 2606 OID 25192)
 -- Name: host_cluster_ip_address_pg_data_path_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1652,7 +1644,6 @@ ALTER TABLE ONLY host_cluster
 
 
 --
--- TOC entry 2078 (class 2606 OID 25194)
 -- Name: host_cluster_param_ip_address_param_port_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1661,7 +1652,6 @@ ALTER TABLE ONLY host_cluster
 
 
 --
--- TOC entry 2080 (class 2606 OID 25196)
 -- Name: index_name_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1670,7 +1660,6 @@ ALTER TABLE ONLY index_name
 
 
 --
--- TOC entry 2083 (class 2606 OID 25198)
 -- Name: index_stat_in_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1679,7 +1668,6 @@ ALTER TABLE ONLY index_stat
 
 
 --
--- TOC entry 2085 (class 2606 OID 25200)
 -- Name: index_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1688,7 +1676,6 @@ ALTER TABLE ONLY index_stat
 
 
 --
--- TOC entry 2087 (class 2606 OID 25202)
 -- Name: index_toast_name_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1697,7 +1684,6 @@ ALTER TABLE ONLY index_toast_name
 
 
 --
--- TOC entry 2089 (class 2606 OID 25204)
 -- Name: index_toast_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1706,7 +1692,6 @@ ALTER TABLE ONLY index_toast_stat
 
 
 --
--- TOC entry 2091 (class 2606 OID 25206)
 -- Name: index_toast_stat_tn_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1715,7 +1700,14 @@ ALTER TABLE ONLY index_toast_stat
 
 
 --
--- TOC entry 2094 (class 2606 OID 25208)
+-- Name: log_time_mt_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY log_time_mt
+    ADD CONSTRAINT log_time_mt_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: log_time_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1724,7 +1716,6 @@ ALTER TABLE ONLY log_time
 
 
 --
--- TOC entry 2097 (class 2606 OID 25210)
 -- Name: schema_name_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1733,7 +1724,6 @@ ALTER TABLE ONLY schema_name
 
 
 --
--- TOC entry 2099 (class 2606 OID 25212)
 -- Name: table_name_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1742,7 +1732,6 @@ ALTER TABLE ONLY table_name
 
 
 --
--- TOC entry 2105 (class 2606 OID 25214)
 -- Name: table_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1751,7 +1740,6 @@ ALTER TABLE ONLY table_stat
 
 
 --
--- TOC entry 2107 (class 2606 OID 25216)
 -- Name: table_stat_tn_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1760,7 +1748,6 @@ ALTER TABLE ONLY table_stat
 
 
 --
--- TOC entry 2109 (class 2606 OID 25218)
 -- Name: table_toast_name_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1769,7 +1756,6 @@ ALTER TABLE ONLY table_toast_name
 
 
 --
--- TOC entry 2111 (class 2606 OID 25220)
 -- Name: table_toast_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1778,7 +1764,6 @@ ALTER TABLE ONLY table_toast_stat
 
 
 --
--- TOC entry 2113 (class 2606 OID 25222)
 -- Name: table_toast_stat_tn_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1787,7 +1772,6 @@ ALTER TABLE ONLY table_toast_stat
 
 
 --
--- TOC entry 2101 (class 2606 OID 25224)
 -- Name: table_va_stat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1796,7 +1780,6 @@ ALTER TABLE ONLY table_va_stat
 
 
 --
--- TOC entry 2103 (class 2606 OID 25226)
 -- Name: table_va_stat_tn_id_time_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1805,7 +1788,6 @@ ALTER TABLE ONLY table_va_stat
 
 
 --
--- TOC entry 2081 (class 1259 OID 25227)
 -- Name: index_name_tn_id_idx_name_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1813,7 +1795,6 @@ CREATE INDEX index_name_tn_id_idx_name_idx ON index_name USING btree (tn_id, idx
 
 
 --
--- TOC entry 2092 (class 1259 OID 25228)
 -- Name: log_time_hour_truncate_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1821,7 +1802,13 @@ CREATE UNIQUE INDEX log_time_hour_truncate_idx ON log_time USING btree (hour_tru
 
 
 --
--- TOC entry 2095 (class 1259 OID 25229)
+-- Name: log_time_mt_minute_truncate_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX log_time_mt_minute_truncate_idx ON log_time_mt USING btree (minute_truncate);
+
+
+--
 -- Name: schema_name_dn_id_sch_name_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1829,7 +1816,6 @@ CREATE INDEX schema_name_dn_id_sch_name_idx ON schema_name USING btree (dn_id, s
 
 
 --
--- TOC entry 2143 (class 2620 OID 25230)
 -- Name: remove_databases_cascade; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1837,7 +1823,6 @@ CREATE TRIGGER remove_databases_cascade AFTER UPDATE ON host_cluster FOR EACH RO
 
 
 --
--- TOC entry 2147 (class 2620 OID 25231)
 -- Name: remove_functions_cascade; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1845,7 +1830,6 @@ CREATE TRIGGER remove_functions_cascade AFTER UPDATE ON schema_name FOR EACH ROW
 
 
 --
--- TOC entry 2153 (class 2620 OID 25232)
 -- Name: remove_index_cascade; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1853,7 +1837,6 @@ CREATE TRIGGER remove_index_cascade AFTER UPDATE ON table_toast_name FOR EACH RO
 
 
 --
--- TOC entry 2150 (class 2620 OID 25233)
 -- Name: remove_indexes_cascade; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1861,7 +1844,6 @@ CREATE TRIGGER remove_indexes_cascade AFTER UPDATE ON table_name FOR EACH ROW EX
 
 
 --
--- TOC entry 2139 (class 2620 OID 25234)
 -- Name: remove_schemas_cascade; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1869,7 +1851,6 @@ CREATE TRIGGER remove_schemas_cascade AFTER UPDATE ON database_name FOR EACH ROW
 
 
 --
--- TOC entry 2148 (class 2620 OID 25235)
 -- Name: remove_tables_cascade; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1877,7 +1858,6 @@ CREATE TRIGGER remove_tables_cascade AFTER UPDATE ON schema_name FOR EACH ROW EX
 
 
 --
--- TOC entry 2151 (class 2620 OID 25236)
 -- Name: remove_toast_cascade; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1885,7 +1865,6 @@ CREATE TRIGGER remove_toast_cascade AFTER UPDATE ON table_name FOR EACH ROW EXEC
 
 
 --
--- TOC entry 2144 (class 2620 OID 25237)
 -- Name: restrict_to_alive; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1893,7 +1872,6 @@ CREATE TRIGGER restrict_to_alive BEFORE UPDATE ON host_cluster FOR EACH ROW EXEC
 
 
 --
--- TOC entry 2140 (class 2620 OID 25238)
 -- Name: restrict_to_alive; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1901,7 +1879,6 @@ CREATE TRIGGER restrict_to_alive BEFORE UPDATE ON database_name FOR EACH ROW EXE
 
 
 --
--- TOC entry 2149 (class 2620 OID 25239)
 -- Name: restrict_to_alive; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1909,7 +1886,6 @@ CREATE TRIGGER restrict_to_alive BEFORE UPDATE ON schema_name FOR EACH ROW EXECU
 
 
 --
--- TOC entry 2152 (class 2620 OID 25240)
 -- Name: restrict_to_alive; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1917,7 +1893,6 @@ CREATE TRIGGER restrict_to_alive BEFORE UPDATE ON table_name FOR EACH ROW EXECUT
 
 
 --
--- TOC entry 2142 (class 2620 OID 25241)
 -- Name: restrict_to_alive; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1925,7 +1900,6 @@ CREATE TRIGGER restrict_to_alive BEFORE UPDATE ON function_name FOR EACH ROW EXE
 
 
 --
--- TOC entry 2145 (class 2620 OID 25242)
 -- Name: restrict_to_alive; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1933,7 +1907,6 @@ CREATE TRIGGER restrict_to_alive BEFORE UPDATE ON index_name FOR EACH ROW EXECUT
 
 
 --
--- TOC entry 2146 (class 2620 OID 25243)
 -- Name: restrict_to_alive; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1941,7 +1914,6 @@ CREATE TRIGGER restrict_to_alive BEFORE UPDATE ON index_toast_name FOR EACH ROW 
 
 
 --
--- TOC entry 2154 (class 2620 OID 25244)
 -- Name: restrict_to_alive; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1949,7 +1921,6 @@ CREATE TRIGGER restrict_to_alive BEFORE UPDATE ON table_toast_name FOR EACH ROW 
 
 
 --
--- TOC entry 2141 (class 2620 OID 25245)
 -- Name: suspend_schemas_cascade; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1957,7 +1928,6 @@ CREATE TRIGGER suspend_schemas_cascade AFTER UPDATE ON database_name FOR EACH RO
 
 
 --
--- TOC entry 2114 (class 2606 OID 25246)
 -- Name: bgwriter_stat_hc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1966,7 +1936,6 @@ ALTER TABLE ONLY bgwriter_stat
 
 
 --
--- TOC entry 2115 (class 2606 OID 25251)
 -- Name: bgwriter_stat_time_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1975,7 +1944,22 @@ ALTER TABLE ONLY bgwriter_stat
 
 
 --
--- TOC entry 2116 (class 2606 OID 25256)
+-- Name: cluster_runtime_stat_hc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY cluster_runtime_stat
+    ADD CONSTRAINT cluster_runtime_stat_hc_id_fkey FOREIGN KEY (hc_id) REFERENCES host_cluster(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cluster_runtime_stat_time_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY cluster_runtime_stat
+    ADD CONSTRAINT cluster_runtime_stat_time_id_fkey FOREIGN KEY (time_id) REFERENCES log_time_mt(id) ON DELETE CASCADE;
+
+
+--
 -- Name: database_name_hc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1984,7 +1968,6 @@ ALTER TABLE ONLY database_name
 
 
 --
--- TOC entry 2117 (class 2606 OID 25261)
 -- Name: database_stat_dn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1993,7 +1976,6 @@ ALTER TABLE ONLY database_stat
 
 
 --
--- TOC entry 2118 (class 2606 OID 25266)
 -- Name: database_stat_time_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2002,7 +1984,22 @@ ALTER TABLE ONLY database_stat
 
 
 --
--- TOC entry 2119 (class 2606 OID 25271)
+-- Name: db_runtime_stat_dn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY db_runtime_stat
+    ADD CONSTRAINT db_runtime_stat_dn_id_fkey FOREIGN KEY (dn_id) REFERENCES database_name(id) ON DELETE CASCADE;
+
+
+--
+-- Name: db_runtime_stat_time_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY db_runtime_stat
+    ADD CONSTRAINT db_runtime_stat_time_id_fkey FOREIGN KEY (time_id) REFERENCES log_time_mt(id) ON DELETE CASCADE;
+
+
+--
 -- Name: function_name_sn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2011,7 +2008,6 @@ ALTER TABLE ONLY function_name
 
 
 --
--- TOC entry 2120 (class 2606 OID 25276)
 -- Name: function_stat_fn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2020,7 +2016,6 @@ ALTER TABLE ONLY function_stat
 
 
 --
--- TOC entry 2121 (class 2606 OID 25281)
 -- Name: function_stat_time_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2029,7 +2024,6 @@ ALTER TABLE ONLY function_stat
 
 
 --
--- TOC entry 2122 (class 2606 OID 25286)
 -- Name: host_cluster_sslmode_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2038,7 +2032,6 @@ ALTER TABLE ONLY host_cluster
 
 
 --
--- TOC entry 2123 (class 2606 OID 25291)
 -- Name: host_cluster_track_function_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2047,7 +2040,6 @@ ALTER TABLE ONLY host_cluster
 
 
 --
--- TOC entry 2125 (class 2606 OID 25296)
 -- Name: index_basic_stat_in_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2056,7 +2048,6 @@ ALTER TABLE ONLY index_stat
 
 
 --
--- TOC entry 2126 (class 2606 OID 25301)
 -- Name: index_basic_stat_time_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2065,7 +2056,6 @@ ALTER TABLE ONLY index_stat
 
 
 --
--- TOC entry 2124 (class 2606 OID 25306)
 -- Name: index_name_tn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2074,7 +2064,6 @@ ALTER TABLE ONLY index_name
 
 
 --
--- TOC entry 2127 (class 2606 OID 25311)
 -- Name: index_toast_name_tn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2083,7 +2072,6 @@ ALTER TABLE ONLY index_toast_name
 
 
 --
--- TOC entry 2128 (class 2606 OID 25316)
 -- Name: index_toast_stat_time_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2092,7 +2080,6 @@ ALTER TABLE ONLY index_toast_stat
 
 
 --
--- TOC entry 2129 (class 2606 OID 25321)
 -- Name: index_toast_stat_tn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2101,7 +2088,6 @@ ALTER TABLE ONLY index_toast_stat
 
 
 --
--- TOC entry 2130 (class 2606 OID 25326)
 -- Name: schema_name_dn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2110,7 +2096,6 @@ ALTER TABLE ONLY schema_name
 
 
 --
--- TOC entry 2134 (class 2606 OID 25331)
 -- Name: table_basic_stat_time_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2119,7 +2104,6 @@ ALTER TABLE ONLY table_stat
 
 
 --
--- TOC entry 2135 (class 2606 OID 25336)
 -- Name: table_basic_stat_tn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2128,7 +2112,6 @@ ALTER TABLE ONLY table_stat
 
 
 --
--- TOC entry 2131 (class 2606 OID 25341)
 -- Name: table_name_sn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2137,7 +2120,6 @@ ALTER TABLE ONLY table_name
 
 
 --
--- TOC entry 2136 (class 2606 OID 25346)
 -- Name: table_toast_name_tn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2146,7 +2128,6 @@ ALTER TABLE ONLY table_toast_name
 
 
 --
--- TOC entry 2137 (class 2606 OID 25351)
 -- Name: table_toast_stat_time_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2155,7 +2136,6 @@ ALTER TABLE ONLY table_toast_stat
 
 
 --
--- TOC entry 2138 (class 2606 OID 25356)
 -- Name: table_toast_stat_tn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2164,7 +2144,6 @@ ALTER TABLE ONLY table_toast_stat
 
 
 --
--- TOC entry 2132 (class 2606 OID 25361)
 -- Name: table_va_stat_time_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2173,7 +2152,6 @@ ALTER TABLE ONLY table_va_stat
 
 
 --
--- TOC entry 2133 (class 2606 OID 25366)
 -- Name: table_va_stat_tn_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2182,8 +2160,6 @@ ALTER TABLE ONLY table_va_stat
 
 
 --
--- TOC entry 2161 (class 0 OID 0)
--- Dependencies: 6
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
 
@@ -2192,8 +2168,6 @@ REVOKE ALL ON SCHEMA public FROM postgres;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
-
--- Completed on 2013-09-06 16:24:32 PDT
 
 --
 -- PostgreSQL database dump complete
