@@ -87,6 +87,7 @@ class PgmonDaemon(Daemon):
 			dn.runtime_stat(ltm_id)
 			dn.discover_schemas()
 			if (current_time_minute % settings.regular_stat_interval) == 0:
+			    dn.stat(lt_id)
 			    for sn in dn.get_dependants(True):
 				sn=SchemaName(conn,db_dsn,sn)
 				sn.discover_tables()
@@ -119,4 +120,3 @@ class PgmonDaemon(Daemon):
 	    delay_to_next=60 * settings.runtime_stat_interval - self._get_current_time()+10
 	    logger.debug("Iteration Done. Minute {0} Next delay {1}".format(current_time_minute,delay_to_next))
 	    time.sleep(delay_to_next)
-#	    time.sleep(60)

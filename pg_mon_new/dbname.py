@@ -31,10 +31,10 @@ pg_stat_get_db_tuples_deleted(oid) AS tup_deleted
 FROM pg_database
 WHERE oid ={0}""".format(self.db_fields['obj_oid'])
 	    self.runtime_stat_query="""SELECT
-MAX(current_timestamp-query_start) AS max_interval_query_dur,
-AVG(current_timestamp-query_start) AS avg_interval_query_dur,
-CAST(EXTRACT(epoch FROM MAX(current_timestamp-query_start)) AS INTEGER) AS max_sec_query_dur,
-CAST(EXTRACT(epoch FROM AVG(current_timestamp-query_start)) AS INTEGER) AS avg_sec_query_dur,
+COALESCE(MAX(current_timestamp-query_start),now()-now()) AS max_interval_query_dur,
+COALESCE(AVG(current_timestamp-query_start),now()-now()) AS avg_interval_query_dur,
+CAST(COALESCE(EXTRACT(epoch FROM MAX(current_timestamp-query_start)),0) AS INTEGER) AS max_sec_query_dur,
+CAST(COALESCE(EXTRACT(epoch FROM AVG(current_timestamp-query_start)),0) AS INTEGER) AS avg_sec_query_dur,
 MAX(age(datfrozenxid)) AS tx_max_age
 FROM pg_stat_activity psa
 JOIN pg_database pd ON psa.datid=pd.oid

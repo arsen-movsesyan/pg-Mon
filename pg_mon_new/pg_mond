@@ -1,4 +1,4 @@
-#!/usr/local/bin/python -B
+#!/usr/bin/python -B
 
 import pg_mon_daemon
 import sys
