@@ -31,9 +31,14 @@ class PgmonDaemon(Daemon):
 	super(PgmonDaemon,self).__init__(pidfile,stdin,stdout,stderr)
 
     def _sig_term(self,signum,frame):
-#	self.__del__()
-	logger.debug("Signal Number {0} received. Exiting...".format(signum))
-	sys.exit(0)
+	logger.debug("Signal Number {0} received".format(signum))
+	if signum == signal.SIGTERM:
+	    logger.debug("Exiting...")
+	    sys.exit(0)
+#	if signum == signal.SIGHUP:
+#	    logger.debug("Reloading...")
+#	    reload(settings)
+
 
     def _sig_reload(self,signum,frame):
 	logger.debug("Signal Number {0} received. Reloading config...".format(signum))
