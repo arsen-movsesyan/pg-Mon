@@ -25,7 +25,7 @@ LOGGING = {
     'handlers': {
 	'main_file_handler': {
 	    'class': 'logging.handlers.RotatingFileHandler',
-	    'level': 'DEBUG',
+	    'level': 'WARNING',
 	    'formatter': 'simple',
 	    'filename': '/usr/home/arsen/work/pg-Mon/pg_mon_new/pg_mon.log',
 	    'mode': 'a',

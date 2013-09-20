@@ -1,4 +1,4 @@
-#!/usr/local/bin/python -B
+#!/usr/bin/env python -B
 
 
 import settings
