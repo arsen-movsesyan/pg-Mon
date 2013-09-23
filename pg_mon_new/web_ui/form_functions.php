@@ -6,11 +6,13 @@ function add_host_form() {
 <form name=add_host_form method=POST action=index.php>
 <table border=0>
     <tr>
-	<td>Host Name</td>
+	<td>Host Name <font color=red>*</font></td>
 	<td><input type=text name=in_host_name required></td>
     </tr><tr>
-	<td>IP Address</td>
+	<td>IP Address <font color=red>*</font></td>
 	<td><input type=text name=in_ip_address required></td>
+    </tr><tr>
+	<td colspan=2><hr width=60%></td>
     </tr><tr>
 	<td>Username</td>
 	<td><input type=text name=in_username placeholder=postgres></td>
@@ -19,13 +21,13 @@ function add_host_form() {
 	<td><input type=pasword name=in_password></td>
     </tr><tr>
 	<td>Maintenance DB Name</td>
-	<td><input name-in_db_name placeholder=postgres></td>
+	<td><input name=in_db_name placeholder=postgres></td>
     </tr><tr>
-	<td>Is Masetr</td>
-	<td><input type=checkbox name=in_is_master checked></td>
+	<td>Is Slave</td>
+	<td><input type=checkbox name=in_is_slave> (Default Master)</td>
     </tr><tr>
-	<td>Observable</td>
-	<td><input type=checkbox name=in_observable checked></td>
+	<td>Suspend</td>
+	<td><input type=checkbox name=in_suspended> (Default Observable)</td>
     </tr><tr>
 	<td>SSL Mode</td>
 	<td><select name=in_ssl_mode>
@@ -54,6 +56,8 @@ echo $option_string;
     </tr><tr>
 	<td valign=top>Description</td>
 	<td><textarea name=in_description></textarea></td>
+    </tr><tr>
+	<td  colspan=2><hr width=60%></td>
     </tr><tr align=center>
 	<td><input type=submit name=add_host_submit value=Submit></td>
 	<td><input type=reset value=Reset></td>

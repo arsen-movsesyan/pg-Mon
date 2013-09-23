@@ -47,9 +47,9 @@ class GenericObject {
     }
 
     public function get_all_fields() {
-	if ($this->loaded == 0) {
-	    $this->load();
-	}
+#	if ($this->loaded == 0) {
+#	    $this->load();
+#	}
 	return $this->database_fields;
     }
 
