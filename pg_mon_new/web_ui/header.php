@@ -2,15 +2,10 @@
 <head>
 <title>Product Management</title>
 </head>
-<body>
+<body vlink=blue>
 <?
 function _debug($text) {
     echo "!!! ".$text." !!!<br>";
 }
-
-
-#require_once("classes/class_InputObject.php");
-#require_once("classes/class_InitQueue.php");
-#require_once("classes/class_ObjectFile.php");
-
+session_start();
 ?>

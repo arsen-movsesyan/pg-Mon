@@ -1,25 +1,35 @@
 <?
 include_once("header.php");
-
-#define("FILE_LOCATION",'/usr/home/arsen/work/LMS/common/file_location/');
-
-#if (!empty($_POST)) {
-
-#}
-
+include_once("form_functions.php");
 ?>
 <center><h3>Pg-Mon</h3></center>
-<table border=1 width=100%>
+
+<table border=0 width=100%>
     <tr align=center bgcolor=#CCCCCC>
-	<td width=20%><b>Hosts<b></td>
+	<td width=14%><b>Hosts<b></td>
 	<td><b>Results<b></td>
     </tr>
     <tr>
-	<td>
+	<td valign=top>
 <?
 include_once("dispatcher.php");
 ?>	</td>
-	<td>Result</td>
+	<td valign=top>
+<?
+if (isset($_GET['action'])) {
+    if ($_GET['action'] == 'add') {
+	eval("add_".$_GET['object']."_form();");
+    }
+    if ($_GET['action'] == 'stat') {
+	$_SESSION['action']='stat';
+	$_SESSION['host_id']=$_GET['host_id'];
+	include_once("result_page.php");
+    }
+} else {
+    echo "Welcome to pg-Mon";
+}
+?>
+	</td>
     </tr>
 </table>
 
