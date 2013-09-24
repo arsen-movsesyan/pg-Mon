@@ -26,6 +26,8 @@ class GOpm extends GenericObject {
 
     public function get_stat($start=1,$end=0) {
 	$query=sprintf($this->stat_query,$start,$end);
+#	echo $query."<br>";
+#	return;
 	$sql=new SQL();
 	$sql->select_c($query);
 	$stat=$sql->get_result();

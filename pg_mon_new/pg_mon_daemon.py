@@ -101,34 +101,35 @@ class PgmonDaemon(Daemon):
 			dn=DatabaseName(conn,db_dsn,dbs['id'])
 			dn.runtime_stat(ltm_id)
 			dn.discover_schemas()
-			dn.stat(lt_id)
-			for sn in dn.get_dependants(True):
-			    sn=SchemaName(conn,db_dsn,sn)
-			    sn.discover_tables()
-			    sn.discover_functions()
-			    for tbl_id in sn.get_tables():
-				tn=TableName(conn,db_dsn,tbl_id)
-				tn.stat(lt_id)
-				tn.va_stat(lt_id)
-				tn.discover_indexes()
-				for ind_id in tn.get_dependants():
-				    ind=IndexName(conn,db_dsn,ind_id)
-				    ind.stat(lt_id)
+			if regular_stat:
+			    dn.stat(lt_id)
+			    for sn in dn.get_dependants(True):
+				sn=SchemaName(conn,db_dsn,sn)
+				sn.discover_tables()
+				sn.discover_functions()
+				for tbl_id in sn.get_tables():
+				    tn=TableName(conn,db_dsn,tbl_id)
+				    tn.stat(lt_id)
+				    tn.va_stat(lt_id)
+				    tn.discover_indexes()
+				    for ind_id in tn.get_dependants():
+					ind=IndexName(conn,db_dsn,ind_id)
+					ind.stat(lt_id)
 					
-				tn.discover_toast()
-				toast_id=tn.get_toast_id()
-				if toast_id:
-				    ttn=TableToastName(conn,db_dsn,toast_id)
-				    ttn.stat(lt_id)
-				    ttn.discover_index()
-				    tin=IndexToastName(conn,db_dsn,ttn.get_tindex_id())
-				    tin.stat(lt_id)
+				    tn.discover_toast()
+				    toast_id=tn.get_toast_id()
+				    if toast_id:
+					ttn=TableToastName(conn,db_dsn,toast_id)
+					ttn.stat(lt_id)
+					ttn.discover_index()
+					tin=IndexToastName(conn,db_dsn,ttn.get_tindex_id())
+					tin.stat(lt_id)
 					
-			    if hc.get_track_function() != 'none':
-				for fnc_id in sn.get_functions():
-				    func=FunctionName(conn,db_dsn,fnc_id)
-				    func.stat(lt_id)
-		    lt.reset_id()
+				if hc.get_track_function() != 'none':
+				    for fnc_id in sn.get_functions():
+					func=FunctionName(conn,db_dsn,fnc_id)
+					func.stat(lt_id)
+			lt.reset_id()
 	    ltm.reset_id()
 
 	    delay_to_next=60 * settings.runtime_stat_interval - self._get_current_time()+10

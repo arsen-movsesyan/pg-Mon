@@ -9,13 +9,19 @@ $header_string="Host <b>".$hc->get_field('hostname')."</b>";
 
 $intern_string="<table border=0><tr bgcolor=#CCCCCC><td colspan=2 align=center><b>Last Hour Statistic</b></td></tr>";
 $hc_stat=$hc->get_stat();
-foreach (array_keys($hc_stat[0]) as $key) {
-    if ($key == 'hostname' or $key == 'ip_address' or $key == 'is_master') {
-	continue;
+
+if (count($hc_stat) == 0) {
+    $intern_string.="<tr><td colspan=2>Statistic for last hour is not available</td></tr>";
+} else {
+    foreach (array_keys($hc_stat[0]) as $key) {
+	if ($key == 'hostname' or $key == 'ip_address' or $key == 'is_master') {
+	    continue;
+	}
+	$intern_string.="<tr><td>".$key."</td><td>".$hc_stat[0][$key]."</td></tr>";
     }
-    $intern_string.="<tr><td>".$key."</td><td>".$hc_stat[0][$key]."</td></tr>";
 }
 $intern_string.="</table>";
+
 if (isset($_SESSION['db_id'])) {
     $dn=new DatabaseName($_SESSION['db_id']);
     $header_string.=" Database <b>".$dn->get_field('db_name')."</b>";

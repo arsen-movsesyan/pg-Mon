@@ -5,6 +5,7 @@ class DatabaseName extends GenericObject {
 
     public function DatabaseName($in_id=false) {
 	parent::initialize('database_name',$in_id);
+	
     }
 
 }
