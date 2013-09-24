@@ -6,7 +6,7 @@ class GOpm extends GenericObject {
     protected $depend_obj;
     protected $reference_field;
     protected $dependant_ids=array();
-    protected $stat_obj;
+    protected $stat_query;
 
 
     public function __construct() {
@@ -24,15 +24,12 @@ class GOpm extends GenericObject {
 	return $this->dependant_ids;
     }
 
-    public function get_stat($stat_name,$start=1,$end=0) {
-	$self_table=preg_split('_',$this->get_table());
-	if (get_class($this) == 'HostCluster') {
-	    $self_table[0]='bgwriter';
-	}
-	$stat_object=ucwords($self_table[0])."Stat'";
-	$this->stat_obj=new GenericObjectCollection();
-	eval($stat_name."(".$this->get_id().",".$start.",".$end.")");
-	return $this->stat_obj;
+    public function get_stat($start=1,$end=0) {
+	$query=sprintf($this->stat_query,$start,$end);
+	$sql=new SQL();
+	$sql->select_c($query);
+	$stat=$sql->get_result();
+	return $stat;
     }
 }
 
