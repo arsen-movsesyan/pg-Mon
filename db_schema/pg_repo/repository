@@ -1,0 +1,36 @@
+upd_1="CREATE OR REPLACE VIEW pm_master_db_lookup_view AS
+SELECT hc.id AS host_id, hc.hostname, dn.id AS db_id, dn.db_name
+FROM host_cluster hc
+JOIN database_name dn ON hc.id = dn.hc_id
+WHERE hc.is_master AND hc.observable AND dn.observable"
+
+upd_2="DROP FUNCTION pm_database_stat_diff(integer, integer);
+
+CREATE OR REPLACE FUNCTION pm_database_stat_diff(IN first integer DEFAULT 1, IN last integer DEFAULT 0)
+RETURNS TABLE(db_id integer, db_size bigint, xact_commit bigint, xact_rollback bigint,blks_fetch bigint, blks_hit bigint, tup_returned bigint, tup_fetched bigint, tup_inserted bigint,tup_updated bigint, tup_deleted bigint) 
+AS
+$BODY$
+SELECT
+dn.id AS db_id,
+last.db_size - first.db_size AS db_size,
+last.xact_commit - first.xact_commit AS xact_commit,
+last.xact_rollback - first.xact_rollback AS xact_rollback,
+last.blks_fetch - first.blks_fetch AS blks_fetch,
+last.blks_hit - first.blks_hit AS blks_hit,
+last.tup_returned - first.tup_returned AS tup_returned,
+last.tup_fetched - first.tup_fetched AS tup_fetched,
+last.tup_inserted - first.tup_inserted AS tup_inserted,
+last.tup_updated - first.tup_updated AS tup_updated,
+last.tup_deleted - first.tup_deleted AS tup_deleted
+FROM host_cluster hc
+JOIN database_name dn ON hc.id = dn.hc_id
+JOIN database_stat first ON dn.id = first.dn_id
+JOIN database_stat last ON dn.id = last.dn_id
+JOIN log_time a ON a.id = first.time_id
+JOIN log_time b ON b.id = last.time_id
+WHERE dn.alive
+AND dn.observable
+AND a.id=(SELECT MIN(id) FROM log_time WHERE hour_truncate >= date_trunc('hour',now()- $1 * interval '1 hour'))
+AND b.id=(SELECT MIN(id) FROM log_time WHERE hour_truncate >= date_trunc('hour',now()- $2 * interval '1 hour'));
+$BODY$
+LANGUAGE sql"

@@ -30,6 +30,10 @@ if (isset($_GET['action'])) {
 	if ($_GET['level'] == 'db') {
 	    $_SESSION['db_id']=$_GET['db_id'];
 	}
+	if ($_GET['level'] == 'sch') {
+	    $_SESSION['sch_id']=$_GET['sch_id'];
+	}
+	$_SESSION['level']=$_GET['level'];
 	include_once("result_page.php");
     }
 
