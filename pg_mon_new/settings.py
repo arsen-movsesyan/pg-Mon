@@ -27,7 +27,7 @@ LOGGING = {
 	    'class': 'logging.handlers.RotatingFileHandler',
 	    'level': 'WARNING',
 	    'formatter': 'simple',
-	    'filename': '/usr/home/arsen/work/pg-Mon/pg_mon_new/pg_mon.log',
+	    'filename': '/home/arsen/work/pg-Mon/pg_mon_new/pg_mon.log',
 	    'mode': 'a',
 	    'maxBytes': 1048576,
 	    'backupCount': 5,

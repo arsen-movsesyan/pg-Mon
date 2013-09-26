@@ -1,0 +1,1015 @@
+2013-09-15 18:19:51,458 - DEBUG - stat_daemon| Starting Stat daemon
+2013-09-15 18:19:51,459 - DEBUG - stat_daemon| Iteration in "run"
+2013-09-15 18:19:55,469 - DEBUG - stat_daemon| Iteration in "run"
+2013-09-15 18:19:59,473 - DEBUG - stat_daemon| Iteration in "run"
+2013-09-15 18:20:01,327 - DEBUG - stat_daemon| Signal Number 15 received. Exiting...
+2013-09-15 18:57:33,090 - DEBUG - stat_daemon| Starting Stat daemon
+2013-09-15 18:57:37,995 - DEBUG - stat_daemon| Signal Number 15 received. Exiting...
+2013-09-15 18:57:51,938 - DEBUG - stat_daemon| Starting Stat daemon
+2013-09-15 18:57:51,939 - DEBUG - stat_daemon| Iteration in "run". Second 51
+2013-09-15 18:57:53,947 - DEBUG - stat_daemon| Iteration in "run". Second 53
+2013-09-15 18:57:55,949 - DEBUG - stat_daemon| Iteration in "run". Second 55
+2013-09-15 18:57:57,951 - DEBUG - stat_daemon| Iteration in "run". Second 57
+2013-09-15 18:57:58,386 - DEBUG - stat_daemon| Signal Number 15 received. Exiting...
+2013-09-15 18:58:12,586 - DEBUG - stat_daemon| Starting Stat daemon
+2013-09-15 18:58:12,587 - DEBUG - stat_daemon| Iteration in "run". Second 12
+2013-09-15 18:58:14,591 - DEBUG - stat_daemon| Iteration in "run". Second 14
+2013-09-15 18:58:16,394 - DEBUG - stat_daemon| Signal Number 15 received. Exiting...
+2013-09-15 18:58:39,998 - DEBUG - stat_daemon| Starting Stat daemon
+2013-09-15 18:58:49,008 - DEBUG - stat_daemon| Iteration in "run". Second 49
+2013-09-15 18:58:51,011 - DEBUG - stat_daemon| Iteration in "run". Second 51
+2013-09-15 18:58:53,013 - DEBUG - stat_daemon| Iteration in "run". Second 53
+2013-09-15 18:58:55,016 - DEBUG - stat_daemon| Iteration in "run". Second 55
+2013-09-15 18:58:57,018 - DEBUG - stat_daemon| Iteration in "run". Second 57
+2013-09-15 18:58:57,231 - DEBUG - stat_daemon| Signal Number 15 received. Exiting...
+2013-09-15 18:59:12,594 - DEBUG - stat_daemon| Starting Stat daemon
+2013-09-15 18:59:12,605 - DEBUG - stat_daemon| Second 12
+2013-09-15 18:59:14,611 - DEBUG - stat_daemon| Iteration in "run". Second 14
+2013-09-15 18:59:16,614 - DEBUG - stat_daemon| Iteration in "run". Second 16
+2013-09-15 18:59:18,617 - DEBUG - stat_daemon| Iteration in "run". Second 18
+2013-09-15 18:59:20,619 - DEBUG - stat_daemon| Iteration in "run". Second 20
+2013-09-15 18:59:22,622 - DEBUG - stat_daemon| Iteration in "run". Second 22
+2013-09-15 18:59:24,624 - DEBUG - stat_daemon| Iteration in "run". Second 24
+2013-09-15 18:59:26,073 - DEBUG - stat_daemon| Signal Number 15 received. Exiting...
+2013-09-15 18:59:54,342 - DEBUG - stat_daemon| Starting Stat daemon
+2013-09-15 18:59:54,343 - DEBUG - stat_daemon| Second 54
+2013-09-15 19:00:00,356 - DEBUG - stat_daemon| Iteration in "run". Second 0
+2013-09-15 19:00:02,358 - DEBUG - stat_daemon| Iteration in "run". Second 2
+2013-09-15 19:00:04,360 - DEBUG - stat_daemon| Iteration in "run". Second 4
+2013-09-15 19:00:06,363 - DEBUG - stat_daemon| Iteration in "run". Second 6
+2013-09-15 19:00:08,365 - DEBUG - stat_daemon| Iteration in "run". Second 8
+2013-09-15 19:00:09,159 - DEBUG - stat_daemon| Signal Number 15 received. Exiting...
+2013-09-15 19:00:11,310 - DEBUG - stat_daemon| Starting Stat daemon
+2013-09-15 19:00:11,311 - DEBUG - stat_daemon| Second 11
+2013-09-15 19:00:20,326 - DEBUG - stat_daemon| Iteration in "run". Second 20
+2013-09-15 19:00:22,329 - DEBUG - stat_daemon| Iteration in "run". Second 22
+2013-09-15 19:00:24,331 - DEBUG - stat_daemon| Iteration in "run". Second 24
+2013-09-15 19:00:24,454 - DEBUG - stat_daemon| Signal Number 15 received. Exiting...
+2013-09-17 05:46:48,210 - DEBUG - pg_mon_daemon| Starting PgMon daemon. Minute=46  Delay=202
+2013-09-17 05:49:42,520 - INFO - hostcluster| Created new hostcluster 127.0.0.1 ip address: storage
+2013-09-17 05:50:10,317 - DEBUG - pg_mon_daemon| Iteration started. Minute 50
+2013-09-17 05:50:10,317 - DEBUG - pg_mon_daemon| Iteration in runtime_stat_interval. Minute 50
+2013-09-17 05:50:10,370 - INFO - hostcluster| Updated parameter 'pg_version' set to '9.2.4' for hostcluster storage
+2013-09-17 05:50:10,371 - INFO - hostcluster| Updated parameter 'pg_data_path' set to '/usr/local/ds1/pg_data/9.2' for hostcluster storage
+2013-09-17 05:50:10,411 - INFO - hostcluster| Create new database accounts for cluster storage
+2013-09-17 05:50:10,412 - INFO - hostcluster| Create new database arche for cluster storage
+2013-09-17 05:50:10,414 - INFO - hostcluster| Create new database canprove for cluster storage
+2013-09-17 05:50:10,415 - INFO - hostcluster| Create new database cc_fm for cluster storage
+2013-09-17 05:50:10,416 - INFO - hostcluster| Create new database college for cluster storage
+2013-09-17 05:50:10,418 - INFO - hostcluster| Create new database db_mon for cluster storage
+2013-09-17 05:50:10,419 - INFO - hostcluster| Create new database db_stat for cluster storage
+2013-09-17 05:50:10,420 - INFO - hostcluster| Create new database distro for cluster storage
+2013-09-17 05:50:10,422 - INFO - hostcluster| Create new database lms_db for cluster storage
+2013-09-17 05:50:10,423 - INFO - hostcluster| Create new database pg_mon_old for cluster storage
+2013-09-17 05:50:10,424 - INFO - hostcluster| Create new database prod_mgm for cluster storage
+2013-09-17 05:50:10,426 - INFO - hostcluster| Create new database simplex for cluster storage
+2013-09-17 05:50:10,427 - INFO - hostcluster| Create new database test for cluster storage
+2013-09-17 05:50:10,428 - INFO - hostcluster| Create new database pg_mon for cluster storage
+2013-09-17 05:50:10,700 - INFO - dbname| Create new schema public in database accounts
+2013-09-17 05:50:11,126 - INFO - dbname| Create new schema public in database arche
+2013-09-17 05:50:11,555 - INFO - dbname| Create new schema public in database canprove
+2013-09-17 05:50:11,926 - INFO - dbname| Create new schema stat in database cc_fm
+2013-09-17 05:50:11,927 - INFO - dbname| Create new schema public in database cc_fm
+2013-09-17 05:50:12,315 - INFO - dbname| Create new schema public in database college
+2013-09-17 05:50:12,583 - INFO - dbname| Create new schema public in database db_mon
+2013-09-17 05:50:13,031 - INFO - dbname| Create new schema public in database db_stat
+2013-09-17 05:50:13,479 - INFO - dbname| Create new schema public in database distro
+2013-09-17 05:50:13,987 - INFO - dbname| Create new schema public in database lms_db
+2013-09-17 05:50:14,283 - INFO - dbname| Create new schema public in database pg_mon_old
+2013-09-17 05:50:14,657 - INFO - dbname| Create new schema public in database prod_mgm
+2013-09-17 05:50:15,073 - INFO - dbname| Create new schema public in database simplex
+2013-09-17 05:50:15,533 - INFO - dbname| Create new schema public in database test
+2013-09-17 05:50:15,583 - INFO - dbname| Create new schema public in database pg_mon
+2013-09-17 05:50:15,593 - DEBUG - pg_mon_daemon| Iteration Done. Minute 50 Next delay 295
+2013-09-17 05:55:10,675 - DEBUG - pg_mon_daemon| Iteration started. Minute 55
+2013-09-17 05:55:10,675 - DEBUG - pg_mon_daemon| Iteration in runtime_stat_interval. Minute 55
+2013-09-17 05:55:11,069 - DEBUG - pg_mon_daemon| Iteration Done. Minute 55 Next delay 299
+2013-09-17 06:00:10,169 - DEBUG - pg_mon_daemon| Iteration started. Minute 0
+2013-09-17 06:00:10,170 - DEBUG - pg_mon_daemon| Iteration in runtime_stat_interval. Minute 0
+2013-09-17 06:00:10,226 - DEBUG - pg_mon_daemon| Iteration in regular_stat_interval. Minute 0
+2013-09-17 06:00:10,413 - INFO - schemaname| Created new table: ssn in schema public
+2013-09-17 06:00:10,415 - INFO - schemaname| Created new table: account_properties in schema public
+2013-09-17 06:00:10,416 - INFO - schemaname| Created new table: vehicle in schema public
+2013-09-17 06:00:10,418 - INFO - schemaname| Created new table: payment in schema public
+2013-09-17 06:00:10,420 - INFO - schemaname| Created new table: payment_properties in schema public
+2013-09-17 06:00:10,421 - INFO - schemaname| Created new table: account in schema public
+2013-09-17 06:00:10,565 - INFO - tablename| Create new index ssn_pkey in table ssn
+2013-09-17 06:00:10,598 - INFO - tablename| Create new TOAST table pg_toast_16438 in table ssn
+2013-09-17 06:00:10,634 - INFO - tabletoastname| Create new TOAST index pg_toast_16438_index in table pg_toast_16438
+2013-09-17 06:00:10,707 - INFO - tablename| Create new index account_properties_pkey in table account_properties
+2013-09-17 06:00:10,742 - INFO - tablename| Create new TOAST table pg_toast_16414 in table account_properties
+2013-09-17 06:00:10,838 - INFO - tabletoastname| Create new TOAST index pg_toast_16414_index in table pg_toast_16414
+2013-09-17 06:00:10,911 - INFO - tablename| Create new index vehicle_pkey in table vehicle
+2013-09-17 06:00:10,946 - INFO - tablename| Create new TOAST table pg_toast_16444 in table vehicle
+2013-09-17 06:00:10,982 - INFO - tabletoastname| Create new TOAST index pg_toast_16444_index in table pg_toast_16444
+2013-09-17 06:00:11,055 - INFO - tablename| Create new index payment_pkey in table payment
+2013-09-17 06:00:11,090 - INFO - tablename| Create new TOAST table pg_toast_16422 in table payment
+2013-09-17 06:00:11,146 - INFO - tabletoastname| Create new TOAST index pg_toast_16422_index in table pg_toast_16422
+2013-09-17 06:00:11,223 - INFO - tablename| Create new index payment_properties_pkey in table payment_properties
+2013-09-17 06:00:11,258 - INFO - tablename| Create new TOAST table pg_toast_16430 in table payment_properties
+2013-09-17 06:00:11,342 - INFO - tabletoastname| Create new TOAST index pg_toast_16430_index in table pg_toast_16430
+2013-09-17 06:00:11,415 - INFO - tablename| Create new index account_pkey in table account
+2013-09-17 06:00:11,450 - INFO - tablename| Create new TOAST table pg_toast_16405 in table account
+2013-09-17 06:00:11,486 - INFO - tabletoastname| Create new TOAST index pg_toast_16405_index in table pg_toast_16405
+2013-09-17 06:00:11,594 - INFO - schemaname| Created new table: file_type_count in schema public
+2013-09-17 06:00:11,596 - INFO - schemaname| Created new table: malware_family in schema public
+2013-09-17 06:00:11,597 - INFO - schemaname| Created new table: app_author in schema public
+2013-09-17 06:00:11,598 - INFO - schemaname| Created new table: permission_log in schema public
+2013-09-17 06:00:11,600 - INFO - schemaname| Created new table: android_device in schema public
+2013-09-17 06:00:11,601 - INFO - schemaname| Created new table: map_bypassed_permissions in schema public
+2013-09-17 06:00:11,602 - INFO - schemaname| Created new table: enum_android_permission in schema public
+2013-09-17 06:00:11,604 - INFO - schemaname| Created new table: map_app_market in schema public
+2013-09-17 06:00:11,605 - INFO - schemaname| Created new table: application_base in schema public
+2013-09-17 06:00:11,606 - INFO - schemaname| Created new table: map_malware_family in schema public
+2013-09-17 06:00:11,608 - INFO - schemaname| Created new table: market in schema public
+2013-09-17 06:00:11,609 - INFO - schemaname| Created new table: map_advertised_permissions in schema public
+2013-09-17 06:00:11,610 - INFO - schemaname| Created new table: map_app_author in schema public
+2013-09-17 06:00:11,611 - INFO - schemaname| Created new table: enum_types_in_apk in schema public
+2013-09-17 06:00:11,613 - INFO - schemaname| Created new table: market_category in schema public
+2013-09-17 06:00:11,614 - INFO - schemaname| Created new table: map_root_permissions in schema public
+2013-09-17 06:00:11,615 - INFO - schemaname| Created new table: application_analyses in schema public
+2013-09-17 06:00:11,779 - INFO - schemaname| Created new function: application_base_id in schema public
+2013-09-17 06:00:11,781 - INFO - schemaname| Created new function: file_type_check in schema public
+2013-09-17 06:00:11,783 - INFO - schemaname| Created new function: permission_check in schema public
+2013-09-17 06:00:11,784 - INFO - schemaname| Created new function: set_author_id in schema public
+2013-09-17 06:00:11,786 - INFO - schemaname| Created new function: set_device_id in schema public
+2013-09-17 06:00:11,787 - INFO - schemaname| Created new function: set_malware_family in schema public
+2013-09-17 06:00:11,789 - INFO - schemaname| Created new function: set_market_id in schema public
+2013-09-17 06:00:11,932 - INFO - tablename| Create new index file_type_count_pkey in table file_type_count
+2013-09-17 06:00:12,051 - INFO - tablename| Create new index malware_family_pkey in table malware_family
+2013-09-17 06:00:12,086 - INFO - tablename| Create new TOAST table pg_toast_16549 in table malware_family
+2013-09-17 06:00:12,123 - INFO - tabletoastname| Create new TOAST index pg_toast_16549_index in table pg_toast_16549
+2013-09-17 06:00:12,195 - INFO - tablename| Create new index app_author_pkey in table app_author
+2013-09-17 06:00:12,230 - INFO - tablename| Create new TOAST table pg_toast_16508 in table app_author
+2013-09-17 06:00:12,267 - INFO - tabletoastname| Create new TOAST index pg_toast_16508_index in table pg_toast_16508
+2013-09-17 06:00:12,339 - INFO - tablename| Create new index permission_log_pkey in table permission_log
+2013-09-17 06:00:12,374 - INFO - tablename| Create new TOAST table pg_toast_16591 in table permission_log
+2013-09-17 06:00:12,458 - INFO - tabletoastname| Create new TOAST index pg_toast_16591_index in table pg_toast_16591
+2013-09-17 06:00:12,531 - INFO - tablename| Create new index android_device_pkey in table android_device
+2013-09-17 06:00:12,566 - INFO - tablename| Create new TOAST table pg_toast_16500 in table android_device
+2013-09-17 06:00:12,603 - INFO - tabletoastname| Create new TOAST index pg_toast_16500_index in table pg_toast_16500
+2013-09-17 06:00:12,675 - INFO - tablename| Create new index map_bypassed_permissions_pkey in table map_bypassed_permissions
+2013-09-17 06:00:12,747 - INFO - tablename| Create new index enum_android_permission_permission_name_key in table enum_android_permission
+2013-09-17 06:00:12,749 - INFO - tablename| Create new index enum_android_permission_pkey in table enum_android_permission
+2013-09-17 06:00:12,806 - INFO - tablename| Create new TOAST table pg_toast_16532 in table enum_android_permission
+2013-09-17 06:00:12,843 - INFO - tabletoastname| Create new TOAST index pg_toast_16532_index in table pg_toast_16532
+2013-09-17 06:00:12,963 - INFO - tablename| Create new index map_app_market_pkey in table map_app_market
+2013-09-17 06:00:13,035 - INFO - tablename| Create new index application_base_pkey in table application_base
+2013-09-17 06:00:13,070 - INFO - tablename| Create new TOAST table pg_toast_16524 in table application_base
+2013-09-17 06:00:13,107 - INFO - tabletoastname| Create new TOAST index pg_toast_16524_index in table pg_toast_16524
+2013-09-17 06:00:13,179 - INFO - tablename| Create new index map_malware_family_pkey in table map_malware_family
+2013-09-17 06:00:13,251 - INFO - tablename| Create new index market_name_pkey in table market
+2013-09-17 06:00:13,287 - INFO - tablename| Create new TOAST table pg_toast_16575 in table market
+2013-09-17 06:00:13,323 - INFO - tabletoastname| Create new TOAST index pg_toast_16575_index in table pg_toast_16575
+2013-09-17 06:00:13,395 - INFO - tablename| Create new index map_advertised_permissions_pkey in table map_advertised_permissions
+2013-09-17 06:00:13,516 - INFO - tablename| Create new index map_app_author_pkey in table map_app_author
+2013-09-17 06:00:13,587 - INFO - tablename| Create new index enum_types_in_apk_pkey in table enum_types_in_apk
+2013-09-17 06:00:13,623 - INFO - tablename| Create new TOAST table pg_toast_16538 in table enum_types_in_apk
+2013-09-17 06:00:13,659 - INFO - tabletoastname| Create new TOAST index pg_toast_16538_index in table pg_toast_16538
+2013-09-17 06:00:13,732 - INFO - tablename| Create new index market_category_pkey in table market_category
+2013-09-17 06:00:13,767 - INFO - tablename| Create new TOAST table pg_toast_16581 in table market_category
+2013-09-17 06:00:13,803 - INFO - tabletoastname| Create new TOAST index pg_toast_16581_index in table pg_toast_16581
+2013-09-17 06:00:13,876 - INFO - tablename| Create new index map_root_permissions_pkey in table map_root_permissions
+2013-09-17 06:00:14,008 - INFO - tablename| Create new index application_analyses_md5_sum_key in table application_analyses
+2013-09-17 06:00:14,009 - INFO - tablename| Create new index application_analyses_pkey in table application_analyses
+2013-09-17 06:00:14,067 - INFO - tablename| Create new TOAST table pg_toast_16516 in table application_analyses
+2013-09-17 06:00:14,103 - INFO - tabletoastname| Create new TOAST index pg_toast_16516_index in table pg_toast_16516
+2013-09-17 06:00:14,232 - INFO - schemaname| Created new table: caption_body in schema public
+2013-09-17 06:00:14,233 - INFO - schemaname| Created new table: caption in schema public
+2013-09-17 06:00:14,234 - INFO - schemaname| Created new table: folder_case in schema public
+2013-09-17 06:00:14,236 - INFO - schemaname| Created new table: caption_keyword in schema public
+2013-09-17 06:00:14,237 - INFO - schemaname| Created new table: map_capture_folder in schema public
+2013-09-17 06:00:14,238 - INFO - schemaname| Created new table: user_profile in schema public
+2013-09-17 06:00:14,240 - INFO - schemaname| Created new table: user in schema public
+2013-09-17 06:00:14,440 - INFO - tablename| Create new index caption_body_pkey in table caption_body
+2013-09-17 06:00:14,523 - INFO - tablename| Create new TOAST table pg_toast_16757 in table caption_body
+2013-09-17 06:00:14,559 - INFO - tabletoastname| Create new TOAST index pg_toast_16757_index in table pg_toast_16757
+2013-09-17 06:00:14,668 - INFO - tablename| Create new index caption_pkey in table caption
+2013-09-17 06:00:14,703 - INFO - tablename| Create new TOAST table pg_toast_16747 in table caption
+2013-09-17 06:00:14,739 - INFO - tabletoastname| Create new TOAST index pg_toast_16747_index in table pg_toast_16747
+2013-09-17 06:00:14,812 - INFO - tablename| Create new index folder_case_pkey in table folder_case
+2013-09-17 06:00:14,847 - INFO - tablename| Create new TOAST table pg_toast_16771 in table folder_case
+2013-09-17 06:00:14,883 - INFO - tabletoastname| Create new TOAST index pg_toast_16771_index in table pg_toast_16771
+2013-09-17 06:00:14,956 - INFO - tablename| Create new index owner_keyword_pkey in table caption_keyword
+2013-09-17 06:00:15,039 - INFO - tablename| Create new TOAST table pg_toast_16765 in table caption_keyword
+2013-09-17 06:00:15,075 - INFO - tabletoastname| Create new TOAST index pg_toast_16765_index in table pg_toast_16765
+2013-09-17 06:00:15,148 - INFO - tablename| Create new index map_capture_folder_pkey in table map_capture_folder
+2013-09-17 06:00:15,364 - INFO - tablename| Create new index user_profile_pkey in table user_profile
+2013-09-17 06:00:15,411 - INFO - tablename| Create new TOAST table pg_toast_16794 in table user_profile
+2013-09-17 06:00:15,447 - INFO - tabletoastname| Create new TOAST index pg_toast_16794_index in table pg_toast_16794
+2013-09-17 06:00:15,688 - INFO - tablename| Create new index user_email_key in table user
+2013-09-17 06:00:15,690 - INFO - tablename| Create new index user_pkey in table user
+2013-09-17 06:00:15,747 - INFO - tablename| Create new TOAST table pg_toast_16786 in table user
+2013-09-17 06:00:15,783 - INFO - tabletoastname| Create new TOAST index pg_toast_16786_index in table pg_toast_16786
+2013-09-17 06:00:15,958 - INFO - schemaname| Created new table: sig_change_log in schema stat
+2013-09-17 06:00:15,960 - INFO - schemaname| Created new table: insert_action in schema stat
+2013-09-17 06:00:15,961 - INFO - schemaname| Created new table: header_duplicates in schema stat
+2013-09-17 06:00:16,181 - INFO - tablename| Create new index sig_change_log_pkey in table sig_change_log
+2013-09-17 06:00:16,216 - INFO - tablename| Create new TOAST table pg_toast_17054 in table sig_change_log
+2013-09-17 06:00:16,252 - INFO - tabletoastname| Create new TOAST index pg_toast_17054_index in table pg_toast_17054
+2013-09-17 06:00:16,361 - INFO - tablename| Create new index insert_action_pkey in table insert_action
+2013-09-17 06:00:16,396 - INFO - tablename| Create new TOAST table pg_toast_17043 in table insert_action
+2013-09-17 06:00:16,432 - INFO - tabletoastname| Create new TOAST index pg_toast_17043_index in table pg_toast_17043
+2013-09-17 06:00:16,505 - INFO - tablename| Create new index header_duplicates_pkey in table header_duplicates
+2013-09-17 06:00:16,560 - INFO - schemaname| Created new table: header_done in schema public
+2013-09-17 06:00:16,562 - INFO - schemaname| Created new table: content_const_url in schema public
+2013-09-17 06:00:16,563 - INFO - schemaname| Created new table: content_header in schema public
+2013-09-17 06:00:16,564 - INFO - schemaname| Created new table: object_domain in schema public
+2013-09-17 06:00:16,566 - INFO - schemaname| Created new table: content_vt in schema public
+2013-09-17 06:00:16,567 - INFO - schemaname| Created new table: object_map_dcu in schema public
+2013-09-17 06:00:16,568 - INFO - schemaname| Created new table: content_domain in schema public
+2013-09-17 06:00:16,570 - INFO - schemaname| Created new table: header_queue in schema public
+2013-09-17 06:00:16,571 - INFO - schemaname| Created new table: object_const_url in schema public
+2013-09-17 06:00:16,572 - INFO - schemaname| Created new table: sig_gen_done in schema public
+2013-09-17 06:00:16,574 - INFO - schemaname| Created new table: sig_gen in schema public
+2013-09-17 06:00:16,575 - INFO - schemaname| Created new table: content_map_dcu in schema public
+2013-09-17 06:00:16,576 - INFO - schemaname| Created new table: signature_type in schema public
+2013-09-17 06:00:16,578 - INFO - schemaname| Created new table: sig_gen_new in schema public
+2013-09-17 06:00:16,579 - INFO - schemaname| Created new table: header_top in schema public
+2013-09-17 06:00:16,580 - INFO - schemaname| Created new table: object_vt in schema public
+2013-09-17 06:00:16,633 - INFO - schemaname| Created new function: exists_indicator in schema public
+2013-09-17 06:00:16,635 - INFO - schemaname| Created new function: insert_new_header in schema public
+2013-09-17 06:00:16,636 - INFO - schemaname| Created new function: new_header_insert in schema public
+2013-09-17 06:00:16,638 - INFO - schemaname| Created new function: new_signature_analysed in schema public
+2013-09-17 06:00:16,639 - INFO - schemaname| Created new function: new_signature_insert in schema public
+2013-09-17 06:00:16,640 - INFO - schemaname| Created new function: object_const_url_insert in schema public
+2013-09-17 06:00:16,642 - INFO - schemaname| Created new function: object_domain_insert in schema public
+2013-09-17 06:00:16,643 - INFO - schemaname| Created new function: object_map_dcu_insert in schema public
+2013-09-17 06:00:16,644 - INFO - schemaname| Created new function: object_vt_insert in schema public
+2013-09-17 06:00:16,646 - INFO - schemaname| Created new function: set_header_analysed in schema public
+2013-09-17 06:00:16,647 - INFO - schemaname| Created new function: set_signature_generated in schema public
+2013-09-17 06:00:16,648 - INFO - schemaname| Created new function: signature_false_positive in schema public
+2013-09-17 06:00:16,650 - INFO - schemaname| Created new function: toggle_signature_retire in schema public
+2013-09-17 06:00:16,721 - INFO - tablename| Create new index header_done_pkey1 in table header_done
+2013-09-17 06:00:16,722 - INFO - tablename| Create new index header_done_analyses_completed_idx in table header_done
+2013-09-17 06:00:16,723 - INFO - tablename| Create new index header_done_sig_id_idx in table header_done
+2013-09-17 06:00:16,841 - INFO - tablename| Create new index content_const_url_pkey in table content_const_url
+2013-09-17 06:00:16,842 - INFO - tablename| Create new index content_const_url_analysed_idx in table content_const_url
+2013-09-17 06:00:16,844 - INFO - tablename| Create new index content_const_url_url_id_idx in table content_const_url
+2013-09-17 06:00:16,924 - INFO - tablename| Create new TOAST table pg_toast_16911 in table content_const_url
+2013-09-17 06:00:16,960 - INFO - tabletoastname| Create new TOAST index pg_toast_16911_index in table pg_toast_16911
+2013-09-17 06:00:17,033 - INFO - tablename| Create new index content_header_pkey in table content_header
+2013-09-17 06:00:17,128 - INFO - tablename| Create new TOAST table pg_toast_16929 in table content_header
+2013-09-17 06:00:17,164 - INFO - tabletoastname| Create new TOAST index pg_toast_16929_index in table pg_toast_16929
+2013-09-17 06:00:17,237 - INFO - tablename| Create new index object_domain_domain_name_key in table object_domain
+2013-09-17 06:00:17,238 - INFO - tablename| Create new index object_domain_pkey in table object_domain
+2013-09-17 06:00:17,240 - INFO - tablename| Create new index object_domain_created_idx in table object_domain
+2013-09-17 06:00:17,241 - INFO - tablename| Create new index object_domain_md5_hash_idx in table object_domain
+2013-09-17 06:00:17,344 - INFO - tablename| Create new TOAST table pg_toast_16974 in table object_domain
+2013-09-17 06:00:17,380 - INFO - tabletoastname| Create new TOAST index pg_toast_16974_index in table pg_toast_16974
+2013-09-17 06:00:17,453 - INFO - tablename| Create new index content_vt_pkey in table content_vt
+2013-09-17 06:00:17,488 - INFO - tablename| Create new TOAST table pg_toast_16944 in table content_vt
+2013-09-17 06:00:17,524 - INFO - tabletoastname| Create new TOAST index pg_toast_16944_index in table pg_toast_16944
+2013-09-17 06:00:17,645 - INFO - tablename| Create new index object_map_dcu_domain_id_const_url_id_key in table object_map_dcu
+2013-09-17 06:00:17,646 - INFO - tablename| Create new index object_map_dcu_pkey in table object_map_dcu
+2013-09-17 06:00:17,648 - INFO - tablename| Create new index object_map_dcu_created_idx in table object_map_dcu
+2013-09-17 06:00:17,649 - INFO - tablename| Create new index object_map_dcu_domain_id_const_url_id_idx in table object_map_dcu
+2013-09-17 06:00:17,789 - INFO - tablename| Create new index content_domain_pkey in table content_domain
+2013-09-17 06:00:17,790 - INFO - tablename| Create new index content_domain_analysed_idx in table content_domain
+2013-09-17 06:00:17,792 - INFO - tablename| Create new index content_domain_domain_id_idx in table content_domain
+2013-09-17 06:00:17,872 - INFO - tablename| Create new TOAST table pg_toast_16920 in table content_domain
+2013-09-17 06:00:17,908 - INFO - tabletoastname| Create new TOAST index pg_toast_16920_index in table pg_toast_16920
+2013-09-17 06:00:17,981 - INFO - tablename| Create new index header_queue_pkey in table header_queue
+2013-09-17 06:00:18,053 - INFO - tablename| Create new index object_const_url_constant_url_key in table object_const_url
+2013-09-17 06:00:18,054 - INFO - tablename| Create new index object_const_url_pkey in table object_const_url
+2013-09-17 06:00:18,056 - INFO - tablename| Create new index object_const_url_created_idx in table object_const_url
+2013-09-17 06:00:18,057 - INFO - tablename| Create new index object_const_url_md5_hash_idx in table object_const_url
+2013-09-17 06:00:18,208 - INFO - tablename| Create new TOAST table pg_toast_16967 in table object_const_url
+2013-09-17 06:00:18,244 - INFO - tabletoastname| Create new TOAST index pg_toast_16967_index in table pg_toast_16967
+2013-09-17 06:00:18,317 - INFO - tablename| Create new index sig_generated_pkey in table sig_gen_done
+2013-09-17 06:00:18,389 - INFO - tablename| Create new index sig_gen_fe_sig_hash_key in table sig_gen
+2013-09-17 06:00:18,390 - INFO - tablename| Create new index sig_gen_pkey in table sig_gen
+2013-09-17 06:00:18,392 - INFO - tablename| Create new index sig_gen_analysed_idx in table sig_gen
+2013-09-17 06:00:18,472 - INFO - tablename| Create new TOAST table pg_toast_16996 in table sig_gen
+2013-09-17 06:00:18,508 - INFO - tabletoastname| Create new TOAST index pg_toast_16996_index in table pg_toast_16996
+2013-09-17 06:00:18,581 - INFO - tablename| Create new index content_map_dcu_pkey in table content_map_dcu
+2013-09-17 06:00:18,583 - INFO - tablename| Create new index content_map_dcu_analysed_idx in table content_map_dcu
+2013-09-17 06:00:18,584 - INFO - tablename| Create new index content_map_dcu_map_id_idx in table content_map_dcu
+2013-09-17 06:00:18,724 - INFO - tablename| Create new TOAST table pg_toast_16935 in table content_map_dcu
+2013-09-17 06:00:18,760 - INFO - tabletoastname| Create new TOAST index pg_toast_16935_index in table pg_toast_16935
+2013-09-17 06:00:18,893 - INFO - tablename| Create new index signature_type_pkey in table signature_type
+2013-09-17 06:00:18,928 - INFO - tablename| Create new TOAST table pg_toast_17009 in table signature_type
+2013-09-17 06:00:18,965 - INFO - tabletoastname| Create new TOAST index pg_toast_17009_index in table pg_toast_17009
+2013-09-17 06:00:19,037 - INFO - tablename| Create new index sig_gen_new_pkey in table sig_gen_new
+2013-09-17 06:00:19,109 - INFO - tablename| Create new index header_top_header_fingerprint_key in table header_top
+2013-09-17 06:00:19,111 - INFO - tablename| Create new index header_top_pkey in table header_top
+2013-09-17 06:00:19,112 - INFO - tablename| Create new index header_top_created_idx in table header_top
+2013-09-17 06:00:19,113 - INFO - tablename| Create new index header_top_header_fingerprint_idx in table header_top
+2013-09-17 06:00:19,301 - INFO - tablename| Create new index object_vt_pkey in table object_vt
+2013-09-17 06:00:19,303 - INFO - tablename| Create new index object_vt_vt_hash_key in table object_vt
+2013-09-17 06:00:19,304 - INFO - tablename| Create new index object_vt_created_idx in table object_vt
+2013-09-17 06:00:19,305 - INFO - tablename| Create new index object_vt_vt_hash_idx in table object_vt
+2013-09-17 06:00:19,484 - INFO - schemaname| Created new table: apply in schema public
+2013-09-17 06:00:19,485 - INFO - schemaname| Created new table: college in schema public
+2013-09-17 06:00:19,486 - INFO - schemaname| Created new table: student in schema public
+2013-09-17 06:00:19,626 - INFO - tablename| Create new index apply_pkey in table apply
+2013-09-17 06:00:19,708 - INFO - tablename| Create new TOAST table pg_toast_17233 in table apply
+2013-09-17 06:00:19,745 - INFO - tabletoastname| Create new TOAST index pg_toast_17233_index in table pg_toast_17233
+2013-09-17 06:00:19,831 - INFO - tablename| Create new TOAST table pg_toast_17239 in table college
+2013-09-17 06:00:19,865 - INFO - tabletoastname| Create new TOAST index pg_toast_17239_index in table pg_toast_17239
+2013-09-17 06:00:19,939 - INFO - tablename| Create new TOAST table pg_toast_17245 in table student
+2013-09-17 06:00:19,973 - INFO - tabletoastname| Create new TOAST index pg_toast_17245_index in table pg_toast_17245
+2013-09-17 06:00:20,139 - INFO - schemaname| Created new table: database_stat in schema public
+2013-09-17 06:00:20,140 - INFO - schemaname| Created new table: table_va_stat in schema public
+2013-09-17 06:00:20,141 - INFO - schemaname| Created new table: table_stat in schema public
+2013-09-17 06:00:20,143 - INFO - schemaname| Created new table: table_toast_stat in schema public
+2013-09-17 06:00:20,144 - INFO - schemaname| Created new table: log_time in schema public
+2013-09-17 06:00:20,145 - INFO - schemaname| Created new table: schema_name in schema public
+2013-09-17 06:00:20,147 - INFO - schemaname| Created new table: function_stat in schema public
+2013-09-17 06:00:20,148 - INFO - schemaname| Created new table: index_stat in schema public
+2013-09-17 06:00:20,149 - INFO - schemaname| Created new table: index_name in schema public
+2013-09-17 06:00:20,150 - INFO - schemaname| Created new table: bgwriter_stat in schema public
+2013-09-17 06:00:20,152 - INFO - schemaname| Created new table: host_cluster in schema public
+2013-09-17 06:00:20,153 - INFO - schemaname| Created new table: index_toast_name in schema public
+2013-09-17 06:00:20,154 - INFO - schemaname| Created new table: queue_log_time in schema public
+2013-09-17 06:00:20,156 - INFO - schemaname| Created new table: table_name in schema public
+2013-09-17 06:00:20,157 - INFO - schemaname| Created new table: database_name in schema public
+2013-09-17 06:00:20,158 - INFO - schemaname| Created new table: function_name in schema public
+2013-09-17 06:00:20,160 - INFO - schemaname| Created new table: index_toast_stat in schema public
+2013-09-17 06:00:20,161 - INFO - schemaname| Created new table: table_toast_name in schema public
+2013-09-17 06:00:20,311 - INFO - schemaname| Created new function: pm_bgwriter_stat_diff in schema public
+2013-09-17 06:00:20,312 - INFO - schemaname| Created new function: pm_database_stat_diff in schema public
+2013-09-17 06:00:20,314 - INFO - schemaname| Created new function: pm_function_stat_diff in schema public
+2013-09-17 06:00:20,317 - INFO - schemaname| Created new function: remove_toas_indexes in schema public
+2013-09-17 06:00:20,318 - INFO - schemaname| Created new function: remove_toast_tables in schema public
+2013-09-17 06:00:20,320 - INFO - schemaname| Created new function: pm_index_stat_diff in schema public
+2013-09-17 06:00:20,322 - INFO - schemaname| Created new function: pm_index_toast_stat_diff in schema public
+2013-09-17 06:00:20,323 - INFO - schemaname| Created new function: pm_table_stat_diff in schema public
+2013-09-17 06:00:20,324 - INFO - schemaname| Created new function: pm_table_toast_stat_diff in schema public
+2013-09-17 06:00:20,326 - INFO - schemaname| Created new function: remove_databases in schema public
+2013-09-17 06:00:20,327 - INFO - schemaname| Created new function: remove_functions in schema public
+2013-09-17 06:00:20,328 - INFO - schemaname| Created new function: remove_indexes in schema public
+2013-09-17 06:00:20,330 - INFO - schemaname| Created new function: remove_schemas in schema public
+2013-09-17 06:00:20,331 - INFO - schemaname| Created new function: remove_tables in schema public
+2013-09-17 06:00:20,332 - INFO - schemaname| Created new function: suspend_schemas in schema public
+2013-09-17 06:00:20,334 - INFO - schemaname| Created new function: terminate_change in schema public
+2013-09-17 06:00:20,335 - INFO - schemaname| Created new function: trigger_add_log_time in schema public
+2013-09-17 06:00:20,562 - INFO - tablename| Create new index database_stat_dn_id_time_id_key in table database_stat
+2013-09-17 06:00:20,563 - INFO - tablename| Create new index database_stat_pkey in table database_stat
+2013-09-17 06:00:20,658 - INFO - tablename| Create new index table_va_stat_pkey in table table_va_stat
+2013-09-17 06:00:20,659 - INFO - tablename| Create new index table_va_stat_tn_id_time_id_key in table table_va_stat
+2013-09-17 06:00:20,754 - INFO - tablename| Create new index table_stat_pkey in table table_stat
+2013-09-17 06:00:20,755 - INFO - tablename| Create new index table_stat_tn_id_time_id_key in table table_stat
+2013-09-17 06:00:20,898 - INFO - tablename| Create new index table_toast_stat_pkey in table table_toast_stat
+2013-09-17 06:00:20,899 - INFO - tablename| Create new index table_toast_stat_tn_id_time_id_key in table table_toast_stat
+2013-09-17 06:00:21,006 - INFO - tablename| Create new index log_time_pkey in table log_time
+2013-09-17 06:00:21,007 - INFO - tablename| Create new index log_time_hour_truncate_idx in table log_time
+2013-09-17 06:00:21,162 - INFO - tablename| Create new index schema_name_pkey in table schema_name
+2013-09-17 06:00:21,163 - INFO - tablename| Create new index schema_name_dn_id_sch_name_idx in table schema_name
+2013-09-17 06:00:21,233 - INFO - tablename| Create new TOAST table pg_toast_17355 in table schema_name
+2013-09-17 06:00:21,281 - INFO - tabletoastname| Create new TOAST index pg_toast_17355_index in table pg_toast_17355
+2013-09-17 06:00:21,426 - INFO - tablename| Create new index function_stat_fn_id_time_id_key in table function_stat
+2013-09-17 06:00:21,427 - INFO - tablename| Create new index function_stat_pkey in table function_stat
+2013-09-17 06:00:21,534 - INFO - tablename| Create new index index_stat_in_id_time_id_key in table index_stat
+2013-09-17 06:00:21,535 - INFO - tablename| Create new index index_stat_pkey in table index_stat
+2013-09-17 06:00:21,678 - INFO - tablename| Create new index index_name_pkey in table index_name
+2013-09-17 06:00:21,679 - INFO - tablename| Create new index index_name_tn_id_idx_name_idx in table index_name
+2013-09-17 06:00:21,749 - INFO - tablename| Create new TOAST table pg_toast_17320 in table index_name
+2013-09-17 06:00:21,797 - INFO - tabletoastname| Create new TOAST index pg_toast_17320_index in table pg_toast_17320
+2013-09-17 06:00:21,918 - INFO - tablename| Create new index bgwriter_stat_hc_id_time_id_key in table bgwriter_stat
+2013-09-17 06:00:21,919 - INFO - tablename| Create new index bgwriter_stat_pkey in table bgwriter_stat
+2013-09-17 06:00:22,014 - INFO - tablename| Create new index dbhost_pkey in table host_cluster
+2013-09-17 06:00:22,049 - INFO - tablename| Create new TOAST table pg_toast_17310 in table host_cluster
+2013-09-17 06:00:22,085 - INFO - tabletoastname| Create new TOAST index pg_toast_17310_index in table pg_toast_17310
+2013-09-17 06:00:22,158 - INFO - tablename| Create new index index_toast_name_pkey in table index_toast_name
+2013-09-17 06:00:22,193 - INFO - tablename| Create new TOAST table pg_toast_17334 in table index_toast_name
+2013-09-17 06:00:22,229 - INFO - tabletoastname| Create new TOAST index pg_toast_17334_index in table pg_toast_17334
+2013-09-17 06:00:22,302 - INFO - tablename| Create new index queue_log_time_pkey in table queue_log_time
+2013-09-17 06:00:22,422 - INFO - tablename| Create new index table_name_pkey in table table_name
+2013-09-17 06:00:22,457 - INFO - tablename| Create new TOAST table pg_toast_17363 in table table_name
+2013-09-17 06:00:22,493 - INFO - tabletoastname| Create new TOAST index pg_toast_17363_index in table pg_toast_17363
+2013-09-17 06:00:22,566 - INFO - tablename| Create new index database_name_pkey in table database_name
+2013-09-17 06:00:22,601 - INFO - tablename| Create new TOAST table pg_toast_17283 in table database_name
+2013-09-17 06:00:22,637 - INFO - tabletoastname| Create new TOAST index pg_toast_17283_index in table pg_toast_17283
+2013-09-17 06:00:22,710 - INFO - tablename| Create new index function_name_pkey in table function_name
+2013-09-17 06:00:22,745 - INFO - tablename| Create new TOAST table pg_toast_17296 in table function_name
+2013-09-17 06:00:22,782 - INFO - tabletoastname| Create new TOAST index pg_toast_17296_index in table pg_toast_17296
+2013-09-17 06:00:22,854 - INFO - tablename| Create new index index_toast_stat_pkey in table index_toast_stat
+2013-09-17 06:00:22,856 - INFO - tablename| Create new index index_toast_stat_tn_id_time_id_key in table index_toast_stat
+2013-09-17 06:00:23,010 - INFO - tablename| Create new index table_toast_name_pkey in table table_toast_name
+2013-09-17 06:00:23,045 - INFO - tablename| Create new TOAST table pg_toast_17382 in table table_toast_name
+2013-09-17 06:00:23,082 - INFO - tabletoastname| Create new TOAST index pg_toast_17382_index in table pg_toast_17382
+2013-09-17 06:00:23,215 - INFO - schemaname| Created new table: index_list in schema public
+2013-09-17 06:00:23,216 - INFO - schemaname| Created new table: central_log_time in schema public
+2013-09-17 06:00:23,217 - INFO - schemaname| Created new table: table_list in schema public
+2013-09-17 06:00:23,219 - INFO - schemaname| Created new table: host_cluster in schema public
+2013-09-17 06:00:23,220 - INFO - schemaname| Created new table: database_list in schema public
+2013-09-17 06:00:23,221 - INFO - schemaname| Created new table: index_stat in schema public
+2013-09-17 06:00:23,223 - INFO - schemaname| Created new table: table_stat in schema public
+2013-09-17 06:00:23,224 - INFO - schemaname| Created new table: schema_list in schema public
+2013-09-17 06:00:23,225 - INFO - schemaname| Created new table: database_stat in schema public
+2013-09-17 06:00:23,226 - INFO - schemaname| Created new table: bgwriter_stat in schema public
+2013-09-17 06:00:23,431 - INFO - tablename| Create new index index_list_pkey in table index_list
+2013-09-17 06:00:23,514 - INFO - tablename| Create new TOAST table pg_toast_17644 in table index_list
+2013-09-17 06:00:23,550 - INFO - tabletoastname| Create new TOAST index pg_toast_17644_index in table pg_toast_17644
+2013-09-17 06:00:23,622 - INFO - tablename| Create new index central_log_time_pkey in table central_log_time
+2013-09-17 06:00:23,695 - INFO - tablename| Create new index table_list_pkey in table table_list
+2013-09-17 06:00:23,730 - INFO - tablename| Create new TOAST table pg_toast_17665 in table table_list
+2013-09-17 06:00:23,766 - INFO - tabletoastname| Create new TOAST index pg_toast_17665_index in table pg_toast_17665
+2013-09-17 06:00:23,839 - INFO - tablename| Create new index host_cluster_pkey in table host_cluster
+2013-09-17 06:00:23,911 - INFO - tablename| Create new index database_list_pkey in table database_list
+2013-09-17 06:00:23,946 - INFO - tablename| Create new TOAST table pg_toast_17626 in table database_list
+2013-09-17 06:00:24,047 - INFO - tabletoastname| Create new TOAST index pg_toast_17626_index in table pg_toast_17626
+2013-09-17 06:00:24,336 - INFO - tablename| Create new index index_stat_in_id_time_id_key in table index_stat
+2013-09-17 06:00:24,337 - INFO - tablename| Create new index index_stat_pkey in table index_stat
+2013-09-17 06:00:24,836 - INFO - tablename| Create new index table_stat_pkey in table table_stat
+2013-09-17 06:00:24,837 - INFO - tablename| Create new index table_stat_tn_id_time_id_key in table table_stat
+2013-09-17 06:00:25,220 - INFO - tablename| Create new index schema_list_pkey in table schema_list
+2013-09-17 06:00:25,386 - INFO - tablename| Create new TOAST table pg_toast_17657 in table schema_list
+2013-09-17 06:00:25,519 - INFO - tabletoastname| Create new TOAST index pg_toast_17657_index in table pg_toast_17657
+2013-09-17 06:00:25,784 - INFO - tablename| Create new index database_stat_dn_id_time_id_key in table database_stat
+2013-09-17 06:00:25,785 - INFO - tablename| Create new index database_stat_pkey in table database_stat
+2013-09-17 06:00:26,168 - INFO - tablename| Create new index bgwriter_stat_hc_id_time_id_key in table bgwriter_stat
+2013-09-17 06:00:26,169 - INFO - tablename| Create new index bgwriter_stat_pkey in table bgwriter_stat
+2013-09-17 06:00:26,669 - INFO - schemaname| Created new table: enum_force_command in schema public
+2013-09-17 06:00:26,670 - INFO - schemaname| Created new table: archive_job_allocation in schema public
+2013-09-17 06:00:26,672 - INFO - schemaname| Created new table: job_queue in schema public
+2013-09-17 06:00:26,673 - INFO - schemaname| Created new table: job_allocation_map in schema public
+2013-09-17 06:00:26,674 - INFO - schemaname| Created new table: worker in schema public
+2013-09-17 06:00:27,001 - INFO - schemaname| Created new function: acknowledge_command in schema public
+2013-09-17 06:00:27,002 - INFO - schemaname| Created new function: acknowledged_pull in schema public
+2013-09-17 06:00:27,003 - INFO - schemaname| Created new function: acknowledged_push in schema public
+2013-09-17 06:00:27,005 - INFO - schemaname| Created new function: assign_job_to_worker in schema public
+2013-09-17 06:00:27,006 - INFO - schemaname| Created new function: job_complete in schema public
+2013-09-17 06:00:27,007 - INFO - schemaname| Created new function: job_request in schema public
+2013-09-17 06:00:27,009 - INFO - schemaname| Created new function: new_job_insert in schema public
+2013-09-17 06:00:27,010 - INFO - schemaname| Created new function: unassign_job in schema public
+2013-09-17 06:00:27,012 - INFO - schemaname| Created new function: wake_up in schema public
+2013-09-17 06:00:27,013 - INFO - schemaname| Created new function: worker_handshake in schema public
+2013-09-17 06:00:27,331 - INFO - tablename| Create new index enum_force_command_pkey in table enum_force_command
+2013-09-17 06:00:27,451 - INFO - tablename| Create new TOAST table pg_toast_17794 in table enum_force_command
+2013-09-17 06:00:27,595 - INFO - tabletoastname| Create new TOAST index pg_toast_17794_index in table pg_toast_17794
+2013-09-17 06:00:27,897 - INFO - tablename| Create new index archive_job_allocation_pkey in table archive_job_allocation
+2013-09-17 06:00:28,232 - INFO - tablename| Create new index job_queue_pkey in table job_queue
+2013-09-17 06:00:28,351 - INFO - tablename| Create new TOAST table pg_toast_17804 in table job_queue
+2013-09-17 06:00:28,567 - INFO - tabletoastname| Create new TOAST index pg_toast_17804_index in table pg_toast_17804
+2013-09-17 06:00:28,735 - INFO - tablename| Create new index job_allocation_map_pkey in table job_allocation_map
+2013-09-17 06:00:28,807 - INFO - tablename| Create new index analyzer_pkey in table worker
+2013-09-17 06:00:28,809 - INFO - tablename| Create new index worker_ip_address_worker_name_key in table worker
+2013-09-17 06:00:28,866 - INFO - tablename| Create new TOAST table pg_toast_17812 in table worker
+2013-09-17 06:00:28,903 - INFO - tabletoastname| Create new TOAST index pg_toast_17812_index in table pg_toast_17812
+2013-09-17 06:00:29,007 - INFO - schemaname| Created new table: groups in schema public
+2013-09-17 06:00:29,009 - INFO - schemaname| Created new table: measurements in schema public
+2013-09-17 06:00:29,010 - INFO - schemaname| Created new table: signature_bodies in schema public
+2013-09-17 06:00:29,011 - INFO - schemaname| Created new table: blockable_categories in schema public
+2013-09-17 06:00:29,013 - INFO - schemaname| Created new table: users in schema public
+2013-09-17 06:00:29,014 - INFO - schemaname| Created new table: recipients in schema public
+2013-09-17 06:00:29,015 - INFO - schemaname| Created new table: incidents in schema public
+2013-09-17 06:00:29,017 - INFO - schemaname| Created new table: ntp_servers in schema public
+2013-09-17 06:00:29,018 - INFO - schemaname| Created new table: malware_analyses in schema public
+2013-09-17 06:00:29,019 - INFO - schemaname| Created new table: filters in schema public
+2013-09-17 06:00:29,021 - INFO - schemaname| Created new table: lms in schema public
+2013-09-17 06:00:29,022 - INFO - schemaname| Created new table: cnc_services in schema public
+2013-09-17 06:00:29,023 - INFO - schemaname| Created new table: blockable_signature_names in schema public
+2013-09-17 06:00:29,024 - INFO - schemaname| Created new table: os_changes in schema public
+2013-09-17 06:00:29,026 - INFO - schemaname| Created new table: record_backup_updates in schema public
+2013-09-17 06:00:29,027 - INFO - schemaname| Created new table: post_servers in schema public
+2013-09-17 06:00:29,028 - INFO - schemaname| Created new table: sensors in schema public
+2013-09-17 06:00:29,030 - INFO - schemaname| Created new table: blocks in schema public
+2013-09-17 06:00:29,031 - INFO - schemaname| Created new table: greylists in schema public
+2013-09-17 06:00:29,032 - INFO - schemaname| Created new table: email_analyses in schema public
+2013-09-17 06:00:29,034 - INFO - schemaname| Created new table: record_maximums in schema public
+2013-09-17 06:00:29,035 - INFO - schemaname| Created new table: malware_scans in schema public
+2013-09-17 06:00:29,036 - INFO - schemaname| Created new table: sessions in schema public
+2013-09-17 06:00:29,037 - INFO - schemaname| Created new table: alerts in schema public
+2013-09-17 06:00:29,039 - INFO - schemaname| Created new table: data_thefts in schema public
+2013-09-17 06:00:29,040 - INFO - schemaname| Created new table: bot_activities in schema public
+2013-09-17 06:00:29,041 - INFO - schemaname| Created new table: bot_locations in schema public
+2013-09-17 06:00:29,043 - INFO - schemaname| Created new table: acknowledgements in schema public
+2013-09-17 06:00:29,044 - INFO - schemaname| Created new table: bot_dns_map in schema public
+2013-09-17 06:00:29,045 - INFO - schemaname| Created new table: guest_images in schema public
+2013-09-17 06:00:29,047 - INFO - schemaname| Created new table: trap_sinks in schema public
+2013-09-17 06:00:29,048 - INFO - schemaname| Created new table: locations in schema public
+2013-09-17 06:00:29,049 - INFO - schemaname| Created new table: groups_sensors in schema public
+2013-09-17 06:00:29,050 - INFO - schemaname| Created new table: events in schema public
+2013-09-17 06:00:29,052 - INFO - schemaname| Created new table: runnable_images in schema public
+2013-09-17 06:00:29,053 - INFO - schemaname| Created new table: global_configs in schema public
+2013-09-17 06:00:29,054 - INFO - schemaname| Created new table: configurations in schema public
+2013-09-17 06:00:29,056 - INFO - schemaname| Created new table: jurls in schema public
+2013-09-17 06:00:29,057 - INFO - schemaname| Created new table: cnc_locations in schema public
+2013-09-17 06:00:29,058 - INFO - schemaname| Created new table: malware_infos in schema public
+2013-09-17 06:00:29,060 - INFO - schemaname| Created new table: cnc_services_events in schema public
+2013-09-17 06:00:29,061 - INFO - schemaname| Created new table: capture_policies in schema public
+2013-09-17 06:00:29,062 - INFO - schemaname| Created new table: record_updates in schema public
+2013-09-17 06:00:29,253 - INFO - schemaname| Created new function: add_event in schema public
+2013-09-17 06:00:29,255 - INFO - schemaname| Created new function: add_jabe_url in schema public
+2013-09-17 06:00:29,256 - INFO - schemaname| Created new function: add_ma_child_record in schema public
+2013-09-17 06:00:29,258 - INFO - schemaname| Created new function: array_distinct in schema public
+2013-09-17 06:00:29,259 - INFO - schemaname| Created new function: array_sort in schema public
+2013-09-17 06:00:29,260 - INFO - schemaname| Created new function: array_sort_distinct in schema public
+2013-09-17 06:00:29,262 - INFO - schemaname| Created new function: array_to_cd_string in schema public
+2013-09-17 06:00:29,263 - INFO - schemaname| Created new function: channel_nopii in schema public
+2013-09-17 06:00:29,264 - INFO - schemaname| Created new function: set_max_lms_id_at_cms in schema public
+2013-09-17 06:00:29,266 - INFO - schemaname| Created new function: complete_incident in schema public
+2013-09-17 06:00:29,267 - INFO - schemaname| Created new function: elems_to_cd_string in schema public
+2013-09-17 06:00:29,268 - INFO - schemaname| Created new function: ensure_incidents_created_at_idx in schema public
+2013-09-17 06:00:29,270 - INFO - schemaname| Created new function: ensure_make_alert_ps_exists in schema public
+2013-09-17 06:00:29,271 - INFO - schemaname| Created new function: ensure_record_backup_updates_table in schema public
+2013-09-17 06:00:29,272 - INFO - schemaname| Created new function: ensure_record_maximums_table in schema public
+2013-09-17 06:00:29,274 - INFO - schemaname| Created new function: ensure_record_updates_table in schema public
+2013-09-17 06:00:29,275 - INFO - schemaname| Created new function: first_func in schema public
+2013-09-17 06:00:29,276 - INFO - schemaname| Created new function: get_or_add_cnc_service in schema public
+2013-09-17 06:00:29,278 - INFO - schemaname| Created new function: plpgsql_call_handler in schema public
+2013-09-17 06:00:29,279 - INFO - schemaname| Created new function: plpgsql_validator in schema public
+2013-09-17 06:00:29,280 - INFO - schemaname| Created new function: update_host_for_event in schema public
+2013-09-17 06:00:29,282 - INFO - schemaname| Created new function: update_maid_for_content_alert in schema public
+2013-09-17 06:00:29,283 - INFO - schemaname| Created new function: update_malware_done in schema public
+2013-09-17 06:00:29,284 - INFO - schemaname| Created new function: update_or_create_alert_from_event in schema public
+2013-09-17 06:00:29,286 - INFO - schemaname| Created new function: update_orig_maid in schema public
+2013-09-17 06:00:29,287 - INFO - schemaname| Created new function: xpath_list in schema public
+2013-09-17 06:00:29,288 - INFO - schemaname| Created new function: xpath_nodeset in schema public
+2013-09-17 06:00:29,290 - INFO - schemaname| Created new function: xpath_nodeset in schema public
+2013-09-17 06:00:29,432 - INFO - tablename| Create new index groups_pkey in table groups
+2013-09-17 06:00:29,504 - INFO - tablename| Create new index measurements_pkey in table measurements
+2013-09-17 06:00:29,506 - INFO - tablename| Create new index unq_measurement_id in table measurements
+2013-09-17 06:00:29,507 - INFO - tablename| Create new index idx_measurements_lms_iden in table measurements
+2013-09-17 06:00:29,508 - INFO - tablename| Create new index idx_measurements_measurementtype in table measurements
+2013-09-17 06:00:29,510 - INFO - tablename| Create new index idx_measurements_timestamp in table measurements
+2013-09-17 06:00:29,635 - INFO - tablename| Create new TOAST table pg_toast_18160 in table measurements
+2013-09-17 06:00:29,671 - INFO - tabletoastname| Create new TOAST index pg_toast_18160_index in table pg_toast_18160
+2013-09-17 06:00:29,744 - INFO - tablename| Create new index signature_bodies_pkey in table signature_bodies
+2013-09-17 06:00:29,779 - INFO - tablename| Create new TOAST table pg_toast_18222 in table signature_bodies
+2013-09-17 06:00:29,815 - INFO - tabletoastname| Create new TOAST index pg_toast_18222_index in table pg_toast_18222
+2013-09-17 06:00:29,888 - INFO - tablename| Create new index blockable_categories_category_port_pair_key in table blockable_categories
+2013-09-17 06:00:29,890 - INFO - tablename| Create new index blockable_categories_human_name_key in table blockable_categories
+2013-09-17 06:00:29,891 - INFO - tablename| Create new index blockable_categories_pkey in table blockable_categories
+2013-09-17 06:00:30,212 - INFO - tablename| Create new index index_users_on_account_and_lms_iden in table users
+2013-09-17 06:00:30,213 - INFO - tablename| Create new index users_pkey in table users
+2013-09-17 06:00:30,428 - INFO - tablename| Create new index recipients_pkey in table recipients
+2013-09-17 06:00:30,764 - INFO - tablename| Create new index incidents_pkey in table incidents
+2013-09-17 06:00:30,766 - INFO - tablename| Create new index idx_incidents_created_at in table incidents
+2013-09-17 06:00:30,767 - INFO - tablename| Create new index idx_incidents_page_url in table incidents
+2013-09-17 06:00:30,768 - INFO - tablename| Create new index idx_incidents_sensor_id in table incidents
+2013-09-17 06:00:30,895 - INFO - tablename| Create new TOAST table pg_toast_18109 in table incidents
+2013-09-17 06:00:30,955 - INFO - tabletoastname| Create new TOAST index pg_toast_18109_index in table pg_toast_18109
+2013-09-17 06:00:31,040 - INFO - tablename| Create new index ntp_servers_pkey in table ntp_servers
+2013-09-17 06:00:31,161 - INFO - tablename| Create new index malware_analyses_pkey in table malware_analyses
+2013-09-17 06:00:31,162 - INFO - tablename| Create new index fki_malware_analyses_email_analysis_id in table malware_analyses
+2013-09-17 06:00:31,163 - INFO - tablename| Create new index idx_malware_analyses_analysis_type in table malware_analyses
+2013-09-17 06:00:31,165 - INFO - tablename| Create new index idx_malware_analyses_data_encoding in table malware_analyses
+2013-09-17 06:00:31,166 - INFO - tablename| Create new index idx_malware_analyses_download_end in table malware_analyses
+2013-09-17 06:00:31,167 - INFO - tablename| Create new index idx_malware_analyses_email_analysis_id in table malware_analyses
+2013-09-17 06:00:31,169 - INFO - tablename| Create new index idx_malware_analyses_is_malicious in table malware_analyses
+2013-09-17 06:00:31,170 - INFO - tablename| Create new index idx_malware_analyses_l7proto in table malware_analyses
+2013-09-17 06:00:31,171 - INFO - tablename| Create new index idx_malware_analyses_lms_malware_analysis_id in table malware_analyses
+2013-09-17 06:00:31,173 - INFO - tablename| Create new index idx_malware_analyses_malware_scan_id in table malware_analyses
+2013-09-17 06:00:31,174 - INFO - tablename| Create new index idx_malware_analyses_md5sum in table malware_analyses
+2013-09-17 06:00:31,175 - INFO - tablename| Create new index idx_malware_analyses_orig_maid in table malware_analyses
+2013-09-17 06:00:31,177 - INFO - tablename| Create new index idx_malware_analyses_original_name in table malware_analyses
+2013-09-17 06:00:31,178 - INFO - tablename| Create new index idx_malware_analyses_parent_maid in table malware_analyses
+2013-09-17 06:00:31,180 - INFO - tablename| Create new index idx_malware_analyses_partial_submitted_by in table malware_analyses
+2013-09-17 06:00:31,181 - INFO - tablename| Create new index idx_malware_analyses_profile_name in table malware_analyses
+2013-09-17 06:00:31,182 - INFO - tablename| Create new index idx_malware_analyses_q_reason in table malware_analyses
+2013-09-17 06:00:31,184 - INFO - tablename| Create new index idx_malware_analyses_q_state in table malware_analyses
+2013-09-17 06:00:31,185 - INFO - tablename| Create new index idx_malware_analyses_q_username in table malware_analyses
+2013-09-17 06:00:31,186 - INFO - tablename| Create new index idx_malware_analyses_run_end in table malware_analyses
+2013-09-17 06:00:31,188 - INFO - tablename| Create new index idx_malware_analyses_run_start in table malware_analyses
+2013-09-17 06:00:31,189 - INFO - tablename| Create new index idx_malware_analyses_sensor_id in table malware_analyses
+2013-09-17 06:00:31,190 - INFO - tablename| Create new index idx_malware_analyses_sha256 in table malware_analyses
+2013-09-17 06:00:31,192 - INFO - tablename| Create new index idx_malware_analyses_shasum in table malware_analyses
+2013-09-17 06:00:31,193 - INFO - tablename| Create new index idx_malware_analyses_ssdeep in table malware_analyses
+2013-09-17 06:00:31,194 - INFO - tablename| Create new index idx_malware_analyses_state in table malware_analyses
+2013-09-17 06:00:31,196 - INFO - tablename| Create new index idx_malware_analyses_static_weight in table malware_analyses
+2013-09-17 06:00:31,197 - INFO - tablename| Create new index idx_malware_analyses_status_code in table malware_analyses
+2013-09-17 06:00:31,198 - INFO - tablename| Create new index idx_malware_analyses_submitted in table malware_analyses
+2013-09-17 06:00:31,200 - INFO - tablename| Create new index idx_malware_analyses_submitted_by in table malware_analyses
+2013-09-17 06:00:31,201 - INFO - tablename| Create new index idx_malware_analyses_url in table malware_analyses
+2013-09-17 06:00:31,202 - INFO - tablename| Create new index idx_malware_analyses_url_domain in table malware_analyses
+2013-09-17 06:00:31,204 - INFO - tablename| Create new index idx_malware_analyses_username in table malware_analyses
+2013-09-17 06:00:32,119 - INFO - tablename| Create new TOAST table pg_toast_18134 in table malware_analyses
+2013-09-17 06:00:32,156 - INFO - tabletoastname| Create new TOAST index pg_toast_18134_index in table pg_toast_18134
+2013-09-17 06:00:32,228 - INFO - tablename| Create new index filters_pkey in table filters
+2013-09-17 06:00:32,263 - INFO - tablename| Create new TOAST table pg_toast_18072 in table filters
+2013-09-17 06:00:32,300 - INFO - tabletoastname| Create new TOAST index pg_toast_18072_index in table pg_toast_18072
+2013-09-17 06:00:32,409 - INFO - tablename| Create new index cnc_services_pkey in table cnc_services
+2013-09-17 06:00:32,410 - INFO - tablename| Create new index idx_cnc_services_channel_exp in table cnc_services
+2013-09-17 06:00:32,412 - INFO - tablename| Create new index idx_cnc_services_channel_hash in table cnc_services
+2013-09-17 06:00:32,413 - INFO - tablename| Create new index idx_cnc_services_sensor_id in table cnc_services
+2013-09-17 06:00:32,414 - INFO - tablename| Create new index idx_cnc_services_server_dns_name in table cnc_services
+2013-09-17 06:00:32,539 - INFO - tablename| Create new TOAST table pg_toast_18026 in table cnc_services
+2013-09-17 06:00:32,624 - INFO - tabletoastname| Create new TOAST index pg_toast_18026_index in table pg_toast_18026
+2013-09-17 06:00:32,697 - INFO - tablename| Create new index blockable_signature_names_sig_name_port_pair_key in table blockable_signature_names
+2013-09-17 06:00:32,698 - INFO - tablename| Create new index blockable_signature_names_pkey in table blockable_signature_names
+2013-09-17 06:00:32,792 - INFO - tablename| Create new index fki_os_changes_event_id in table os_changes
+2013-09-17 06:00:32,794 - INFO - tablename| Create new index os_changes_pkey in table os_changes
+2013-09-17 06:00:32,851 - INFO - tablename| Create new TOAST table pg_toast_18173 in table os_changes
+2013-09-17 06:00:32,888 - INFO - tabletoastname| Create new TOAST index pg_toast_18173_index in table pg_toast_18173
+2013-09-17 06:00:32,996 - INFO - tablename| Create new index post_servers_pkey in table post_servers
+2013-09-17 06:00:33,069 - INFO - tablename| Create new index sensors_pkey in table sensors
+2013-09-17 06:00:33,152 - INFO - tablename| Create new TOAST table pg_toast_18205 in table sensors
+2013-09-17 06:00:33,188 - INFO - tabletoastname| Create new TOAST index pg_toast_18205_index in table pg_toast_18205
+2013-09-17 06:00:33,261 - INFO - tablename| Create new index blocks_pkey in table blocks
+2013-09-17 06:00:33,262 - INFO - tablename| Create new index idx_blocks_endipnum in table blocks
+2013-09-17 06:00:33,264 - INFO - tablename| Create new index idx_blocks_startipnum in table blocks
+2013-09-17 06:00:33,265 - INFO - tablename| Create new index ix_end_start_ip in table blocks
+2013-09-17 06:00:33,267 - INFO - tablename| Create new index ix_start_end_ip in table blocks
+2013-09-17 06:00:33,441 - INFO - tablename| Create new index index_greylists_on_url in table greylists
+2013-09-17 06:00:33,442 - INFO - tablename| Create new index greylists_pkey in table greylists
+2013-09-17 06:00:33,500 - INFO - tablename| Create new TOAST table pg_toast_18088 in table greylists
+2013-09-17 06:00:33,562 - INFO - tabletoastname| Create new TOAST index pg_toast_18088_index in table pg_toast_18088
+2013-09-17 06:00:33,681 - INFO - tablename| Create new index email_analyses_pkey in table email_analyses
+2013-09-17 06:00:33,682 - INFO - tablename| Create new index idx_email_analyses_attch_bad in table email_analyses
+2013-09-17 06:00:33,684 - INFO - tablename| Create new index idx_email_analyses_from in table email_analyses
+2013-09-17 06:00:33,685 - INFO - tablename| Create new index idx_email_analyses_from_domain in table email_analyses
+2013-09-17 06:00:33,687 - INFO - tablename| Create new index idx_email_analyses_last_malware in table email_analyses
+2013-09-17 06:00:33,688 - INFO - tablename| Create new index idx_email_analyses_messageid in table email_analyses
+2013-09-17 06:00:33,689 - INFO - tablename| Create new index idx_email_analyses_processed_date in table email_analyses
+2013-09-17 06:00:33,691 - INFO - tablename| Create new index idx_email_analyses_queueid in table email_analyses
+2013-09-17 06:00:33,692 - INFO - tablename| Create new index idx_email_analyses_state in table email_analyses
+2013-09-17 06:00:33,693 - INFO - tablename| Create new index idx_email_analyses_to in table email_analyses
+2013-09-17 06:00:33,695 - INFO - tablename| Create new index idx_email_analyses_url_bad in table email_analyses
+2013-09-17 06:00:34,016 - INFO - tablename| Create new TOAST table pg_toast_18053 in table email_analyses
+2013-09-17 06:00:34,052 - INFO - tabletoastname| Create new TOAST index pg_toast_18053_index in table pg_toast_18053
+2013-09-17 06:00:34,125 - INFO - tablename| Create new index record_maximums_table_name in table record_maximums
+2013-09-17 06:00:34,257 - INFO - tablename| Create new index malware_scans_pkey in table malware_scans
+2013-09-17 06:00:34,259 - INFO - tablename| Create new index idx_malware_scans_quarantine_name in table malware_scans
+2013-09-17 06:00:34,260 - INFO - tablename| Create new index idx_malware_scans_username in table malware_scans
+2013-09-17 06:00:34,261 - INFO - tablename| Create new index index_malware_scans_on_name in table malware_scans
+2013-09-17 06:00:34,263 - INFO - tablename| Create new index index_malware_scans_on_scan_url in table malware_scans
+2013-09-17 06:00:34,264 - INFO - tablename| Create new index index_malware_scans_on_sensor_id in table malware_scans
+2013-09-17 06:00:34,265 - INFO - tablename| Create new index index_malware_scans_on_status in table malware_scans
+2013-09-17 06:00:34,448 - INFO - tablename| Create new TOAST table pg_toast_18151 in table malware_scans
+2013-09-17 06:00:34,484 - INFO - tabletoastname| Create new TOAST index pg_toast_18151_index in table pg_toast_18151
+2013-09-17 06:00:34,557 - INFO - tablename| Create new index sessions_pkey in table sessions
+2013-09-17 06:00:34,559 - INFO - tablename| Create new index index_sessions_on_session_id in table sessions
+2013-09-17 06:00:34,560 - INFO - tablename| Create new index index_sessions_on_updated_at in table sessions
+2013-09-17 06:00:34,640 - INFO - tablename| Create new TOAST table pg_toast_18214 in table sessions
+2013-09-17 06:00:34,736 - INFO - tabletoastname| Create new TOAST index pg_toast_18214_index in table pg_toast_18214
+2013-09-17 06:00:34,809 - INFO - tablename| Create new index alerts_pkey in table alerts
+2013-09-17 06:00:34,811 - INFO - tablename| Create new index idx_alerts_acknowledged in table alerts
+2013-09-17 06:00:34,812 - INFO - tablename| Create new index idx_alerts_block in table alerts
+2013-09-17 06:00:34,813 - INFO - tablename| Create new index idx_alerts_dst_ip in table alerts
+2013-09-17 06:00:34,815 - INFO - tablename| Create new index idx_alerts_email_analysis_id in table alerts
+2013-09-17 06:00:34,816 - INFO - tablename| Create new index idx_alerts_et10id in table alerts
+2013-09-17 06:00:34,818 - INFO - tablename| Create new index idx_alerts_has_av in table alerts
+2013-09-17 06:00:34,819 - INFO - tablename| Create new index idx_alerts_has_ids in table alerts
+2013-09-17 06:00:34,820 - INFO - tablename| Create new index idx_alerts_id_arr in table alerts
+2013-09-17 06:00:34,822 - INFO - tablename| Create new index idx_alerts_inb_inf in table alerts
+2013-09-17 06:00:34,823 - INFO - tablename| Create new index idx_alerts_incident_id in table alerts
+2013-09-17 06:00:34,824 - INFO - tablename| Create new index idx_alerts_inf_id in table alerts
+2013-09-17 06:00:34,826 - INFO - tablename| Create new index idx_alerts_inf_type in table alerts
+2013-09-17 06:00:34,827 - INFO - tablename| Create new index idx_alerts_lms_iden in table alerts
+2013-09-17 06:00:34,829 - INFO - tablename| Create new index idx_alerts_ma_submitted in table alerts
+2013-09-17 06:00:34,830 - INFO - tablename| Create new index idx_alerts_ma_url in table alerts
+2013-09-17 06:00:34,831 - INFO - tablename| Create new index idx_alerts_malware_analysis_id in table alerts
+2013-09-17 06:00:34,833 - INFO - tablename| Create new index idx_alerts_malware_scan_id in table alerts
+2013-09-17 06:00:34,834 - INFO - tablename| Create new index idx_alerts_malware_type in table alerts
+2013-09-17 06:00:34,835 - INFO - tablename| Create new index idx_alerts_multi in table alerts
+2013-09-17 06:00:34,836 - INFO - tablename| Create new index idx_alerts_parent_maid in table alerts
+2013-09-17 06:00:34,838 - INFO - tablename| Create new index idx_alerts_recipient in table alerts
+2013-09-17 06:00:34,839 - INFO - tablename| Create new index idx_alerts_sender in table alerts
+2013-09-17 06:00:34,841 - INFO - tablename| Create new index idx_alerts_src_ip in table alerts
+2013-09-17 06:00:34,842 - INFO - tablename| Create new index idx_alerts_trace_iden in table alerts
+2013-09-17 06:00:34,843 - INFO - tablename| Create new index idx_alerts_vlan in table alerts
+2013-09-17 06:00:35,576 - INFO - tablename| Create new TOAST table pg_toast_17964 in table alerts
+2013-09-17 06:00:35,612 - INFO - tabletoastname| Create new TOAST index pg_toast_17964_index in table pg_toast_17964
+2013-09-17 06:00:35,686 - INFO - tablename| Create new index data_thefts_pkey in table data_thefts
+2013-09-17 06:00:35,687 - INFO - tablename| Create new index fki_data_thefts_event_id in table data_thefts
+2013-09-17 06:00:35,688 - INFO - tablename| Create new index idx_data_thefts_event_id in table data_thefts
+2013-09-17 06:00:35,768 - INFO - tablename| Create new TOAST table pg_toast_18045 in table data_thefts
+2013-09-17 06:00:35,804 - INFO - tabletoastname| Create new TOAST index pg_toast_18045_index in table pg_toast_18045
+2013-09-17 06:00:35,937 - INFO - tablename| Create new index bot_activities_pkey in table bot_activities
+2013-09-17 06:00:35,984 - INFO - tablename| Create new TOAST table pg_toast_17989 in table bot_activities
+2013-09-17 06:00:36,020 - INFO - tabletoastname| Create new TOAST index pg_toast_17989_index in table pg_toast_17989
+2013-09-17 06:00:36,117 - INFO - tablename| Create new index index_bot_locations_on_ip in table bot_locations
+2013-09-17 06:00:36,119 - INFO - tablename| Create new index bot_locations_pkey in table bot_locations
+2013-09-17 06:00:36,176 - INFO - tablename| Create new TOAST table pg_toast_18005 in table bot_locations
+2013-09-17 06:00:36,212 - INFO - tabletoastname| Create new TOAST index pg_toast_18005_index in table pg_toast_18005
+2013-09-17 06:00:36,285 - INFO - tablename| Create new index index_acknowledgements_on_src_ip in table acknowledgements
+2013-09-17 06:00:36,287 - INFO - tablename| Create new index acknowledgements_pkey in table acknowledgements
+2013-09-17 06:00:36,388 - INFO - tablename| Create new TOAST table pg_toast_17954 in table acknowledgements
+2013-09-17 06:00:36,440 - INFO - tabletoastname| Create new TOAST index pg_toast_17954_index in table pg_toast_17954
+2013-09-17 06:00:36,537 - INFO - tablename| Create new index bot_dns_map_pkey in table bot_dns_map
+2013-09-17 06:00:36,584 - INFO - tablename| Create new TOAST table pg_toast_17997 in table bot_dns_map
+2013-09-17 06:00:36,620 - INFO - tabletoastname| Create new TOAST index pg_toast_17997_index in table pg_toast_17997
+2013-09-17 06:00:36,717 - INFO - tablename| Create new index guest_images_pkey in table guest_images
+2013-09-17 06:00:36,789 - INFO - tablename| Create new index trap_sinks_pkey in table trap_sinks
+2013-09-17 06:00:36,909 - INFO - tablename| Create new index locations_pkey in table locations
+2013-09-17 06:00:37,018 - INFO - tablename| Create new index events_pkey in table events
+2013-09-17 06:00:37,019 - INFO - tablename| Create new index fki_events_incident_id in table events
+2013-09-17 06:00:37,021 - INFO - tablename| Create new index fki_events_malware_analysis_id in table events
+2013-09-17 06:00:37,022 - INFO - tablename| Create new index idx_events_acknowledged in table events
+2013-09-17 06:00:37,023 - INFO - tablename| Create new index idx_events_analysis_type in table events
+2013-09-17 06:00:37,025 - INFO - tablename| Create new index idx_events_dst_ip in table events
+2013-09-17 06:00:37,026 - INFO - tablename| Create new index idx_events_event_type in table events
+2013-09-17 06:00:37,027 - INFO - tablename| Create new index idx_events_incident_id in table events
+2013-09-17 06:00:37,029 - INFO - tablename| Create new index idx_events_lms_iden in table events
+2013-09-17 06:00:37,030 - INFO - tablename| Create new index idx_events_malware_analysis_id in table events
+2013-09-17 06:00:37,031 - INFO - tablename| Create new index idx_events_occurred in table events
+2013-09-17 06:00:37,033 - INFO - tablename| Create new index idx_events_processed in table events
+2013-09-17 06:00:37,034 - INFO - tablename| Create new index idx_events_sensor_id in table events
+2013-09-17 06:00:37,035 - INFO - tablename| Create new index idx_events_signature_name in table events
+2013-09-17 06:00:37,037 - INFO - tablename| Create new index idx_events_src_ip in table events
+2013-09-17 06:00:37,038 - INFO - tablename| Create new index idx_events_trace_iden in table events
+2013-09-17 06:00:37,496 - INFO - tablename| Create new TOAST table pg_toast_18062 in table events
+2013-09-17 06:00:37,533 - INFO - tabletoastname| Create new TOAST index pg_toast_18062_index in table pg_toast_18062
+2013-09-17 06:00:37,606 - INFO - tablename| Create new index runnable_images_pkey in table runnable_images
+2013-09-17 06:00:37,678 - INFO - tablename| Create new index global_configs_pkey in table global_configs
+2013-09-17 06:00:37,713 - INFO - tablename| Create new TOAST table pg_toast_18080 in table global_configs
+2013-09-17 06:00:37,749 - INFO - tabletoastname| Create new TOAST index pg_toast_18080_index in table pg_toast_18080
+2013-09-17 06:00:37,822 - INFO - tablename| Create new index configurations_pkey in table configurations
+2013-09-17 06:00:37,857 - INFO - tablename| Create new TOAST table pg_toast_18037 in table configurations
+2013-09-17 06:00:37,941 - INFO - tabletoastname| Create new TOAST index pg_toast_18037_index in table pg_toast_18037
+2013-09-17 06:00:38,014 - INFO - tablename| Create new index fki_jurls_incident_id in table jurls
+2013-09-17 06:00:38,015 - INFO - tablename| Create new index jurls_pkey in table jurls
+2013-09-17 06:00:38,073 - INFO - tablename| Create new TOAST table pg_toast_18118 in table jurls
+2013-09-17 06:00:38,109 - INFO - tabletoastname| Create new TOAST index pg_toast_18118_index in table pg_toast_18118
+2013-09-17 06:00:38,182 - INFO - tablename| Create new index index_cnc_locations_on_server_dns_name in table cnc_locations
+2013-09-17 06:00:38,183 - INFO - tablename| Create new index cnc_locations_pkey in table cnc_locations
+2013-09-17 06:00:38,241 - INFO - tablename| Create new TOAST table pg_toast_18018 in table cnc_locations
+2013-09-17 06:00:38,277 - INFO - tabletoastname| Create new TOAST index pg_toast_18018_index in table pg_toast_18018
+2013-09-17 06:00:38,350 - INFO - tablename| Create new index malware_infos_pkey in table malware_infos
+2013-09-17 06:00:38,351 - INFO - tablename| Create new index fki_malware_infos_malware_analysis_id in table malware_infos
+2013-09-17 06:00:38,353 - INFO - tablename| Create new index index_malware_infos_on_malware_analysis_id in table malware_infos
+2013-09-17 06:00:38,354 - INFO - tablename| Create new index index_malware_infos_on_sensor_id in table malware_infos
+2013-09-17 06:00:38,356 - INFO - tablename| Create new index index_malware_infos_on_tool_name in table malware_infos
+2013-09-17 06:00:38,357 - INFO - tablename| Create new index index_malware_infos_on_tool_version in table malware_infos
+2013-09-17 06:00:38,565 - INFO - tablename| Create new TOAST table pg_toast_18142 in table malware_infos
+2013-09-17 06:00:38,601 - INFO - tabletoastname| Create new TOAST index pg_toast_18142_index in table pg_toast_18142
+2013-09-17 06:00:38,674 - INFO - tablename| Create new index fki_cnc_services_events_cnc_service_id in table cnc_services_events
+2013-09-17 06:00:38,675 - INFO - tablename| Create new index fki_cnc_services_events_event_id in table cnc_services_events
+2013-09-17 06:00:38,677 - INFO - tablename| Create new index idx_cnc_services_events_sensor_id in table cnc_services_events
+2013-09-17 06:00:38,818 - INFO - tablename| Create new index capture_policies_pkey in table capture_policies
+2013-09-17 06:00:38,987 - INFO - schemaname| Created new table: table_stat in schema public
+2013-09-17 06:00:38,988 - INFO - schemaname| Created new table: index_name in schema public
+2013-09-17 06:00:38,989 - INFO - schemaname| Created new table: function_stat in schema public
+2013-09-17 06:00:38,991 - INFO - schemaname| Created new table: table_name in schema public
+2013-09-17 06:00:38,992 - INFO - schemaname| Created new table: table_va_stat in schema public
+2013-09-17 06:00:38,993 - INFO - schemaname| Created new table: host_cluster in schema public
+2013-09-17 06:00:38,995 - INFO - schemaname| Created new table: schema_name in schema public
+2013-09-17 06:00:38,996 - INFO - schemaname| Created new table: table_toast_name in schema public
+2013-09-17 06:00:38,997 - INFO - schemaname| Created new table: log_time in schema public
+2013-09-17 06:00:38,999 - INFO - schemaname| Created new table: database_name in schema public
+2013-09-17 06:00:39,000 - INFO - schemaname| Created new table: index_toast_stat in schema public
+2013-09-17 06:00:39,002 - INFO - schemaname| Created new table: database_stat in schema public
+2013-09-17 06:00:39,003 - INFO - schemaname| Created new table: bgwriter_stat in schema public
+2013-09-17 06:00:39,004 - INFO - schemaname| Created new table: index_toast_name in schema public
+2013-09-17 06:00:39,006 - INFO - schemaname| Created new table: function_name in schema public
+2013-09-17 06:00:39,007 - INFO - schemaname| Created new table: index_stat in schema public
+2013-09-17 06:00:39,008 - INFO - schemaname| Created new table: table_toast_stat in schema public
+2013-09-17 06:00:39,146 - INFO - schemaname| Created new function: get_conn_string in schema public
+2013-09-17 06:00:39,147 - INFO - schemaname| Created new function: get_conn_string in schema public
+2013-09-17 06:00:39,149 - INFO - schemaname| Created new function: get_conn_string in schema public
+2013-09-17 06:00:39,150 - INFO - schemaname| Created new function: remove_databases in schema public
+2013-09-17 06:00:39,151 - INFO - schemaname| Created new function: remove_functions in schema public
+2013-09-17 06:00:39,153 - INFO - schemaname| Created new function: remove_indexes in schema public
+2013-09-17 06:00:39,154 - INFO - schemaname| Created new function: remove_schemas in schema public
+2013-09-17 06:00:39,155 - INFO - schemaname| Created new function: remove_tables in schema public
+2013-09-17 06:00:39,157 - INFO - schemaname| Created new function: remove_toas_indexes in schema public
+2013-09-17 06:00:39,158 - INFO - schemaname| Created new function: remove_toast_tables in schema public
+2013-09-17 06:00:39,159 - INFO - schemaname| Created new function: suspend_schemas in schema public
+2013-09-17 06:00:39,161 - INFO - schemaname| Created new function: terminate_change in schema public
+2013-09-17 06:00:39,162 - INFO - schemaname| Created new function: test_log_time in schema public
+2013-09-17 06:00:39,311 - INFO - tablename| Create new index table_stat_pkey in table table_stat
+2013-09-17 06:00:39,312 - INFO - tablename| Create new index table_stat_tn_id_time_id_key in table table_stat
+2013-09-17 06:00:39,406 - INFO - tablename| Create new index index_name_pkey in table index_name
+2013-09-17 06:00:39,408 - INFO - tablename| Create new index index_name_tn_id_idx_name_idx in table index_name
+2013-09-17 06:00:39,465 - INFO - tablename| Create new TOAST table pg_toast_18995 in table index_name
+2013-09-17 06:00:39,501 - INFO - tabletoastname| Create new TOAST index pg_toast_18995_index in table pg_toast_18995
+2013-09-17 06:00:39,574 - INFO - tablename| Create new index function_stat_fn_id_time_id_key in table function_stat
+2013-09-17 06:00:39,576 - INFO - tablename| Create new index function_stat_pkey in table function_stat
+2013-09-17 06:00:39,718 - INFO - tablename| Create new index table_name_pkey in table table_name
+2013-09-17 06:00:39,753 - INFO - tablename| Create new TOAST table pg_toast_19039 in table table_name
+2013-09-17 06:00:39,789 - INFO - tabletoastname| Create new TOAST index pg_toast_19039_index in table pg_toast_19039
+2013-09-17 06:00:39,862 - INFO - tablename| Create new index table_va_stat_pkey in table table_va_stat
+2013-09-17 06:00:39,864 - INFO - tablename| Create new index table_va_stat_tn_id_time_id_key in table table_va_stat
+2013-09-17 06:00:39,958 - INFO - tablename| Create new index dbhost_pkey in table host_cluster
+2013-09-17 06:00:39,960 - INFO - tablename| Create new index host_cluster_ip_address_pg_data_path_key in table host_cluster
+2013-09-17 06:00:40,017 - INFO - tablename| Create new TOAST table pg_toast_18985 in table host_cluster
+2013-09-17 06:00:40,054 - INFO - tabletoastname| Create new TOAST index pg_toast_18985_index in table pg_toast_18985
+2013-09-17 06:00:40,174 - INFO - tablename| Create new index schema_name_pkey in table schema_name
+2013-09-17 06:00:40,176 - INFO - tablename| Create new index schema_name_dn_id_sch_name_idx in table schema_name
+2013-09-17 06:00:40,233 - INFO - tablename| Create new TOAST table pg_toast_19030 in table schema_name
+2013-09-17 06:00:40,270 - INFO - tabletoastname| Create new TOAST index pg_toast_19030_index in table pg_toast_19030
+2013-09-17 06:00:40,342 - INFO - tablename| Create new index table_toast_name_pkey in table table_toast_name
+2013-09-17 06:00:40,377 - INFO - tablename| Create new TOAST table pg_toast_19054 in table table_toast_name
+2013-09-17 06:00:40,414 - INFO - tabletoastname| Create new TOAST index pg_toast_19054_index in table pg_toast_19054
+2013-09-17 06:00:40,486 - INFO - tablename| Create new index log_time_pkey in table log_time
+2013-09-17 06:00:40,488 - INFO - tablename| Create new index log_time_hour_truncate_idx in table log_time
+2013-09-17 06:00:40,582 - INFO - tablename| Create new index database_name_pkey in table database_name
+2013-09-17 06:00:40,677 - INFO - tablename| Create new TOAST table pg_toast_18957 in table database_name
+2013-09-17 06:00:40,714 - INFO - tabletoastname| Create new TOAST index pg_toast_18957_index in table pg_toast_18957
+2013-09-17 06:00:40,786 - INFO - tablename| Create new index index_toast_stat_pkey in table index_toast_stat
+2013-09-17 06:00:40,788 - INFO - tablename| Create new index index_toast_stat_tn_id_time_id_key in table index_toast_stat
+2013-09-17 06:00:40,883 - INFO - tablename| Create new index database_stat_dn_id_time_id_key in table database_stat
+2013-09-17 06:00:40,884 - INFO - tablename| Create new index database_stat_pkey in table database_stat
+2013-09-17 06:00:40,979 - INFO - tablename| Create new index bgwriter_stat_hc_id_time_id_key in table bgwriter_stat
+2013-09-17 06:00:40,980 - INFO - tablename| Create new index bgwriter_stat_pkey in table bgwriter_stat
+2013-09-17 06:00:41,075 - INFO - tablename| Create new index index_toast_name_pkey in table index_toast_name
+2013-09-17 06:00:41,109 - INFO - tablename| Create new TOAST table pg_toast_19009 in table index_toast_name
+2013-09-17 06:00:41,326 - INFO - tabletoastname| Create new TOAST index pg_toast_19009_index in table pg_toast_19009
+2013-09-17 06:00:41,555 - INFO - tablename| Create new index function_name_pkey in table function_name
+2013-09-17 06:00:41,602 - INFO - tablename| Create new TOAST table pg_toast_18971 in table function_name
+2013-09-17 06:00:41,662 - INFO - tabletoastname| Create new TOAST index pg_toast_18971_index in table pg_toast_18971
+2013-09-17 06:00:41,759 - INFO - tablename| Create new index index_stat_in_id_time_id_key in table index_stat
+2013-09-17 06:00:41,760 - INFO - tablename| Create new index index_stat_pkey in table index_stat
+2013-09-17 06:00:41,915 - INFO - tablename| Create new index table_toast_stat_pkey in table table_toast_stat
+2013-09-17 06:00:41,916 - INFO - tablename| Create new index table_toast_stat_tn_id_time_id_key in table table_toast_stat
+2013-09-17 06:00:42,270 - INFO - schemaname| Created new table: list_all_apps in schema public
+2013-09-17 06:00:42,272 - INFO - schemaname| Created new table: list_supported_file_types in schema public
+2013-09-17 06:00:42,273 - INFO - schemaname| Created new table: gi_set in schema public
+2013-09-17 06:00:42,274 - INFO - schemaname| Created new table: list_all_os in schema public
+2013-09-17 06:00:42,275 - INFO - schemaname| Created new table: map_dfa in schema public
+2013-09-17 06:00:42,277 - INFO - schemaname| Created new table: product_type in schema public
+2013-09-17 06:00:42,278 - INFO - schemaname| Created new table: map_gi_product in schema public
+2013-09-17 06:00:42,279 - INFO - schemaname| Created new table: map_gs_os in schema public
+2013-09-17 06:00:42,479 - INFO - tablename| Create new index list_all_apps_pkey in table list_all_apps
+2013-09-17 06:00:42,514 - INFO - tablename| Create new TOAST table pg_toast_19284 in table list_all_apps
+2013-09-17 06:00:42,550 - INFO - tabletoastname| Create new TOAST index pg_toast_19284_index in table pg_toast_19284
+2013-09-17 06:00:42,623 - INFO - tablename| Create new index list_supported_file_types_pkey in table list_supported_file_types
+2013-09-17 06:00:42,658 - INFO - tablename| Create new TOAST table pg_toast_19300 in table list_supported_file_types
+2013-09-17 06:00:42,694 - INFO - tabletoastname| Create new TOAST index pg_toast_19300_index in table pg_toast_19300
+2013-09-17 06:00:42,767 - INFO - tablename| Create new index gi_set_pkey in table gi_set
+2013-09-17 06:00:42,802 - INFO - tablename| Create new TOAST table pg_toast_19276 in table gi_set
+2013-09-17 06:00:42,886 - INFO - tabletoastname| Create new TOAST index pg_toast_19276_index in table pg_toast_19276
+2013-09-17 06:00:42,959 - INFO - tablename| Create new index list_all_os_pkey in table list_all_os
+2013-09-17 06:00:42,994 - INFO - tablename| Create new TOAST table pg_toast_19292 in table list_all_os
+2013-09-17 06:00:43,030 - INFO - tabletoastname| Create new TOAST index pg_toast_19292_index in table pg_toast_19292
+2013-09-17 06:00:43,103 - INFO - tablename| Create new index map_dfa_pkey in table map_dfa
+2013-09-17 06:00:43,176 - INFO - tablename| Create new index product_type_pkey in table product_type
+2013-09-17 06:00:43,211 - INFO - tablename| Create new TOAST table pg_toast_19324 in table product_type
+2013-09-17 06:00:43,247 - INFO - tabletoastname| Create new TOAST index pg_toast_19324_index in table pg_toast_19324
+2013-09-17 06:00:43,320 - INFO - tablename| Create new index map_gi_product_pkey in table map_gi_product
+2013-09-17 06:00:43,440 - INFO - tablename| Create new index map_gs_os_pkey in table map_gs_os
+2013-09-17 06:00:43,563 - INFO - schemaname| Created new table: service in schema public
+2013-09-17 06:00:43,564 - INFO - schemaname| Created new table: states in schema public
+2013-09-17 06:00:43,565 - INFO - schemaname| Created new table: subject in schema public
+2013-09-17 06:00:43,567 - INFO - schemaname| Created new table: message in schema public
+2013-09-17 06:00:43,568 - INFO - schemaname| Created new table: items in schema public
+2013-09-17 06:00:43,569 - INFO - schemaname| Created new table: item_service in schema public
+2013-09-17 06:00:43,571 - INFO - schemaname| Created new table: orders in schema public
+2013-09-17 06:00:43,572 - INFO - schemaname| Created new table: basic_service in schema public
+2013-09-17 06:00:43,843 - INFO - tablename| Create new index service_pkey in table service
+2013-09-17 06:00:43,943 - INFO - tablename| Create new TOAST table pg_toast_19435 in table service
+2013-09-17 06:00:43,980 - INFO - tabletoastname| Create new TOAST index pg_toast_19435_index in table pg_toast_19435
+2013-09-17 06:00:44,052 - INFO - tablename| Create new index states_pkey in table states
+2013-09-17 06:00:44,087 - INFO - tablename| Create new TOAST table pg_toast_19443 in table states
+2013-09-17 06:00:44,124 - INFO - tabletoastname| Create new TOAST index pg_toast_19443_index in table pg_toast_19443
+2013-09-17 06:00:44,196 - INFO - tablename| Create new index subject_pkey in table subject
+2013-09-17 06:00:44,231 - INFO - tablename| Create new TOAST table pg_toast_19449 in table subject
+2013-09-17 06:00:44,268 - INFO - tabletoastname| Create new TOAST index pg_toast_19449_index in table pg_toast_19449
+2013-09-17 06:00:44,341 - INFO - tablename| Create new index message_pkey in table message
+2013-09-17 06:00:44,376 - INFO - tablename| Create new TOAST table pg_toast_19415 in table message
+2013-09-17 06:00:44,460 - INFO - tabletoastname| Create new TOAST index pg_toast_19415_index in table pg_toast_19415
+2013-09-17 06:00:44,533 - INFO - tablename| Create new index items_pkey in table items
+2013-09-17 06:00:44,568 - INFO - tablename| Create new TOAST table pg_toast_19407 in table items
+2013-09-17 06:00:44,604 - INFO - tabletoastname| Create new TOAST index pg_toast_19407_index in table pg_toast_19407
+2013-09-17 06:00:44,677 - INFO - tablename| Create new index item_service_pkey in table item_service
+2013-09-17 06:00:44,712 - INFO - tablename| Create new TOAST table pg_toast_19399 in table item_service
+2013-09-17 06:00:44,748 - INFO - tabletoastname| Create new TOAST index pg_toast_19399_index in table pg_toast_19399
+2013-09-17 06:00:44,821 - INFO - tablename| Create new index order_pkey in table orders
+2013-09-17 06:00:44,856 - INFO - tablename| Create new TOAST table pg_toast_19424 in table orders
+2013-09-17 06:00:44,892 - INFO - tabletoastname| Create new TOAST index pg_toast_19424_index in table pg_toast_19424
+2013-09-17 06:00:45,025 - INFO - tablename| Create new index basic_service_pkey in table basic_service
+2013-09-17 06:00:45,060 - INFO - tablename| Create new TOAST table pg_toast_19391 in table basic_service
+2013-09-17 06:00:45,096 - INFO - tabletoastname| Create new TOAST index pg_toast_19391_index in table pg_toast_19391
+2013-09-17 06:00:45,254 - INFO - schemaname| Created new table: offer_impression_2011_10_01 in schema public
+2013-09-17 06:00:45,255 - INFO - schemaname| Created new table: offer_impression in schema public
+2013-09-17 06:00:45,257 - INFO - schemaname| Created new table: oi_1 in schema public
+2013-09-17 06:00:45,258 - INFO - schemaname| Created new table: oi_2 in schema public
+2013-09-17 06:00:45,259 - INFO - schemaname| Created new table: oi_3 in schema public
+2013-09-17 06:00:45,261 - INFO - schemaname| Created new table: person in schema public
+2013-09-17 06:00:45,262 - INFO - schemaname| Created new table: phone_number in schema public
+2013-09-17 06:00:45,263 - INFO - schemaname| Created new table: table_3 in schema public
+2013-09-17 06:00:45,388 - INFO - schemaname| Created new function: create_next_oi in schema public
+2013-09-17 06:00:45,390 - INFO - schemaname| Created new function: name_date_format in schema public
+2013-09-17 06:00:45,391 - INFO - schemaname| Created new function: name_date_format in schema public
+2013-09-17 06:00:45,541 - INFO - tablename| Create new index offer_impression_pkey in table offer_impression
+2013-09-17 06:00:45,769 - INFO - tablename| Create new index person_pkey in table person
+2013-09-17 06:00:45,804 - INFO - tablename| Create new TOAST table pg_toast_19538 in table person
+2013-09-17 06:00:45,840 - INFO - tabletoastname| Create new TOAST index pg_toast_19538_index in table pg_toast_19538
+2013-09-17 06:00:45,913 - INFO - tablename| Create new index phone_number_pkey in table phone_number
+2013-09-17 06:00:45,948 - INFO - tablename| Create new TOAST table pg_toast_19546 in table phone_number
+2013-09-17 06:00:46,032 - INFO - tabletoastname| Create new TOAST index pg_toast_19546_index in table pg_toast_19546
+2013-09-17 06:00:46,105 - INFO - tablename| Create new index table_3_pkey in table table_3
+2013-09-17 06:00:46,140 - INFO - tablename| Create new TOAST table pg_toast_19554 in table table_3
+2013-09-17 06:00:46,176 - INFO - tabletoastname| Create new TOAST index pg_toast_19554_index in table pg_toast_19554
+2013-09-17 06:00:46,248 - INFO - schemaname| Created new table: database_name in schema public
+2013-09-17 06:00:46,249 - INFO - schemaname| Created new table: host_cluster in schema public
+2013-09-17 06:00:46,251 - INFO - schemaname| Created new table: function_stat in schema public
+2013-09-17 06:00:46,252 - INFO - schemaname| Created new table: log_time in schema public
+2013-09-17 06:00:46,253 - INFO - schemaname| Created new table: function_name in schema public
+2013-09-17 06:00:46,255 - INFO - schemaname| Created new table: log_time_mt in schema public
+2013-09-17 06:00:46,256 - INFO - schemaname| Created new table: table_toast_stat in schema public
+2013-09-17 06:00:46,257 - INFO - schemaname| Created new table: index_name in schema public
+2013-09-17 06:00:46,259 - INFO - schemaname| Created new table: index_toast_stat in schema public
+2013-09-17 06:00:46,260 - INFO - schemaname| Created new table: db_runtime_stat in schema public
+2013-09-17 06:00:46,261 - INFO - schemaname| Created new table: index_toast_name in schema public
+2013-09-17 06:00:46,263 - INFO - schemaname| Created new table: cluster_runtime_stat in schema public
+2013-09-17 06:00:46,264 - INFO - schemaname| Created new table: table_name in schema public
+2013-09-17 06:00:46,265 - INFO - schemaname| Created new table: database_stat in schema public
+2013-09-17 06:00:46,267 - INFO - schemaname| Created new table: schema_name in schema public
+2013-09-17 06:00:46,268 - INFO - schemaname| Created new table: table_va_stat in schema public
+2013-09-17 06:00:46,269 - INFO - schemaname| Created new table: bgwriter_stat in schema public
+2013-09-17 06:00:46,270 - INFO - schemaname| Created new table: table_stat in schema public
+2013-09-17 06:00:46,272 - INFO - schemaname| Created new table: enum_sslmode in schema public
+2013-09-17 06:00:46,273 - INFO - schemaname| Created new table: enum_track_functions in schema public
+2013-09-17 06:00:46,274 - INFO - schemaname| Created new table: index_stat in schema public
+2013-09-17 06:00:46,276 - INFO - schemaname| Created new table: table_toast_name in schema public
+2013-09-17 06:00:46,287 - INFO - schemaname| Created new function: pm_bgwriter_stat_diff in schema public
+2013-09-17 06:00:46,289 - INFO - schemaname| Created new function: pm_database_stat_diff in schema public
+2013-09-17 06:00:46,290 - INFO - schemaname| Created new function: pm_function_stat_diff in schema public
+2013-09-17 06:00:46,291 - INFO - schemaname| Created new function: remove_toas_indexes in schema public
+2013-09-17 06:00:46,293 - INFO - schemaname| Created new function: remove_toast_tables in schema public
+2013-09-17 06:00:46,294 - INFO - schemaname| Created new function: pm_index_stat_diff in schema public
+2013-09-17 06:00:46,296 - INFO - schemaname| Created new function: pm_index_toast_stat_diff in schema public
+2013-09-17 06:00:46,297 - INFO - schemaname| Created new function: pm_table_stat_diff in schema public
+2013-09-17 06:00:46,298 - INFO - schemaname| Created new function: pm_table_toast_stat_diff in schema public
+2013-09-17 06:00:46,300 - INFO - schemaname| Created new function: remove_databases in schema public
+2013-09-17 06:00:46,301 - INFO - schemaname| Created new function: remove_functions in schema public
+2013-09-17 06:00:46,302 - INFO - schemaname| Created new function: remove_indexes in schema public
+2013-09-17 06:00:46,304 - INFO - schemaname| Created new function: remove_schemas in schema public
+2013-09-17 06:00:46,305 - INFO - schemaname| Created new function: remove_tables in schema public
+2013-09-17 06:00:46,306 - INFO - schemaname| Created new function: suspend_schemas in schema public
+2013-09-17 06:00:46,308 - INFO - schemaname| Created new function: terminate_change in schema public
+2013-09-17 06:00:46,309 - INFO - schemaname| Created new function: vw_hot_update_pct in schema public
+2013-09-17 06:00:46,310 - INFO - schemaname| Created new function: vw_index_pct in schema public
+2013-09-17 06:00:46,312 - INFO - schemaname| Created new function: vw_table_hip_pct in schema public
+2013-09-17 06:00:46,313 - INFO - schemaname| Created new function: vw_table_idx_hip_pct in schema public
+2013-09-17 06:00:46,314 - INFO - schemaname| Created new function: vw_table_modify_pct in schema public
+2013-09-17 06:00:46,357 - INFO - tablename| Create new index database_name_pkey in table database_name
+2013-09-17 06:00:46,392 - INFO - tablename| Create new TOAST table pg_toast_20121 in table database_name
+2013-09-17 06:00:46,428 - INFO - tabletoastname| Create new TOAST index pg_toast_20121_index in table pg_toast_20121
+2013-09-17 06:00:46,595 - INFO - tablename| Create new index dbhost_pkey in table host_cluster
+2013-09-17 06:00:46,596 - INFO - tablename| Create new index host_cluster_fqdn_param_port_key in table host_cluster
+2013-09-17 06:00:46,598 - INFO - tablename| Create new index host_cluster_ip_address_pg_data_path_key in table host_cluster
+2013-09-17 06:00:46,599 - INFO - tablename| Create new index host_cluster_param_ip_address_param_port_key in table host_cluster
+2013-09-17 06:00:46,728 - INFO - tablename| Create new TOAST table pg_toast_20167 in table host_cluster
+2013-09-17 06:00:46,764 - INFO - tabletoastname| Create new TOAST index pg_toast_20167_index in table pg_toast_20167
+2013-09-17 06:00:46,837 - INFO - tablename| Create new index function_stat_fn_id_time_id_key in table function_stat
+2013-09-17 06:00:46,839 - INFO - tablename| Create new index function_stat_pkey in table function_stat
+2013-09-17 06:00:47,041 - INFO - tablename| Create new index log_time_pkey in table log_time
+2013-09-17 06:00:47,043 - INFO - tablename| Create new index log_time_hour_truncate_idx in table log_time
+2013-09-17 06:00:47,401 - INFO - tablename| Create new index function_name_pkey in table function_name
+2013-09-17 06:00:47,436 - INFO - tablename| Create new TOAST table pg_toast_20153 in table function_name
+2013-09-17 06:00:47,484 - INFO - tabletoastname| Create new TOAST index pg_toast_20153_index in table pg_toast_20153
+2013-09-17 06:00:47,569 - INFO - tablename| Create new index log_time_mt_pkey in table log_time_mt
+2013-09-17 06:00:47,571 - INFO - tablename| Create new index log_time_mt_minute_truncate_idx in table log_time_mt
+2013-09-17 06:00:47,725 - INFO - tablename| Create new index table_toast_stat_pkey in table table_toast_stat
+2013-09-17 06:00:47,727 - INFO - tablename| Create new index table_toast_stat_tn_id_time_id_key in table table_toast_stat
+2013-09-17 06:00:47,821 - INFO - tablename| Create new index index_name_pkey in table index_name
+2013-09-17 06:00:47,823 - INFO - tablename| Create new index index_name_tn_id_idx_name_idx in table index_name
+2013-09-17 06:00:47,904 - INFO - tablename| Create new TOAST table pg_toast_20184 in table index_name
+2013-09-17 06:00:47,940 - INFO - tabletoastname| Create new TOAST index pg_toast_20184_index in table pg_toast_20184
+2013-09-17 06:00:48,037 - INFO - tablename| Create new index index_toast_stat_pkey in table index_toast_stat
+2013-09-17 06:00:48,039 - INFO - tablename| Create new index index_toast_stat_tn_id_time_id_key in table index_toast_stat
+2013-09-17 06:00:48,134 - INFO - tablename| Create new index db_runtime_stat_pkey in table db_runtime_stat
+2013-09-17 06:00:48,253 - INFO - tablename| Create new index index_toast_name_pkey in table index_toast_name
+2013-09-17 06:00:48,288 - INFO - tablename| Create new TOAST table pg_toast_20198 in table index_toast_name
+2013-09-17 06:00:48,325 - INFO - tabletoastname| Create new TOAST index pg_toast_20198_index in table pg_toast_20198
+2013-09-17 06:00:48,397 - INFO - tablename| Create new index cluster_runtime_stat_pkey in table cluster_runtime_stat
+2013-09-17 06:00:48,469 - INFO - tablename| Create new index table_name_pkey in table table_name
+2013-09-17 06:00:48,504 - INFO - tablename| Create new TOAST table pg_toast_20234 in table table_name
+2013-09-17 06:00:48,541 - INFO - tabletoastname| Create new TOAST index pg_toast_20234_index in table pg_toast_20234
+2013-09-17 06:00:48,613 - INFO - tablename| Create new index database_stat_dn_id_time_id_key in table database_stat
+2013-09-17 06:00:48,615 - INFO - tablename| Create new index database_stat_pkey in table database_stat
+2013-09-17 06:00:48,757 - INFO - tablename| Create new index schema_name_pkey in table schema_name
+2013-09-17 06:00:48,759 - INFO - tablename| Create new index schema_name_dn_id_sch_name_idx in table schema_name
+2013-09-17 06:00:48,900 - INFO - tablename| Create new TOAST table pg_toast_20226 in table schema_name
+2013-09-17 06:00:48,937 - INFO - tabletoastname| Create new TOAST index pg_toast_20226_index in table pg_toast_20226
+2013-09-17 06:00:49,009 - INFO - tablename| Create new index table_va_stat_pkey in table table_va_stat
+2013-09-17 06:00:49,011 - INFO - tablename| Create new index table_va_stat_tn_id_time_id_key in table table_va_stat
+2013-09-17 06:00:49,106 - INFO - tablename| Create new index bgwriter_stat_hc_id_time_id_key in table bgwriter_stat
+2013-09-17 06:00:49,107 - INFO - tablename| Create new index bgwriter_stat_pkey in table bgwriter_stat
+2013-09-17 06:00:49,262 - INFO - tablename| Create new index table_stat_pkey in table table_stat
+2013-09-17 06:00:49,263 - INFO - tablename| Create new index table_stat_tn_id_time_id_key in table table_stat
+2013-09-17 06:00:49,358 - INFO - tablename| Create new index enum_sslmode_pkey in table enum_sslmode
+2013-09-17 06:00:49,392 - INFO - tablename| Create new TOAST table pg_toast_20141 in table enum_sslmode
+2013-09-17 06:00:49,429 - INFO - tabletoastname| Create new TOAST index pg_toast_20141_index in table pg_toast_20141
+2013-09-17 06:00:49,502 - INFO - tablename| Create new index enum_track_functions_pkey in table enum_track_functions
+2013-09-17 06:00:49,537 - INFO - tablename| Create new TOAST table pg_toast_20147 in table enum_track_functions
+2013-09-17 06:00:49,573 - INFO - tabletoastname| Create new TOAST index pg_toast_20147_index in table pg_toast_20147
+2013-09-17 06:00:49,646 - INFO - tablename| Create new index index_stat_in_id_time_id_key in table index_stat
+2013-09-17 06:00:49,647 - INFO - tablename| Create new index index_stat_pkey in table index_stat
+2013-09-17 06:00:49,790 - INFO - tablename| Create new index table_toast_name_pkey in table table_toast_name
+2013-09-17 06:00:49,825 - INFO - tablename| Create new TOAST table pg_toast_20272 in table table_toast_name
+2013-09-17 06:00:49,861 - INFO - tabletoastname| Create new TOAST index pg_toast_20272_index in table pg_toast_20272
+2013-09-17 06:00:49,896 - DEBUG - pg_mon_daemon| Iteration Done. Minute 0 Next delay 261
+2013-09-17 06:05:10,996 - DEBUG - pg_mon_daemon| Iteration started. Minute 5
+2013-09-17 06:05:10,996 - DEBUG - pg_mon_daemon| Iteration in runtime_stat_interval. Minute 5
+2013-09-17 06:05:11,388 - DEBUG - pg_mon_daemon| Iteration Done. Minute 5 Next delay 299
+2013-09-17 06:10:10,488 - DEBUG - pg_mon_daemon| Iteration started. Minute 10
+2013-09-17 06:10:10,489 - DEBUG - pg_mon_daemon| Iteration in runtime_stat_interval. Minute 10
+2013-09-17 06:10:10,882 - DEBUG - pg_mon_daemon| Iteration Done. Minute 10 Next delay 300
+2013-09-17 06:15:10,896 - DEBUG - pg_mon_daemon| Iteration started. Minute 15
+2013-09-17 06:15:10,896 - DEBUG - pg_mon_daemon| Iteration in runtime_stat_interval. Minute 15
+2013-09-17 06:15:11,288 - DEBUG - pg_mon_daemon| Iteration Done. Minute 15 Next delay 299
+2013-09-17 06:20:10,389 - DEBUG - pg_mon_daemon| Iteration started. Minute 20
+2013-09-17 06:20:10,389 - DEBUG - pg_mon_daemon| Iteration in runtime_stat_interval. Minute 20
+2013-09-17 06:20:10,782 - DEBUG - pg_mon_daemon| Iteration Done. Minute 20 Next delay 300
+2013-09-17 06:25:10,882 - DEBUG - pg_mon_daemon| Iteration started. Minute 25
+2013-09-17 06:25:10,883 - DEBUG - pg_mon_daemon| Iteration in runtime_stat_interval. Minute 25
+2013-09-17 06:25:11,320 - DEBUG - pg_mon_daemon| Iteration Done. Minute 25 Next delay 299
+2013-09-17 06:30:10,420 - DEBUG - pg_mon_daemon| Iteration started. Minute 30
+2013-09-17 06:30:10,420 - DEBUG - pg_mon_daemon| Iteration in runtime_stat_interval. Minute 30
+2013-09-17 06:30:10,861 - DEBUG - pg_mon_daemon| Iteration Done. Minute 30 Next delay 300
+2013-09-17 06:35:10,962 - DEBUG - pg_mon_daemon| Iteration started. Minute 35
+2013-09-17 06:35:10,962 - DEBUG - pg_mon_daemon| Iteration in runtime_stat_interval. Minute 35
+2013-09-17 06:35:11,399 - DEBUG - pg_mon_daemon| Iteration Done. Minute 35 Next delay 299
+2013-09-17 06:40:10,500 - DEBUG - pg_mon_daemon| Iteration started. Minute 40
+2013-09-17 06:40:10,500 - DEBUG - pg_mon_daemon| Iteration in runtime_stat_interval. Minute 40
+2013-09-17 06:40:10,954 - DEBUG - pg_mon_daemon| Iteration Done. Minute 40 Next delay 300
+2013-09-17 06:45:11,055 - DEBUG - pg_mon_daemon| Iteration started. Minute 45
+2013-09-17 06:45:11,055 - DEBUG - pg_mon_daemon| Iteration in runtime_stat_interval. Minute 45
+2013-09-17 06:45:11,480 - DEBUG - pg_mon_daemon| Iteration Done. Minute 45 Next delay 299
+2013-09-17 06:49:44,204 - DEBUG - pg_mon_daemon| Signal Number 15 received. Exiting...

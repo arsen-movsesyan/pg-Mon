@@ -5,8 +5,8 @@ class Pgconnect {
     protected $last_query;
 
     public function __construct() {
-#	$conn_string="host=localhost user=postgres dbname=pg_mon";
-	$conn_string="host=dbmon user=postgres dbname=pg_mon";
+	$conn_string="host=localhost user=postgres dbname=pg_mon";
+#	$conn_string="host=dbmon user=postgres dbname=pg_mon";
 	$this->db_conn=@pg_pconnect($conn_string);
 	if (!is_resource($this->db_conn)) {
 	    throw new Exception("Cannot connect to database ",E_USER_ERROOR);
