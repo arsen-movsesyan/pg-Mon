@@ -25,9 +25,9 @@ LOGGING = {
     'handlers': {
 	'main_file_handler': {
 	    'class': 'logging.handlers.RotatingFileHandler',
-	    'level': 'WARNING',
+	    'level': 'DEBUG',
 	    'formatter': 'simple',
-	    'filename': '/home/arsen/work/pg-Mon/pg_mon_new/pg_mon.log',
+	    'filename': '/var/log/pg_mon/pg_mon.log',
 	    'mode': 'a',
 	    'maxBytes': 1048576,
 	    'backupCount': 5,
@@ -66,11 +66,12 @@ def custom_dsn(db_handler):
 
 
 DAEMON_SETTINGS = {
-    'pidfile':'/tmp/stat_daemon.pid',
+    'pidfile':'/tmp/pg_mon_daemon.pid',
     'stdin':'/dev/null',
     'stdout':'/dev/null',
-    'stderr':'/tmp/stat_daemon.err',
+    'stderr':'/tmp/pg_mon_daemon.err',
 }
 
+runtime_stat_enable=True
 runtime_stat_interval=5		# in minutes
 regular_stat_interval=60	# in minutes

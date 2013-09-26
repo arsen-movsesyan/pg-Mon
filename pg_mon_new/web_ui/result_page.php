@@ -11,6 +11,7 @@ $header_string="Host <b>".$hc->get_field('hostname')."</b>";
 $intern_original="<table border=1><tr bgcolor=#CCCCCC><td colspan=2 align=center><b>Last Hour Statistic</b></td></tr>";
 
 $hc_stat=$hc->get_stat();
+
 $intern_string=$intern_original;
 if (count($hc_stat) == 0) {
     $intern_string.="<tr><td colspan=2>Statistic for last hour is not available</td></tr>";

@@ -2,11 +2,11 @@
 require_once("include/class_SQL.php");
 
 class GenericObject {
-    private $id;
-    private $table_name;
     private $database_fields;
     private $loaded=0;
     private $modified_fields;
+    protected $id;
+    protected $table_name;
 
     public function get_table() {
 	return $this->table_name;
@@ -14,10 +14,8 @@ class GenericObject {
 
     public function reload() {
 	$sql = new SQL();
-	$id = $this->id;
-	$table_name = $this->table_name;
-	if (!$sql->select_c("SELECT * FROM $table_name WHERE id=$id")) {
-	    echo "Cannot select from database with id=$id. Error: ".$sql->last_error();
+	if (!$sql->select_c("SELECT * FROM ".$this->table_name." WHERE id=".$this->id)) {
+	    echo "Cannot select from database with id=".$this->id." Error: ".$sql->last_error();
 	    exit;
 	}
 	$all=$sql->get_result();
@@ -25,7 +23,7 @@ class GenericObject {
 	$this->loaded=1;
 	if (sizeof($this->modified_fields) > 0) {
 	    foreach ($this->modified_fields as $key => $value) {
-    		$this->modified_fields[$key] = false;
+		$this->modified_fields[$key] = false;
 	    }
 	}
     }
@@ -57,12 +55,12 @@ class GenericObject {
 	return $this->id;
     }
 
-    public function initialize($table_name, $tuple_id=false) {
-	$this->table_name=$table_name;
-	if ($tuple_id) {
-	    $this->id=$tuple_id;
-	}
-    }
+#    public function initialize($table_name, $tuple_id=false) {
+#	$this->table_name=$table_name;
+#	if ($tuple_id) {
+#	    $this->id=$tuple_id;
+#	}
+#    }
 
     public function set_field($field, $value) {
 	if ($this->loaded == 0) {

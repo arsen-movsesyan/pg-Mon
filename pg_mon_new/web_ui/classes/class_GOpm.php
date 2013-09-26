@@ -1,6 +1,6 @@
 <?
 require_once("include/class_GenericObject.php");
-require_once("include/class_GenericObjectCollection.php");
+#require_once("include/class_GenericObjectCollection.php");
 
 class GOpm extends GenericObject {
     protected $depend_obj;
@@ -9,9 +9,13 @@ class GOpm extends GenericObject {
     protected $stat_query;
 
 
-    public function __construct() {
-	parent::__construct();
+    public function initialize($table_name, $tuple_id=false) {
+	$this->table_name=$table_name;
+	if ($tuple_id) {
+	     $this->id=$tuple_id;
+	}
     }
+
 
     public function get_dependant_ids() {
 	if (count($this->dependant_ids) == 0) {
@@ -26,8 +30,6 @@ class GOpm extends GenericObject {
 
     public function get_stat($start=1,$end=0) {
 	$query=sprintf($this->stat_query,$start,$end);
-#	echo $query."<br>";
-#	return;
 	$sql=new SQL();
 	$sql->select_c($query);
 	$stat=$sql->get_result();
