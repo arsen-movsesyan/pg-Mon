@@ -1,58 +1,33 @@
 <?
-include_once("header.php");
+#session_start();
 include_once("form_functions.php");
 include_once("post_functions.php");
-?>
-<center><h3>Pg-Mon</h3></center>
+include_once("classes/class_HostList.php");
 
-<table border=0 width=100%>
-    <tr align=center bgcolor=#CCCCCC>
-	<td width=14%><b>Hosts<b></td>
-	<td><b>Results<b></td>
-    </tr>
-    <tr>
-	<td valign=top>
-<?
-home_link();
-include_once("dispatcher.php");
-?>	</td>
-	<td valign=top>
-<?
+$result_page='';
+$host_list='';
+
+$hl=new HostList();
+$st=new Stat()
+
+
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'add') {
-	eval("add_".$_GET['object']."_form();");
-    } elseif ($_GET['action'] == 'stat') {
-	$_SESSION['action']='stat';
-	$_SESSION['host_id']=$_GET['host_id'];
-#	if ($_GET['level'] == 'host') {
-#	    include_once("result_page.php");
-#	}
-	if ($_GET['level'] == 'db') {
-	    $_SESSION['db_id']=$_GET['db_id'];
-	}
-	if ($_GET['level'] == 'sch') {
-	    $_SESSION['sch_id']=$_GET['sch_id'];
-	}
-	$_SESSION['level']=$_GET['level'];
-	include_once("result_page.php");
+	$result_page.=add_host_form();
+#    } elseif ($_GET['action'] == 'stat') {
+#	;
     }
 
 } else {
     if (isset($_POST['add_host_submit'])) {
-	add_host($_POST);
-	unset($_POST);
-	home_link();
-    } else {
-	echo "Welcome to pg-Mon";
+	$new_host_id=add_host($_POST);
+	$hl->set_host_id($new_host_id);
     }
 }
-?>
-	</td>
-    </tr>
-</table>
 
-<br>
+$host_list.=$hl->get_string();
 
-<?
-include_once("footer.php");
+include_once("template.php");
+#print_r($hl->get_nested_array());
+#session_destroy();
 ?>

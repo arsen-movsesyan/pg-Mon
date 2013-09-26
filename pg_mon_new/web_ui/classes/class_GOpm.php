@@ -19,7 +19,7 @@ class GOpm extends GenericObject {
 
     public function get_dependant_ids() {
 	if (count($this->dependant_ids) == 0) {
-	    $sql=new SQL();
+	    $sql=SQL::factory();
 	    $sql->select_c("SELECT id FROM ".$this->depend_obj." WHERE ".$this->reference_field."=".$this->get_id());
 	    for ($i=0;$i < $sql->get_num_rows();$i++) {
 		$this->dependant_ids[$i]=$sql->get_result()[$i]['id'];
@@ -30,7 +30,7 @@ class GOpm extends GenericObject {
 
     public function get_stat($start=1,$end=0) {
 	$query=sprintf($this->stat_query,$start,$end);
-	$sql=new SQL();
+	$sql=SQL::factory();
 	$sql->select_c($query);
 	$stat=$sql->get_result();
 	return $stat;

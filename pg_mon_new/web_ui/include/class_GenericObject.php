@@ -13,7 +13,7 @@ class GenericObject {
     }
 
     public function reload() {
-	$sql = new SQL();
+	$sql = SQL::factory();
 	if (!$sql->select_c("SELECT * FROM ".$this->table_name." WHERE id=".$this->id)) {
 	    echo "Cannot select from database with id=".$this->id." Error: ".$sql->last_error();
 	    exit;
@@ -75,7 +75,7 @@ class GenericObject {
 
     public function destroy() {
 	if ($this->id) {
-	    $sql = new SQL();
+	    $sql = SQL::factory();
 	    if (!$sql->delete_c($this->table_name,array('id'=>$this->id))) {
 		echo "Cannot destroy row id. Error: ".$sql->last_error."<br>";
 		echo "Query: ".$sql->get_last_query();
@@ -86,7 +86,7 @@ class GenericObject {
     }
 
     public function Save() {
-	$sql = new sql();
+	$sql = SQL::factory();
 
 	if (!$this->id) {
 #	    $this->loaded=0;

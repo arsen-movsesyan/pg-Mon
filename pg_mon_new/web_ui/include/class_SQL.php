@@ -5,12 +5,20 @@ class SQL extends Pgconnect {
     private $affected_rows;
     private $rows_array=array();
     private $result_array=array();
-    
-    
-    public function Database() {
+    private static $instance=NULL;
+
+    public static function factory() {
+	if (self::$instance == NULL) {
+	    self::$instance = new SQL();
+	}
+	return self::$instance;
+    }
+
+    protected function __construct() {
 	parent::__construct();
 	$this->_flush();
     }
+
     
     private function _flush() {
 	$this->rows_array=array();

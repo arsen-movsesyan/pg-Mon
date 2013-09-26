@@ -2,8 +2,8 @@
 include_once("include/class_SQL.php");
 
 function add_host_form() {
-?>
-<form name=add_host_form method=POST action=index.php>
+    $form_string="
+<form name=add_host_form method=POST action=".$_SERVER['PHP_SELF'].">
 <table border=0>
     <tr>
 	<td>Host Name <font color=red>*</font></td>
@@ -30,21 +30,21 @@ function add_host_form() {
 	<td><input type=checkbox name=in_suspended> (Default Observable)</td>
     </tr><tr>
 	<td>SSL Mode</td>
-	<td><select name=in_ssl_mode>
-<?
-$in_sql=new SQL();
-$in_sql->select_c("SELECT * FROM enum_sslmode");
-$ssl_results=$in_sql->get_result();
-$option_string='';
-for ($i=0;$i<sizeof($ssl_results);$i++) {
-    $option_string.="<option value=".$ssl_results[$i]['id'];
-    if ($ssl_results[$i]['sslmode'] == 'prefer') {
-	$option_string.= " selected";
+	<td><select name=in_ssl_mode>";
+
+    $in_sql=SQL::factory();
+    $in_sql->select_c("SELECT * FROM enum_sslmode");
+    $ssl_results=$in_sql->get_result();
+    $option_string='';
+    for ($i=0;$i<sizeof($ssl_results);$i++) {
+	$option_string.="<option value=".$ssl_results[$i]['id'];
+	if ($ssl_results[$i]['sslmode'] == 'prefer') {
+	    $option_string.= " selected";
+	}
+	$option_string.=">".$ssl_results[$i]['sslmode']."</option>";
     }
-    $option_string.=">".$ssl_results[$i]['sslmode']."</option>";
-}
-echo $option_string;
-?>
+    $form_string.=$option_string;
+    $form_string.="
 	    </select>
 	</td>
     </tr><tr>
@@ -63,8 +63,8 @@ echo $option_string;
 	<td><input type=reset value=Reset></td>
     </tr>
 </table>
-</form>
-<?
+</form>";
+    return $form_string;
 }
 
 ?>

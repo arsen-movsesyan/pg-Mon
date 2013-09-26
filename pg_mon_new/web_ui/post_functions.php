@@ -1,7 +1,5 @@
 <?
 include_once("classes/class_HostCluster.php");
-#include_once("include/class_SQL.php");
-
 
 function add_host($in_post) {
     $hc=new HostCluster();
@@ -30,6 +28,7 @@ function add_host($in_post) {
 	}
     }
     $hc->Save();
+    return $hc->get_id();
 }
 
 ?>

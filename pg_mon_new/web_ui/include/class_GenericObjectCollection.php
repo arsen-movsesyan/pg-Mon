@@ -65,7 +65,7 @@ class GenericObjectCollection {
 		$stmt = "SELECT * FROM ".$this->table_name." WHERE id IN (".$this->_id_list().")";
 	    }
 #            echo $stmt."<br>";
-	    $sql=new SQL();
+	    $sql=SQL::factory();
 	    $sql->select_c($stmt);
 	    $result_rows=$sql->get_result();
 
