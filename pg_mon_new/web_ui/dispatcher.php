@@ -14,6 +14,7 @@ echo "Regitstered ".$sql->get_num_rows()." hosts<br>";
 if ($sql->get_num_rows() > 0) {
     $hosts=$sql->get_result();
     foreach ($hosts as $id) {
+#	echo $id['id']."<br>";
 	$hc= new HostCluster($id['id']);
 	echo "<a href=index.php?level=host&action=stat&host_id=".$hc->get_id().">".$hc->get_field('hostname')."</a><br>";
     }

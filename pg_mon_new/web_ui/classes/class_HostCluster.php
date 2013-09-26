@@ -7,11 +7,13 @@ class HostCluster extends GOpm {
 	parent::initialize('host_cluster',$in_id);
 	$this->depend_obj='database_name';
 	$this->reference_field='hc_id';
-	$this->stat_query="SELECT * FROM pm_bgwriter_stat_diff(%s,%s) WHERE ip_address='".$this->get_field('param_ip_address')."'";
     }
 
 
-
+    public function get_stat($start=1,$end=0) {
+	$this->stat_query="SELECT * FROM pm_bgwriter_stat_diff(%s,%s) WHERE ip_address='".$this->get_field('param_ip_address')."'";
+	return parent::get_stat($start,$end);
+    }
 
     public function add($in_ip_address,$in_hostName,$in_params=array()) {
 	$this->set_field('hostname',$in_hostName);
