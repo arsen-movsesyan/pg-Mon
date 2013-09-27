@@ -1,7 +1,11 @@
 <?
 include_once("include/class_SQL.php");
 
+
 function add_host_form() {
+    $ip_pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}";
+#    $ip_pattern="^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
+
     $form_string="
 <form name=add_host_form method=POST action=".$_SERVER['PHP_SELF'].">
 <table border=0>
@@ -10,7 +14,7 @@ function add_host_form() {
 	<td><input type=text name=in_host_name required></td>
     </tr><tr>
 	<td>IP Address <font color=red>*</font></td>
-	<td><input type=text name=in_ip_address required></td>
+	<td><input type=text name=in_ip_address required pattern=$ip_pattern></td>
     </tr><tr>
 	<td colspan=2><hr width=60%></td>
     </tr><tr>
@@ -49,7 +53,7 @@ function add_host_form() {
 	</td>
     </tr><tr>
 	<td>Port</td>
-	<td><input type=text name=in_port size=4 placeholder=5432></td>
+	<td><input type=text name=in_port size=4 placeholder=5432 pattern=\"\d{1,5}\"></td>
     </tr><tr>
 	<td>FQDN</td>
 	<td><input type=text name=in_fqdn></td>
@@ -65,6 +69,16 @@ function add_host_form() {
 </table>
 </form>";
     return $form_string;
+}
+
+function select_range_form() {
+    $ret="<form method=post action=".$_SERVER['PHP_SELF']." oninput=\"start_back.value=r_start.value;
+end_back.value=r_end.value\">
+    From Hours back <input type=range name=r_start value=1 min=1 max=100>&nbsp;<output name=start_back for=r_start>1</output><br>
+    To Hour Back <input type=range name=r_end value=0 min=0 max=99>&nbsp;<output name=end_back for=r_end>0</output><br>
+    <input type=submit name=range_submit value=Set></form>";
+
+    return $ret;
 }
 
 ?>

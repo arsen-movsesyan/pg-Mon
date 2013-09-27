@@ -5,19 +5,9 @@ include_once("class_DatabaseName.php");
 include_once("class_SchemaName.php");
 
 class HostList {
-#    private $host_string='';
     private $sql;
-#    private $host_list=array();
-    private $selected_hc_id;
-    private $selected_dn_id;
-    private $selected_sn_id;
-#    private $nested_array=array();
-#    private $selected_tn_id;
-#    private $selected_in_id;
-
-
-    private $db_list;
-
+    private $level=NULL;
+    private $host_list=array();
 
     public function __construct() {
 	$this->sql=SQL::factory();
@@ -25,12 +15,18 @@ class HostList {
     }
 
     private function _define_level() {
-	$this->selected_hc_id=(isset($_GET['hc_id']) ? $_GET['hc_id'] : NULL);
-	$this->selected_dn_id=(isset($_GET['dn_id']) ? $_GET['dn_id'] : NULL);
-	$this->selected_sn_id=(isset($_GET['sn_id']) ? $_GET['sn_id'] : NULL);
-#	$this->selected_tn_id=(isset($_GET['tn_id']) ? $_GET['tn_id'] : NULL);
-#	$this->selected_in_id=(isset($_GET['in_id']) ? $_GET['in_id'] : NULL);
+	$this->level=array();
+	if (isset($_GET['hc_id'])) {
+	    $this->level['hc_id']=$_GET['hc_id'];
+	    if (isset($_GET['dn_id'])) {
+		$this->level['dn_id']=$_GET['dn_id'];
+		if (isset($_GET['sn_id'])) {
+		    $this->level['sn_id']=$_GET['sn_id'];
+		}
+	    }
+	}
     }
+
 
     private function _host_list() {
 	$this->sql->select_c("SELECT id FROM host_cluster");
@@ -43,15 +39,14 @@ class HostList {
 
     private function _get_sch_list() {
 	$string="<ul>";
-	$dn=new DatabaseName($this->selected_dn_id);
+	$dn=new DatabaseName($this->level['dn_id']);
 	foreach ($dn->get_dependant_ids() as $sn_id) {
 	    $sn=new SchemaName($sn_id);
-	    $string.="<li><a href=".$_SERVER['PHP_SELF']."?action=stat&hc_id=".$this->selected_hc_id."&dn_id=".$this->selected_dn_id."&sn_id=".$sn->get_id().">";
-	    if ($this->selected_sn_id == $sn->get_id()) {
+	    $string.="<li><a href=".$_SERVER['PHP_SELF']."?action=stat&hc_id=".$this->level['hc_id']."&dn_id=".$this->level['dn_id']."&sn_id=".$sn->get_id().">";
+	    if (isset($this->level['sn_id']) and $this->level['sn_id'] == $sn->get_id()) {
 		$string.="<b>".$sn->get_field('sch_name')."</b>";
-	    } else {
+	    } else
 		$string.=$sn->get_field('sch_name');
-	    }
 	    $string.="</a></li>";
 	}
 	$string.="</ul>";
@@ -60,16 +55,15 @@ class HostList {
 
     private function _get_db_list() {
 	$string="<ul>";
-	$hc=new HostCluster($this->selected_hc_id);
+	$hc=new HostCluster($this->level['hc_id']);
 	foreach ($hc->get_dependant_ids() as $db_id) {
 	    $dn=new DatabaseName($db_id);
-	    $string.="<li><a href=".$_SERVER['PHP_SELF']."?action=stat&hc_id=".$this->selected_hc_id."&dn_id=".$dn->get_id().">";
-	    if ($this->selected_dn_id == $dn->get_id()) {
+	    $string.="<li><a href=".$_SERVER['PHP_SELF']."?action=stat&hc_id=".$this->level['hc_id']."&dn_id=".$dn->get_id().">";
+	    if (isset($this->level['dn_id']) and $this->level['dn_id'] == $dn->get_id()) {
 		$string.="<b>".$dn->get_field('db_name')."</b>";
 		$string.=$this->_get_sch_list();
-	    } else {
+	    } else
 		$string.=$dn->get_field('db_name');
-	    }
 	    $string.="</a></li>";
 	}
 	$string.="</ul>";
@@ -78,6 +72,8 @@ class HostList {
 
 
     public function get_string() {
+	if ($this->level == NULL)
+	    $this->_define_level();
 	$this->_define_level();
 	if (count($this->host_list) == 0)
 	    $string="No hosts registered";
@@ -85,12 +81,11 @@ class HostList {
 	    $string="<ul>";
 	    foreach ($this->host_list as $hc) {
 		$string.="<li><a href=".$_SERVER['PHP_SELF']."?action=stat&hc_id=".$hc->get_id().">";
-		if ($this->selected_hc_id == $hc->get_id()) {
+		if (isset($this->level['hc_id']) and $this->level['hc_id'] == $hc->get_id()) {
 		    $string.="<b>".$hc->get_field('hostname')."</b>";
 		    $string.=$this->_get_db_list();
-		} else {
+		} else
 		    $string.=$hc->get_field('hostname');
-		}
 		$string.="</a></li>";
 	    }
 	    $string.="</ul>";
@@ -98,19 +93,11 @@ class HostList {
 	return $string;
     }
 
-    public function set_host_id($id) {
-	$this->selected_hc_id=$id;
-    }
 
-    public function get_nested_array() {
-	$array=array();
-	if ($this->selected_hc_id)
-	    $array['hc_id']=$this->selected_hc_id;
-	if ($this->selected_dn_id)
-	    $array['dn_id']=$this->selected_dn_id;
-	if ($this->selected_sn_id)
-	    $array['sn_id']=$this->selected_sn_id;
-	return $array;
+    public function get_level() {
+	if ($this->level == NULL)
+	    $this->_define_level();
+	return $this->level;
     }
 
 

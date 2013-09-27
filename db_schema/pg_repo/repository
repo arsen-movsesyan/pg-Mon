@@ -34,3 +34,35 @@ AND a.id=(SELECT MIN(id) FROM log_time WHERE hour_truncate >= date_trunc('hour',
 AND b.id=(SELECT MIN(id) FROM log_time WHERE hour_truncate >= date_trunc('hour',now()- $2 * interval '1 hour'));
 $BODY$
 LANGUAGE sql"
+
+upd_3="CREATE OR REPLACE VIEW pm_master_hc_lookup_view AS 
+SELECT hc.id AS host_id, hc.hostname, hc.param_ip_address AS ip_address
+FROM host_cluster hc
+WHERE hc.is_master AND hc.observable;
+
+DROP FUNCTION pm_bgwriter_stat_diff(integer, integer);
+
+CREATE OR REPLACE FUNCTION pm_bgwriter_stat_diff(IN first integer DEFAULT 1, IN last integer DEFAULT 0)
+ RETURNS TABLE(host_id integer, checkpoints_timed bigint, checkpoints_req bigint, buffers_checkpoint bigint, buffers_clean bigint, maxwritten_clean bigint, buffers_backend bigint, buffers_alloc bigint) AS
+$BODY$
+SELECT hc.id AS host_id,
+last.checkpoints_timed - first.checkpoints_timed AS checkpoints_timed,
+last.checkpoints_req - first.checkpoints_req AS checkpoints_req,
+last.buffers_checkpoint - first.buffers_checkpoint AS buffers_checkpoint,
+last.buffers_clean - first.buffers_clean AS buffers_clean,
+last.maxwritten_clean - first.maxwritten_clean AS maxwritten_clean,
+last.buffers_backend - first.buffers_backend AS buffers_backend,
+last.buffers_alloc - first.buffers_alloc AS buffers_alloc
+FROM host_cluster hc
+JOIN bgwriter_stat first ON hc.id=first.hc_id
+JOIN bgwriter_stat last ON hc.id=last.hc_id
+JOIN log_time a ON a.id=first.time_id
+JOIN log_time b ON b.id=last.time_id
+WHERE hc.alive
+AND hc.observable
+AND a.id=(SELECT MIN(id) FROM log_time WHERE hour_truncate >= date_trunc('hour',now()- $1 * interval '1 hour'))
+AND b.id=(SELECT MIN(id) FROM log_time WHERE hour_truncate >= date_trunc('hour',now()- $2 * interval '1 hour'));
+$BODY$
+  LANGUAGE sql;
+"
+

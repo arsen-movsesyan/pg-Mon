@@ -21,9 +21,9 @@ function add_host($in_post) {
 		    $hc->set_field('param_sslmode_id',$in_post['in_ssl_mode']);
 		}
 		break;
-	    case 'in_port'		: $hc->set_field('param_port',$in_post['param_port']);break;
-	    case 'in_fqdn'		: $hc->set_field('fqdn',$in_post['fqdn']);break;
-	    case 'in_description'	: $hc->set_field('description',$in_post['description']);break;
+	    case 'in_port'		: $hc->set_field('param_port',$in_post['in_port']);break;
+	    case 'in_fqdn'		: $hc->set_field('fqdn',$in_post['in_fqdn']);break;
+	    case 'in_description'	: $hc->set_field('description',$in_post['in_description']);break;
 	    }
 	}
     }
