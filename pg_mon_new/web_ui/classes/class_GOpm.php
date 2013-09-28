@@ -28,9 +28,9 @@ class GOpm extends GenericObject {
 	return $this->dependant_ids;
     }
 
-    public function get_stat($start=1,$end=0) {
+    public function get_stat() {
 	$ret='';
-	$query=sprintf($this->stat_query,$start,$end);
+	$query=sprintf($this->stat_query,$_SESSION['from_hour_back'],$_SESSION['to_hour_back']);
 	$sql=SQL::factory();
 	$sql->select_c($query);
 	$stat=$sql->get_result();

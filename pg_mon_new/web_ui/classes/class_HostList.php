@@ -16,15 +16,16 @@ class HostList {
 
     private function _define_level() {
 	$this->level=array();
-	if (isset($_GET['hc_id'])) {
-	    $this->level['hc_id']=$_GET['hc_id'];
-	    if (isset($_GET['dn_id'])) {
-		$this->level['dn_id']=$_GET['dn_id'];
-		if (isset($_GET['sn_id'])) {
-		    $this->level['sn_id']=$_GET['sn_id'];
-		}
-	    }
-	}
+	$this->level=$_SESSION['level'];
+#	if (isset($_GET['hc_id'])) {
+#	    $this->level['hc_id']=$_GET['hc_id'];
+#	    if (isset($_GET['dn_id'])) {
+#		$this->level['dn_id']=$_GET['dn_id'];
+#		if (isset($_GET['sn_id'])) {
+#		    $this->level['sn_id']=$_GET['sn_id'];
+#		}
+#	    }
+#	}
     }
 
 
@@ -74,7 +75,6 @@ class HostList {
     public function get_string() {
 	if ($this->level == NULL)
 	    $this->_define_level();
-	$this->_define_level();
 	if (count($this->host_list) == 0)
 	    $string="No hosts registered";
 	else {
@@ -86,18 +86,11 @@ class HostList {
 		    $string.=$this->_get_db_list();
 		} else
 		    $string.=$hc->get_field('hostname');
-		$string.="</a></li>";
+		$string.="</a></li>\n";
 	    }
 	    $string.="</ul>";
 	}
 	return $string;
-    }
-
-
-    public function get_level() {
-	if ($this->level == NULL)
-	    $this->_define_level();
-	return $this->level;
     }
 
 

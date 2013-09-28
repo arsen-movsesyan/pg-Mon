@@ -72,12 +72,21 @@ function add_host_form() {
 }
 
 function select_range_form() {
-    $ret="<form method=post action=".$_SERVER['PHP_SELF']." oninput=\"start_back.value=r_start.value;
-end_back.value=r_end.value\">
-    From Hours back <input type=range name=r_start value=1 min=1 max=100>&nbsp;<output name=start_back for=r_start>1</output><br>
-    To Hour Back <input type=range name=r_end value=0 min=0 max=99>&nbsp;<output name=end_back for=r_end>0</output><br>
-    <input type=submit name=range_submit value=Set></form>";
-
+    $ret="<form method=post action=".$_SERVER['PHP_SELF']." oninput=\"start_back.value=from_hour_back.value;end_back.value=to_hour_back.value\">\n";
+    $ret.="From Hours back<br><input type=range name=from_hour_back min=1 max=100 value=".$_SESSION['from_hour_back'].">\n";
+    $ret.="&nbsp;<output name=start_back for=from_hour_back>".$_SESSION['from_hour_back']."</output><br>\n";
+    $ret.="To Hours Back<br><input type=range name=to_hour_back min=0 max=99 value=".$_SESSION['to_hour_back'].">\n";
+    $ret.="&nbsp;<output name=end_back for=to_hour_back>".$_SESSION['to_hour_back']."</output><br>\n";
+    if (isset($_SESSION['level']['hc_id'])) {
+	$ret.="<input type=hidden name=hc_id value=".$_SESSION['level']['hc_id'].">\n";
+	if (isset($_SESSION['level']['dn_id'])) {
+	    $ret.="<input type=hidden name=dn_id value=".$_SESSION['level']['dn_id'].">\n";
+	    if (isset($_SESSION['level']['sn_id'])) {
+		$ret.="<input type=hidden name=sn_id value=".$_SESSION['level']['sn_id'].">\n";
+	    }
+	}
+    }
+    $ret.="<input type=submit name=stat_range_submit value=Set></form>";
     return $ret;
 }
 

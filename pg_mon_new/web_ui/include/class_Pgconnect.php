@@ -5,8 +5,8 @@ class Pgconnect {
     protected $last_query;
 
     protected function __construct() {
-	$conn_string="host=localhost user=postgres dbname=pg_mon";
-#	$conn_string="host=dbmon user=postgres dbname=pg_mon";
+#	$conn_string="host=localhost user=postgres dbname=pg_mon";
+	$conn_string="host=dbmon user=postgres dbname=pg_mon";
 	$this->db_conn=@pg_connect($conn_string);
 #	$this->db_conn=@pg_pconnect($conn_string);
 	if (!is_resource($this->db_conn)) {

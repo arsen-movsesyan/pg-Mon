@@ -31,4 +31,34 @@ function add_host($in_post) {
     return $hc->get_id();
 }
 
+function define_session_vars() {
+    $_SESSION['level']=array();
+    if (isset($_REQUEST['hc_id'])) {
+	$_SESSION['level']['hc_id']=$_REQUEST['hc_id'];
+	if (isset($_REQUEST['dn_id'])) {
+	    $_SESSION['level']['dn_id']=$_REQUEST['dn_id'];
+	    if (isset($_REQUEST['sn_id'])) {
+		$_SESSION['level']['sn_id']=$_REQUEST['sn_id'];
+	    }
+	}
+    }
+}
+
+function define_session_stat_range() {
+    if (isset($_REQUEST['from_hour_back'])) {
+	$_SESSION['from_hour_back']=$_REQUEST['from_hour_back'];
+    } elseif (!isset($_SESSION['from_hour_back'])) {
+	$_SESSION['from_hour_back']=DEFAULT_FROM_HOUR_BACK;
+    }
+    if (isset($_REQUEST['to_hour_back'])) {
+	$_SESSION['to_hour_back']=$_REQUEST['to_hour_back'];
+    } elseif (!isset($_SESSION['to_hour_back'])) {
+	$_SESSION['to_hour_back']=DEFAULT_TO_HOUR_BACK;
+    }
+}
+
+function reset_conf() {
+    $_SESSION['from_hour_back']=DEFAULT_FROM_HOUR_BACK;
+    $_SESSION['to_hour_back']=DEFAULT_TO_HOUR_BACK;
+}
 ?>
