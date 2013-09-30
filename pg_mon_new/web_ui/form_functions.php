@@ -86,8 +86,27 @@ function select_range_form() {
 	    }
 	}
     }
+    if (isset($_REQUEST['action'])) {
+	$ret.="<input type=hidden name=action value=".$_REQUEST['action'].">\n";
+    }
+    if (isset($_REQUEST['info'])) {
+	$ret.="<input type=hidden name=info value=".$_REQUEST['info'].">\n";
+    }
     $ret.="<input type=submit name=stat_range_submit value=Set></form>";
     return $ret;
 }
+
+function render_link() {
+    $ret='';
+    if (isset($_SESSION['level']['hc_id']))
+	$ret.="&hc_id=".$_SESSION['level']['hc_id'];
+    if (isset($_SESSION['level']['dn_id']))
+	$ret.="&dn_id=".$_SESSION['level']['dn_id'];
+    if (isset($_SESSION['level']['sn_id']))
+	$ret.="&sn_id=".$_SESSION['level']['sn_id'];
+#    echo "Link=: ".$ret."<br>";
+    return $ret;
+}
+
 
 ?>

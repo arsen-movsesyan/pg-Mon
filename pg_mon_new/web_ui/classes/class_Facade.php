@@ -1,14 +1,6 @@
 <?
 class Facade {
     private $basic_template;
-    private $top_info_template="
-<table border=1 class=\"top_info\">
-    <tr>
-	<td>%s</td>
-    </tr><tr>
-	<td>%s</td>
-    </tr>
-</table>";
 
 #    public function __construct() {
 #
@@ -39,6 +31,32 @@ class Facade {
 	return $ret;
     }
 
+
+    public static function wrap_nested_array($in_array,$exclude_field,$table_class="hc_db_stat") {
+	if ($in_array) {
+	    $param=array_keys($in_array[0]);
+	    $ret="<table border=1 class=\"$table_class\"><tr>";
+	    for ($i=0;$i<count($param);$i++) {
+		if ($param[$i] == $exclude_field)
+		    continue;
+		$ret.="<td>".$param[$i]."</td>";
+	    }
+	    $ret.="</tr>";
+
+	    foreach ($in_array as $row) {
+		$ret.="<tr>";
+		foreach ($row as $p=>$v) {
+		    if ($p == $exclude_field)
+		    continue;
+		    $ret.="<td>".$v."</td>";
+		}
+		$ret.="</tr>";
+	    }
+	    $ret.="</table>";
+	} else
+	    $ret='';
+	return $ret;
+    }
 
     public static function wrap_info($in_array,$table_class="hc_db_stat") {
 	if ($in_array) {

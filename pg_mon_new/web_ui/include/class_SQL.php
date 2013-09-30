@@ -43,7 +43,6 @@ class SQL extends Pgconnect {
 	return true;
     }
 
-
     public function get_result() {
         return $this->result_array;
     }

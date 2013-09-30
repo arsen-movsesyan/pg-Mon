@@ -5,6 +5,7 @@ include_once("post_functions.php");
 include_once("classes/class_HostList.php");
 include_once("classes/class_HostDbStat.php");
 include_once("classes/class_TableList.php");
+include_once("classes/class_TableStat.php");
 include_once("classes/class_Facade.php");
 
 define("DEFAULT_FROM_HOUR_BACK",1);
@@ -22,16 +23,18 @@ $facade=new Facade();
 $hl=new HostList();
 $hdst=new HostDbStat();
 $tbl=new TableList();
+$table_stat=new TableStat();
 
-if (isset($_GET['action'])) {
-    if ($_GET['action'] == 'add') {
-	$result_page=add_host_form();
-    } elseif ($_GET['action'] == 'home') {
+if (isset($_REQUEST['action'])) {
+    if ($_REQUEST['action'] == 'add') {
+	$stat_info=add_host_form();
+    } elseif ($_REQUEST['action'] == 'home') {
 	reset_conf();
-    } elseif ($_GET['action'] == 'stat') {
-#	print_r($_GET);
-	$stat_info=$_GET['info'];
-    } elseif ($_GET['action'] == 'logout') {
+    } elseif ($_REQUEST['action'] == 'stat') {
+	$_SESSION['stat_type']=$_REQUEST['info'];
+	$stat_list=$table_stat->get_stat_info($_REQUEST['info']);
+	$stat_info=$facade->wrap_nested_array($stat_list,'table_id');
+    } elseif ($_REQUEST['action'] == 'logout') {
 	logout();
     }
 } else {
@@ -48,6 +51,7 @@ $host_list.=$hl->get_string();
 
 $result_page=$facade->render_top_info($hdst->get_host_info(),$hdst->get_host_stat(),$hdst->get_db_info(),$hdst->get_db_stat());
 
+$stat_link=render_link();
 include_once("template.php");
 
 ?>

@@ -29,7 +29,7 @@ class HostList extends GenericInfo {
 	$dn=new DatabaseName($this->level['dn_id']);
 	foreach ($dn->get_dependant_ids() as $sn_id) {
 	    $sn=new SchemaName($sn_id);
-	    $string.="<li><a href=".$_SERVER['PHP_SELF']."?action=stat&info=si&hc_id=".$this->level['hc_id']."&dn_id=".$this->level['dn_id']."&sn_id=".$sn->get_id().">";
+	    $string.="<li><a href=".$_SERVER['PHP_SELF']."?action=stat&info=bi&hc_id=".$this->level['hc_id']."&dn_id=".$this->level['dn_id']."&sn_id=".$sn->get_id().">";
 	    if (isset($this->level['sn_id']) and $this->level['sn_id'] == $sn->get_id()) {
 		$string.="<b>".$sn->get_field('sch_name')."</b>";
 	    } else
@@ -45,7 +45,7 @@ class HostList extends GenericInfo {
 	$hc=new HostCluster($this->level['hc_id']);
 	foreach ($hc->get_dependant_ids() as $db_id) {
 	    $dn=new DatabaseName($db_id);
-	    $string.="<li><a href=".$_SERVER['PHP_SELF']."?action=stat&info=di&hc_id=".$this->level['hc_id']."&dn_id=".$dn->get_id().">";
+	    $string.="<li><a href=".$_SERVER['PHP_SELF']."?action=stat&info=bi&hc_id=".$this->level['hc_id']."&dn_id=".$dn->get_id().">";
 	    if (isset($this->level['dn_id']) and $this->level['dn_id'] == $dn->get_id()) {
 		$string.="<b>".$dn->get_field('db_name')."</b>";
 		$string.=$this->_get_sch_list();

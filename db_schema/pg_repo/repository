@@ -67,7 +67,7 @@ $BODY$
 "
 
 
-UPD_3=DROP VIEW pm_last_va_stat;
+upd_4="DROP VIEW pm_last_va_stat;
 
 CREATE OR REPLACE VIEW pm_last_va_stat AS 
 SELECT tn.id AS table_id,

@@ -6,7 +6,8 @@ class TableList extends GenericInfo {
     private $table_list;
 
     public function __construct() {
-	$this->sql=SQL::factory();
+	parent::__construct();
+#	$this->sql=SQL::factory();
     }
 
     private function _create_table_list() {
@@ -27,7 +28,7 @@ class TableList extends GenericInfo {
 	    $this->_create_table_list();
 	return $this->table_list;
     }
-
+/*
 
     public function get_string() {
 	if ($this->level == NULL)
@@ -48,6 +49,7 @@ class TableList extends GenericInfo {
 	}
 	return parent::get_string();
     }
+*/
 }
 
 ?>
