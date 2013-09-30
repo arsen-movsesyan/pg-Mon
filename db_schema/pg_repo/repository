@@ -66,3 +66,26 @@ $BODY$
   LANGUAGE sql;
 "
 
+
+UPD_3=DROP VIEW pm_last_va_stat;
+
+CREATE OR REPLACE VIEW pm_last_va_stat AS 
+SELECT tn.id AS table_id,
+now() - tvas.lv::timestamp with time zone AS last_vacuum, 
+now() - tvas.lav::timestamp with time zone AS last_autovacuum, 
+now() - tvas.la::timestamp with time zone AS last_analyze, 
+now() - tvas.laa::timestamp with time zone AS last_autoanalyze
+FROM table_name tn
+JOIN (SELECT table_va_stat.tn_id, max(table_va_stat.last_vacuum) AS lv, 
+MAX(table_va_stat.last_autovacuum) AS lav, 
+MAX(table_va_stat.last_analyze) AS la, 
+MAX(table_va_stat.last_autoanalyze) AS laa
+FROM table_va_stat
+GROUP BY table_va_stat.tn_id) tvas ON tn.id = tvas.tn_id
+WHERE tn.alive;
+
+ALTER FUNCTION vw_table_hip_pct(integer, integer)
+RENAME TO vw_table_heap_pct;
+
+ALTER FUNCTION vw_table_idx_hip_pct(integer, integer)
+RENAME TO vw_table_idx_hit_pct;"

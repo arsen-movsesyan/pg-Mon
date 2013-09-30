@@ -1,31 +1,17 @@
 <?
-include_once("include/class_SQL.php");
+#include_once("include/class_SQL.php");
+include_once("include/class_GenericInfo.php");
 include_once("class_HostCluster.php");
 include_once("class_DatabaseName.php");
 include_once("class_SchemaName.php");
 
-class HostList {
-    private $sql;
-    private $level=NULL;
-    private $host_list=array();
+class HostList extends GenericInfo {
+    private $host_list;
 
     public function __construct() {
-	$this->sql=SQL::factory();
+	parent::__construct();
 	$this->_host_list();
-    }
 
-    private function _define_level() {
-	$this->level=array();
-	$this->level=$_SESSION['level'];
-#	if (isset($_GET['hc_id'])) {
-#	    $this->level['hc_id']=$_GET['hc_id'];
-#	    if (isset($_GET['dn_id'])) {
-#		$this->level['dn_id']=$_GET['dn_id'];
-#		if (isset($_GET['sn_id'])) {
-#		    $this->level['sn_id']=$_GET['sn_id'];
-#		}
-#	    }
-#	}
     }
 
 
@@ -59,7 +45,7 @@ class HostList {
 	$hc=new HostCluster($this->level['hc_id']);
 	foreach ($hc->get_dependant_ids() as $db_id) {
 	    $dn=new DatabaseName($db_id);
-	    $string.="<li><a href=".$_SERVER['PHP_SELF']."?action=stat&hc_id=".$this->level['hc_id']."&dn_id=".$dn->get_id().">";
+	    $string.="<li><a href=".$_SERVER['PHP_SELF']."?action=stat&info=di&hc_id=".$this->level['hc_id']."&dn_id=".$dn->get_id().">";
 	    if (isset($this->level['dn_id']) and $this->level['dn_id'] == $dn->get_id()) {
 		$string.="<b>".$dn->get_field('db_name')."</b>";
 		$string.=$this->_get_sch_list();
@@ -76,21 +62,21 @@ class HostList {
 	if ($this->level == NULL)
 	    $this->_define_level();
 	if (count($this->host_list) == 0)
-	    $string="No hosts registered";
+	    $this->string="No hosts registered";
 	else {
-	    $string="<ul>";
+	    $this->string="<ul>";
 	    foreach ($this->host_list as $hc) {
-		$string.="<li><a href=".$_SERVER['PHP_SELF']."?action=stat&hc_id=".$hc->get_id().">";
+		$this->string.="<li><a href=".$_SERVER['PHP_SELF']."?action=stat&info=ci&hc_id=".$hc->get_id().">";
 		if (isset($this->level['hc_id']) and $this->level['hc_id'] == $hc->get_id()) {
-		    $string.="<b>".$hc->get_field('hostname')."</b>";
-		    $string.=$this->_get_db_list();
+		    $this->string.="<b>".$hc->get_field('hostname')."</b>";
+		    $this->string.=$this->_get_db_list();
 		} else
-		    $string.=$hc->get_field('hostname');
-		$string.="</a></li>\n";
+		    $this->string.=$hc->get_field('hostname');
+		$this->string.="</a></li>\n";
 	    }
-	    $string.="</ul>";
+	    $this->string.="</ul>";
 	}
-	return $string;
+	return parent::get_string();
     }
 
 

@@ -9,6 +9,9 @@ class SchemaName extends GOpm {
 	$this->reference_field='sn_id';
     }
 
+    public function get_info() {
+	return false;
+    }
 }
 
 ?>

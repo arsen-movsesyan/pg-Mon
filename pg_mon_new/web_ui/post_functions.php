@@ -1,5 +1,6 @@
 <?
 include_once("classes/class_HostCluster.php");
+include_once("include/class_SQL.php");
 
 function add_host($in_post) {
     $hc=new HostCluster();
@@ -61,4 +62,13 @@ function reset_conf() {
     $_SESSION['from_hour_back']=DEFAULT_FROM_HOUR_BACK;
     $_SESSION['to_hour_back']=DEFAULT_TO_HOUR_BACK;
 }
+
+function logout() {
+    $sql=SQL::factory();
+    $sql->__destruct();
+    session_destroy();
+    include_once("logout.php");
+    exit();
+}
+
 ?>

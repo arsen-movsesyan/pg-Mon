@@ -2,8 +2,13 @@ html, body {
     margin:0px;
     padding:0px;
 }
+
 body, input, select, textarea {
     background-color: #ffffff;
+}
+
+a:visited {
+    color: blue;
 }
 
 ul {
@@ -18,19 +23,61 @@ td, input, select, textarea {
     vertical-align: top;
 }
 
+td {
+    padding: 0px;
+}
 
-table.main {width: 100%; height: 100%; border-collapse: collapse;}
-td {padding: 0px;}
-td.top {}
-td.host_text {}
-td.topmenu {}
-td.host_list {width: 17%;}
-td.main_window {width: 83%; height: 100%;}
+
+table.main {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+}
+
+table.hc_db_stat {
+    border-collapse: collapse;
+}
+
+td.logo {}
+td.top_info {}
+td.config {}
+td.search {}
+td.top_menu {}
+td.right_thin {}
+td.host_list {
+    width: 16%;
+    height: 100%;
+}
+td.main_stat {
+    width: 68%;
+    height: 100%;}
+
+td.table_list {
+    width: 16%;
+}
 td.copyright {}
 td.bottom {}
 
 .range_set {
-    width: 180px;
     padding: 2px;
     padding-left: 15px;
+    padding-top: 10px;
+}
+
+td.menuitem {
+    vertical-align: middle;
+    text-align: center;
+    width: 12%;
+    background-image: url(menuitem_bg.jpg);
+    background-repeat: no-repeat;
+    background-position: right;
+}
+
+a.menu {
+    font-size: 10px;
+    text-transform: uppercase;
+#    color: #ffffff;
+    color: #555555;
+    font-weight: bold;
+    text-decoration: none;
 }

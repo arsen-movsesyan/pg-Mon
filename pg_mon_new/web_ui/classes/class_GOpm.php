@@ -1,8 +1,7 @@
 <?
 require_once("include/class_GenericObject.php");
-#require_once("include/class_GenericObjectCollection.php");
 
-class GOpm extends GenericObject {
+abstract class GOpm extends GenericObject {
     protected $depend_obj;
     protected $reference_field;
     protected $dependant_ids=array();
@@ -29,11 +28,18 @@ class GOpm extends GenericObject {
     }
 
     public function get_stat() {
-	$ret='';
+#	$ret='';
 	$query=sprintf($this->stat_query,$_SESSION['from_hour_back'],$_SESSION['to_hour_back']);
 	$sql=SQL::factory();
 	$sql->select_c($query);
 	$stat=$sql->get_result();
+	return $stat;
+    }
+
+
+    abstract public function get_info();
+
+/*
 	if (count($stat) == 0) {
 	    $ret="No statistic available";
 	} else {
@@ -45,7 +51,7 @@ class GOpm extends GenericObject {
 		$keys[]=$p;
 		$values[]=$v;
 	    }
-	    $ret="<table border=0><tr>";
+	    $ret="<table border=1 class=\"hc_db_stat\"><tr>";
 	    for ($i=0;$i<count($keys);$i++) {
 		$ret.="<td>".$keys[$i]."</td>";
 	    }
@@ -56,7 +62,8 @@ class GOpm extends GenericObject {
 	    $ret.="</tr></table>";
 	}
 	return $ret;
-    }
+*/
+
 }
 
 ?>
