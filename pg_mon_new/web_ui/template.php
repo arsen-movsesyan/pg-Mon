@@ -20,16 +20,19 @@
 	<td class="search">Search</td>
 	<td class="top_menu">
 
-<table class="main">
+<table border="1" class="main">
   <tr>
     <td class="menuitem"><a class="menu" href="<?$_SERVER['PHP_SELF']?>?action=home">Home</a></td>
     <td class="menuitem"><a class="menu" href="<?$_SERVER['PHP_SELF']?>?action=add">Add Host</a></td>
     <td class="menuitem"><a class="menu" href="<?$_SERVER['PHP_SELF']?>?action=stat&info=bi<?=$stat_link?> ">Basic Info</a></td>
-    <td class="menuitem"><a class="menu" href="<?$_SERVER['PHP_SELF']?>?action=stat&info=iu<?=$stat_link?> ">Index Usage</a></td>
+    <td class="menuitem"><a class="menu" href="<?$_SERVER['PHP_SELF']?>?action=stat&info=iu<?=$stat_link?> ">Seq/Idx Scans</a></td>
+    <td class="menuitem"><a class="menu" href="<?$_SERVER['PHP_SELF']?>?action=stat&info=is<?=$stat_link?> ">Index Stat</a></td>
     <td class="menuitem"><a class="menu" href="<?$_SERVER['PHP_SELF']?>?action=stat&info=hs<?=$stat_link?> ">HOT Stat</a></td>
     <td class="menuitem"><a class="menu" href="<?$_SERVER['PHP_SELF']?>?action=stat&info=ps<?=$stat_link?> ">Heap Stat</a></td>
     <td class="menuitem"><a class="menu" href="<?$_SERVER['PHP_SELF']?>?action=stat&info=vs<?=$stat_link?> ">Vacuum Stat</a></td>
+<!--
     <td class="menuitem"><a class="menu" href="<?$_SERVER['PHP_SELF']?>?action=stat&info=ih<?=$stat_link?> ">Index Hit Stat</a></td>
+-->
     <td class="menuitem"><a class="menu" href="<?$_SERVER['PHP_SELF']?>?action=logout">Logout</a></td>
   </tr>
 </table>
@@ -44,7 +47,7 @@
 	<td class="copyright">Copyright</td>
 	<td class="bottom" colspan="2">Bottom</td>
     </tr>
-<tbody>
+</tbody>
 </table>
 </body>
 </html>

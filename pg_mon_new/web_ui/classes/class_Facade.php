@@ -6,8 +6,8 @@ class Facade {
 #
 #    }
 
-
-    public static function wrap_horizontal($in_array,$exclude_field, $table_class="hc_db_stat") {
+# Used for Host and DB stat
+    public static function wrap_horizontal($in_array,$exclude_field) {
 	if (count($in_array) == 0) {
 	    return "No statistic available";
 	}
@@ -19,7 +19,7 @@ class Facade {
 	    $keys[]=$p;
 	    $values[]=$v;
 	}
-	$ret="<table border=1 class=\"$table_class\"><tr>";
+	$ret="<table border=\"1\" class=\"hc_db_stat\"><tr>";
 	for ($i=0;$i<count($keys);$i++) {
 	    $ret.="<td>".$keys[$i]."</td>";
 	}
@@ -31,15 +31,18 @@ class Facade {
 	return $ret;
     }
 
-
-    public static function wrap_nested_array($in_array,$exclude_field,$table_class="hc_db_stat") {
+# Used for statistic information
+    public static function wrap_nested_array($in_array,$exclude_field) {
 	if ($in_array) {
 	    $param=array_keys($in_array[0]);
-	    $ret="<table border=1 class=\"$table_class\"><tr>";
+	    $ret="<table border=\"1\" class=\"stat\"><tr>";
 	    for ($i=0;$i<count($param);$i++) {
 		if ($param[$i] == $exclude_field)
 		    continue;
-		$ret.="<td>".$param[$i]."</td>";
+		$ret.="<td><b>".$param[$i];
+		if ($i > 0)
+		    $ret.=" ^";
+		$ret."</b></td>";
 	    }
 	    $ret.="</tr>";
 
@@ -58,9 +61,10 @@ class Facade {
 	return $ret;
     }
 
-    public static function wrap_info($in_array,$table_class="hc_db_stat") {
+# Used for host info and DB info
+    public static function wrap_info($in_array) {
 	if ($in_array) {
-	    $ret="<table border=1 class=\"$table_class\">";
+	    $ret="<table border=\"1\" class=\"hc_db_info\">";
 	    foreach ($in_array as $p=>$v) {
 		$ret.="<tr><td>".$p."</td><td><b>".$v."</b></td></tr>";
 	    }
@@ -70,8 +74,9 @@ class Facade {
 	return $ret;
     }
 
+# This used for table column
     public static function wrap_single_column($in_array) {
-	$ret="<table border=1 class=\"hc_db_stat\">";
+	$ret="<table border=\"1\" class=\"single\">";
 	if ($in_array) {
 	    foreach ($in_array as $row) {
 		$ret.="<tr><td>".$row['tbl_name']."</td></tr>";
@@ -83,7 +88,7 @@ class Facade {
 
 
     public function render_top_info($host_info,$host_stat,$db_info,$db_stat) {
-	$ret="<table border=1 class= \"top_info\"><tr><td>";
+	$ret="<table border=1 class=\"top_info\"><tr><td>";
 	$ret.=$this->wrap_info($host_info);
 	$ret.="</td><td>";
 	$ret.=$this->wrap_horizontal($host_stat,'host_id');

@@ -34,9 +34,28 @@ table.main {
     border-collapse: collapse;
 }
 
+table.top_info {
+    border-collapse: collapse;
+}
+
+table.hc_db_info {
+    border-collapse: collapse;
+}
+
 table.hc_db_stat {
     border-collapse: collapse;
 }
+
+table.stat {
+#    text-align: center;
+#    padding-top: 10%;
+    border-collapse: collapse;
+}
+
+table.single {
+    border-collapse: collapse;
+}
+
 
 td.logo {}
 td.top_info {}
@@ -48,9 +67,8 @@ td.host_list {
     width: 16%;
     height: 100%;
 }
-td.main_stat {
-    width: 68%;
-    height: 100%;}
+
+td.main_stat {}
 
 td.table_list {
     width: 16%;
@@ -67,10 +85,7 @@ td.bottom {}
 td.menuitem {
     vertical-align: middle;
     text-align: center;
-    width: 11%;
-    background-image: url(menuitem_bg.jpg);
-    background-repeat: no-repeat;
-    background-position: right;
+    width: 9%;
 }
 
 a.menu {
