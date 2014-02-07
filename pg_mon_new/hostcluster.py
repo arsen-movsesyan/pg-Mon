@@ -123,6 +123,7 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 		return False
 	    self.db_fields={}
 	    self._populate()
+	    cur.close()
 	    self.db_conn.commit()
 #	else:
 #	    logger.debug("No new data obtained during discover for hostcluster {0}".format(self.db_fields['hostname']))
@@ -138,7 +139,7 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 	except Exception as e:
 	    logger.error("Cannot execute database discovery query on Prod: {0}".format(e.pgerror))
 	    cur.close()
-	    return
+	    return False
 	prod_dbs=cur.fetchall()
 	cur.close()
 	cur=self.db_conn.cursor()
@@ -147,7 +148,7 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 	except Exception as e:
 	    logger.error("Cannot execute database discovery query on Local: {0}".format(e.pgerror))
 	    cur.close()
-	    return
+	    return False
 	local_dbs=cur.fetchall()
 	cur.close()
 	for l_db in local_dbs:
@@ -168,6 +169,7 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 		new_db._create()
 		logger.info("Create new database {0} for cluster {1}".format(p_db[1],self.db_fields['hostname']))
 	self.db_conn.commit()
+	return True
 
     def get_track_function(self):
 	if self.id:

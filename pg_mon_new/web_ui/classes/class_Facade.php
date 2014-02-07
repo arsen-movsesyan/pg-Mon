@@ -51,6 +51,8 @@ class Facade {
 		foreach ($row as $p=>$v) {
 		    if ($p == $exclude_field)
 		    continue;
+		    if (is_numeric($v))
+			$v=round($v,2);
 		    $ret.="<td>".$v."</td>";
 		}
 		$ret.="</tr>";
