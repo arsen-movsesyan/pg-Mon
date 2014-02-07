@@ -102,7 +102,7 @@ class PgmonDaemon(Daemon):
 		    hc=HostCluster(conn,hc_id[0])
 		    if not hc.discover_cluster_params():
 			logger.critical("Cannot discover clusters params for HC: {0}".format(hc.get_field('hostname')))
-			break
+			continue
 		    hc.discover_cluster_databases()
 		    if settings.runtime_stat_enable:
 			hc.runtime_stat(ltm_id)
