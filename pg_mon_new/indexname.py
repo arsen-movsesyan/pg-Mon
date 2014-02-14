@@ -12,7 +12,7 @@ class IndexName(table.genericName):
 	if in_id:
 	    self._populate()
 	    self.prod_dsn=in_prod_dsn
-	    self.stat_obj=table.genericStat('index_stat','in_id',in_id)
+	    self.stat_obj=table.genericStat(self.db_conn,'index_stat','in_id',in_id)
 	    self.stat_query="""SELECT
 pg_relation_size(oid) AS idx_size,
 pg_stat_get_numscans(oid) AS idx_scan,

@@ -29,12 +29,12 @@ LOGGING = {
 	    'formatter': 'simple',
 	    'filename': '/var/log/pg_mon/pg_mon.log',
 	    'mode': 'a',
-	    'maxBytes': 1048576,
+	    'maxBytes': 10485760,
 	    'backupCount': 5,
 	},
     },
     'loggers': {
-	'worker_logger': {
+	'working_logger': {
 	    'handlers': ['main_file_handler'],
 	    'level': 'DEBUG',
 	    'propagate': True,
@@ -49,7 +49,7 @@ LOGGING = {
 
 logging.config.dictConfig(LOGGING)
 
-logger=logging.getLogger('worker_logger')
+logger=logging.getLogger('working_logger')
 
 def custom_dsn(db_handler):
     for handler in DATABASE:

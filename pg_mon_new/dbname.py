@@ -12,9 +12,9 @@ class DatabaseName(table.genericName):
 	self.table='database_name'
 	if in_id:
 	    self._populate()
-	    self.prod_dsn=in_prod_dsn
-	    self.stat_obj=table.genericStat('database_stat','dn_id',in_id)
-	    self.runtime_stat_obj=table.genericStat('db_runtime_stat','dn_id',in_id)
+	    self.set_prod_dsn(in_prod_dsn)
+	    self.stat_obj=table.genericStat(self.db_conn,'database_stat','dn_id',in_id)
+	    self.runtime_stat_obj=table.genericStat(self.db_conn,'db_runtime_stat','dn_id',in_id)
 	    self.sub_table='schema_name'
 	    self.sub_fk='dn_id'
 	    self.stat_query="""SELECT
@@ -46,17 +46,17 @@ WHERE pd.oid='{0}'""".format(self.db_fields['obj_oid'])
 
 
     def discover_schemas(self):
-	if not self.prod_conn or self.prod_conn.closed:
-	    if not self.set_prod_conn():
-		return False
-
-	cur=self.prod_conn.cursor()
+	cur=self._get_p_cursor()
+	if not cur:
+	    logger.error("Return from DN discover_schemas. No p_cur obtained")
+	    return False
 	try:
 	    cur.execute("SELECT oid,nspname FROM pg_namespace WHERE nspname NOT IN ('pg_catalog', 'information_schema') AND nspname !~ '^pg_toast' AND nspname !~ '^pg_temp'")
 	except Exception as e:
 	    logger.error("Canot execute schema discovery query on Prod {0}".format(e.pgerror))
 	    cur.close()
-	    return
+	    self.prod_conn.close()
+	    return False
 	prod_schs=cur.fetchall()
 	cur.close()
 	cur=self.db_conn.cursor()
@@ -65,17 +65,31 @@ WHERE pd.oid='{0}'""".format(self.db_fields['obj_oid'])
 	except Exception as e:
 	    logger.error("Canot execute schema discovery query on Local {0}".format(e.pgerror))
 	    cur.close()
-	    return
+	    self.prod_conn.close()
+	    return False
 	local_schs=cur.fetchall()
 	cur.close()
 	for l_sch in local_schs:
 	    for p_sch in prod_schs:
 		if l_sch[0]==p_sch[0] and l_sch[1]==p_sch[1]:
+		    old_sch=SchemaName(self.db_conn,self.prod_dsn,l_sch[2])
+		    if not old_sch.discover_tables():
+			logger.error("Returning from DN.discover_schemas() False from discover_tables for old")
+			self.prod_conn.close()
+			return False
+		    if not old_sch.discover_functions():
+			logger.error("Returning from DN.discover_schemas() False from discover_functions for old")
+			self.prod_conn.close()
+			return False
 		    break
 	    else:
-		old.sch=SchemaName(self.db_conn,self.prod_dsn,l_sch[2])
-		old_sch.retire()
-		logger.info("Retired schema {0} in database {1}".format(l_sch[1],self.db_fields['db_name']))
+		old_sch=SchemaName(self.db_conn,self.prod_dsn,l_sch[2])
+		if old_sch.retire():
+		    logger.info("Retired schema {0} in database {1}".format(l_sch[1],self.db_fields['db_name']))
+		else:
+		    logger.error("Return from DN.discover_schemas() Cannot retire old")
+		    self.prod.conn.close()
+		    return False
 	for p_sch in prod_schs:
 	    for l_sch in local_schs:
 		if l_sch[0]==p_sch[0] and l_sch[1]==p_sch[1]:
@@ -83,6 +97,54 @@ WHERE pd.oid='{0}'""".format(self.db_fields['obj_oid'])
 	    else:
 		new_sch=SchemaName(self.db_conn,self.prod_dsn)
 		new_sch.set_fields(dn_id=self.id,obj_oid=p_sch[0],sch_name=p_sch[1])
-		new_sch._create()
-		logger.info("Create new schema {0} in database {1}".format(p_sch[1],self.db_fields['db_name']))
-	self.db_conn.commit()
+		if new_sch._create():
+		    new_sch.set_prod_dsn(self.prod_dsn)
+		    if not new_sch.discover_tables():
+			logger.error("Returning from DN.discover_schemas() False from discover_tables for new")
+			self.prod_conn.close()
+			return False
+		    if not new_sch.discover_functions():
+			logger.error("Returning from DN.discover_schemas() False from discover_functions for new")
+			self.prod_conn.close()
+			return False
+		    logger.info("Create new schema {0} in database {1}".format(p_sch[1],self.db_fields['db_name']))
+		else:
+		    logger.error("Return from DN.discover_schemas() Cannot create new")
+		    self.prod.conn.close()
+		    return False
+	return True
+
+
+    def stat(self,in_time_id):
+	if not super(DatabaseName,self).stat(in_time_id):
+	    self.prod_conn.close()
+	    logger.error("Return from DN.stat False from super.stat()")
+	    return False
+	sn_sets=self.get_dependants(True)
+	if not sn_sets:
+	    logger.error("Return from DN.stat No dependants returned")
+	    self.prod_conn.close()
+	    return False
+	for sn_set in sn_sets:
+	    sn=SchemaName(self.db_conn,self.prod_dsn,sn_set)
+	    sn.stat(in_time_id)
+	return True
+
+
+    def runtime_stat(self,in_time_id):
+	if not super(DatabaseName,self).runtime_stat(in_time_id):
+	    logger.error("Return from DN.runtime_stat False from super.stat()")
+	    self.prod_conn.close()
+	    return False
+	sn_sets=self.get_dependants(True)
+	if not sn_sets:
+	    logger.error("Return from DN.runtime_stat No dependants returned")
+	    self.prod_conn.close()
+	    return False
+############################################
+# TEST HERE!!!
+#	for sn_set in sn_sets:
+#	    logger.debug("!!! sn_set={0}".format(sn_set))
+#	    sn=SchemaName(self.db_conn,self.prod_dsn,sn_set)
+	return True
+

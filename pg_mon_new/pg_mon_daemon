@@ -15,7 +15,7 @@ if len(sys.argv) == 2:
     elif 'restart' == sys.argv[1]:
 	daemon.restart()
 #    elif sys.argv[1] == 'reload':
-#	daemon.re_load()
+#	daemon.reload()
     else:
 	print "Unknown command"
 	sys.exit(0)

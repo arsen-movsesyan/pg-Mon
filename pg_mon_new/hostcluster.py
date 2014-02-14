@@ -16,8 +16,8 @@ class HostCluster(table.genericName):
     def _initialyze(self,in_id):
 	self._populate()
 	self.prod_dsn=self.get_conn_string()
-	self.stat_obj=table.genericStat('bgwriter_stat','hc_id',in_id)
-	self.runtime_stat_obj=table.genericStat('cluster_runtime_stat','hc_id',in_id)
+	self.stat_obj=table.genericStat(self.db_conn,'bgwriter_stat','hc_id',in_id)
+	self.runtime_stat_obj=table.genericStat(self.db_conn,'cluster_runtime_stat','hc_id',in_id)
 	self.sub_table='database_name'
 	self.sub_fk='hc_id'
 	self.stat_query="""SELECT
@@ -65,10 +65,11 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 
 
     def discover_cluster_params(self):
-	if not self.prod_conn or self.prod_conn.closed:
-	    if not self.set_prod_conn():
-		return False
-	cur=self.prod_conn.cursor()
+	cur=self._get_cursor()
+	if not cur:
+	    self.prod_conn.close()
+	    logger.error("Return from discover_cluster_params")
+	    return False
 	params={}
 	try:
 	    cur.execute("SELECT current_setting('server_version') AS ver")
@@ -120,6 +121,8 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 		cur.execute(update_stat)
 	    except Exception as e:
 		logger.error("Cannot update hostcluster new discovered data: {0}".format(e.pgerror))
+		cur.close()
+		self.db_conn.rollback()
 		return False
 	    self.db_fields={}
 	    self._populate()
@@ -129,47 +132,112 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 #	    logger.debug("No new data obtained during discover for hostcluster {0}".format(self.db_fields['hostname']))
 	return True
 
-    def discover_cluster_databases(self):
-	if not self.prod_conn or self.prod_conn.closed:
-	    if not self.set_prod_conn():
-		return False
-	cur=self.prod_conn.cursor()
+
+
+    def discover_databases(self):
+	p_cur=self._get_p_cursor()
+	if not p_cur:
+	    logger.error("Return from discover_databases. No p_cur obtained")
+	    return False
 	try:
-	    cur.execute("SELECT oid,datname FROM pg_database WHERE NOT datistemplate AND datname !='postgres'")
+	    p_cur.execute("SELECT oid,datname FROM pg_database WHERE NOT datistemplate AND datname !='postgres'")
 	except Exception as e:
 	    logger.error("Cannot execute database discovery query on Prod: {0}".format(e.pgerror))
-	    cur.close()
+	    p_cur.close()
+	    self.prod_conn.close()
 	    return False
-	prod_dbs=cur.fetchall()
-	cur.close()
+	prod_dbs=p_cur.fetchall()
+	p_cur.close()
+
+	cur=self._get_cursor()
+	if not cur:
+	    logger.error("Return from discover_databases. No cur obtained")
+	    return False
 	cur=self.db_conn.cursor()
 	try:
 	    cur.execute("SELECT obj_oid,db_name,id FROM database_name WHERE hc_id={0} AND alive".format(self.id))
 	except Exception as e:
 	    logger.error("Cannot execute database discovery query on Local: {0}".format(e.pgerror))
 	    cur.close()
+	    self.prod_conn.close()
 	    return False
 	local_dbs=cur.fetchall()
 	cur.close()
 	for l_db in local_dbs:
 	    for p_db in prod_dbs:
 		if l_db[0]==p_db[0] and l_db[1]==p_db[1]:
+		    old_db=DatabaseName(self.db_conn,self.get_conn_string(l_db[1]),l_db[2])
+		    if not old_db.discover_schemas():
+			self.prod_conn.close()
+			logger.error("Return from discover_databases. False from discover_schemas() for old")
+			return False
 		    break
 	    else:
-		old_db=DatabaseName(self.db_conn,self.prod_dsn,l_db[2])
-		old_db.retire()
-		logger.info("Retired database {0} in cluster {1}".format(l_db[1],self.db_fields['hostname']))
+		old_db=DatabaseName(self.db_conn,self.get_conn_string(l_db[1]),l_db[2])
+		if old_db.retire():
+		    logger.info("Retired database {0} in cluster {1}".format(l_db[1],self.db_fields['hostname']))
+		else:
+		    logger.error("Return from HC.discover_databases() cannot retire old")
+		    self.prod_conn.close()
+		    return False
 	for p_db in prod_dbs:
 	    for l_db in local_dbs:
 		if l_db[0]==p_db[0] and l_db[1]==p_db[1]:
 		    break
 	    else:
-		new_db=DatabaseName(self.db_conn,self.prod_dsn)
+		new_db=DatabaseName(self.db_conn,self.get_conn_string(p_db[1]))
 		new_db.set_fields(hc_id=self.id,obj_oid=p_db[0],db_name=p_db[1])
-		new_db._create()
-		logger.info("Create new database {0} for cluster {1}".format(p_db[1],self.db_fields['hostname']))
-	self.db_conn.commit()
+		if new_db._create():
+		    logger.info("Create new database {0} for cluster {1}".format(p_db[1],self.db_fields['hostname']))
+		    new_db.set_prod_dsn(self.prod_dsn)
+		    if not new_db.discover_schemas():
+			self.prod_conn.close()
+			logger.error("Return from HC.discover_databases. False from discover_schemas() for new")
+			return False
+		else:
+		    logger.error("Return from HC.discover_databases(). Canot create new")
+		    self.prod_conn.close()
+		    return False
 	return True
+
+
+    def stat(self,in_time_id):
+	if not super(HostCluster,self).stat(in_time_id):
+	    logger.error("Returned from HC.stat")
+	    return False
+	dep_dn=self.get_dependants(True)
+	if not dep_dn:
+	    logger.error("Returned from HC.stat no dependants returned")
+	    self.prod_conn.close()
+	    return False
+	for dn_set in dep_dn:
+	    dn=DatabaseName(self.db_conn,dn_set['db_dsn'],dn_set['id'])
+	    if not dn.stat(in_time_id):
+		logger.error("Returned from HC.stat False from db.stat")
+		self.prod_conn.close()
+		return False
+	return True
+
+
+    def runtime_stat(self,in_time_id):
+	if not super(HostCluster,self).runtime_stat(in_time_id):
+	    logger.error("Returned from HC.runtime_stat")
+	    return False
+	dep_dn=self.get_dependants(True)
+	if not dep_dn:
+	    logger.error("Returned from HC.runtime_stat no dependants returned")
+	    self.prod_conn.close()
+	    return False
+	for dn_set in dep_dn:
+	    dn=DatabaseName(self.db_conn,dn_set['db_dsn'],dn_set['id'])
+	    if not dn.runtime_stat(in_time_id):
+		logger.error("Returned from HC.runtime_stat False from db.stat")
+		self.prod_conn.close()
+		return False
+	return True
+
+
+
 
     def get_track_function(self):
 	if self.id:
@@ -183,14 +251,22 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 	select_stat="SELECT id,db_name FROM {0} WHERE {1}={2} AND alive".format(self.sub_table,self.sub_fk,self.id)
 	if obs:
 	    select_stat+=" AND observable"
-	cur=self.db_conn.cursor()
+	cur=self._get_cursor()
+	if not cur:
+	    logger.error("Return from HC.get_dependants No cursor obtained")
+	    self.prod_conn.close()
+	    return False
 	try:
 	    cur.execute(select_stat)
 	except Exception as e:
-	    logger.error(e.pgerror)
-	    return
+	    logger.error("Cannot execute query for dependant databases for host {0}. Error {1}".format(self.id,e.pgerror))
+	    cur.close()
+	    self.prod_conn.close()
+	    return False
 	ret=[]
 	for db in cur.fetchall():
 	    ret.append(dict(id=db[0],db_dsn=self.get_conn_string(db[1])))
 	cur.close()
 	return ret
+
+
