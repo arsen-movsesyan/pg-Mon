@@ -10,16 +10,7 @@ from daemon import Daemon
 import logtime
 import logtime_mt
 
-
 from hostcluster import HostCluster
-#from dbname import DatabaseName
-#from schemaname import SchemaName
-#from tablename import TableName
-#from indexname import IndexName
-#from tabletoastname import TableToastName
-#from indextoastname import IndexToastName
-
-#from functionname import FunctionName
 
 
 logger=settings.logger
@@ -102,7 +93,6 @@ class PgmonDaemon(Daemon):
 		ltm_id=ltm.get_id()
 		if not ltm_id:
 		    self._rollback()
-#		    self._delay()
 		    continue
 		self.pg_mon_conn.commit()
 		logger.debug("Obtained ltm_id: {0}".format(ltm_id))
@@ -112,7 +102,6 @@ class PgmonDaemon(Daemon):
 		lt_id=lt.get_id()
 		if not lt_id:
 		    self._rollback()
-#		    self._delay()
 		    continue
 		regular_stat=True
 		self.pg_mon_conn.commit()
@@ -125,14 +114,10 @@ class PgmonDaemon(Daemon):
 		logger.critical("Cannot obtain list of clusters from pg_mon DB: {0}".format(e.pgerror))
 		cur.close()
 		self._rollback()
-#		self._delay()
 		continue
 	    hc_ids=cur.fetchall()
 	    cur.close()
 
-#=============================================================
-# Start iterate over objects here
-#=============================================================
 
 ###############################################################
 ################# HostClusters ################################
@@ -141,19 +126,17 @@ class PgmonDaemon(Daemon):
 		hc=HostCluster(self.pg_mon_conn,hc_id[0])
 		if not hc.discover_cluster_params():
 		    logger.critical("Cannot discover clusters params for HC: {0}".format(hc.get_field('hostname')))
-#		    self._rollback()
-		    continue
+#		    continue
 		if not hc.discover_databases():
 		    logger.critical("Cannot discover databases for host ID: {0}".format(hc_id))
-		    self._rollback()
-		    continue
 		if settings.runtime_stat_enable:
 		    logger.debug("Runtime is enabled")
 		    if not hc.runtime_stat(ltm_id):
-			continue
+			logger.error("Error from hc.runtime_stat()")
 		if regular_stat:
 		    logger.debug("Getting hc regular stat")
 		    if not hc.stat(lt_id):
-			continue
+			logger.error("Error from hc.stat()")
+		hc.__del__()
 	    self.pg_mon_conn.close()
 	    self._delay()

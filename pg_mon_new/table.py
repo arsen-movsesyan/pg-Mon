@@ -82,10 +82,10 @@ class generic(object):
 	return True
 
 
-    def __del__(self):
-	if self.prod_conn:
-	    if not self.prod_conn.closed:
-		self.prod_conn.close()
+#    def __del__(self):
+#	if self.prod_conn:
+#	    if not self.prod_conn.closed:
+#		self.prod_conn.close()
 
 
 
@@ -158,20 +158,24 @@ class genericName(generic):
 
 
 
-    def set_prod_conn(self):
-	try:
-	    self.prod_conn=psycopg2.connect(self.prod_dsn)
-	except Exception as e:
-	    logger.warning("Cannot connect to production DB: {0}".format(self.prod_dsn))
-	    logger.warning("Error: {0}".format(e))
-	    return False
-#	logger.debug("Connection to prod DB established. DSN: {0}".format(self.prod_dsn))
+    def set_prod_conn(self,in_prod_conn=None):
+	if not in_prod_conn:
+	    if not self.prod_conn:
+		try:
+		    self.prod_conn=psycopg2.connect(self.prod_dsn)
+		except Exception as e:
+		    logger.warning("Cannot connect to production DB: {0}".format(self.prod_dsn))
+		    logger.warning("Error: {0}".format(e))
+		    return False
+	else:
+	    self.prod_conn=in_prod_conn
 	return True
 
 
     def _get_p_cursor(self):
 	if not self.prod_conn or self.prod_conn.closed:
 	    if not self.set_prod_conn():
+		logger.error("Return form _get_p_cursor False From set_prod_conn")
 		return False
 	return self.prod_conn.cursor()
 
@@ -185,13 +189,14 @@ class genericName(generic):
 	except Exception as e:
 	    logger.error("Canot get statistic info: {0}".format(e.pgerror))
 	    p_cur.close()
-	    self.prod_conn.rollback()
+#	    self.prod_conn.rollback()
 	    return False
 	stat_res=p_cur.fetchone()
 	desc=p_cur.description
 	p_cur.close()
 	self.stat_obj.set_field_dict(zip_field_names(stat_res,desc))
 	self.stat_obj.set_field('time_id',in_time_id)
+#	self.stat_obj.set_prod_conn(self.prod_conn)
 #	logger.debug("Stat generic method")
 	return self.stat_obj._create()
 
@@ -205,7 +210,7 @@ class genericName(generic):
 	except Exception as e:
 	    logger.error("Canot get runtime statistic info: {0}".format(e.pgerror))
 	    cur.close()
-	    self.prod_conn.rollback()
+#	    self.prod_conn.rollback()
 	    return False
 	self.runtime_stat_obj.set_field_dict(zip_field_names(cur.fetchone(),cur.description))
 	self.runtime_stat_obj.set_field('time_id',in_time_id)
@@ -229,6 +234,7 @@ class genericName(generic):
 		self.db_conn.rollback()
 		return False
 	    cur.close()
+	    self.db_conn.commit()
 	return True
 
 
@@ -239,7 +245,7 @@ class genericEnum(object):
 	try:
 	    in_cursor.execute("SELECT * FROM {0}".format(in_table))
 	except Exception as e:
-	    logger.error("Canot get ENUM info for table {0}: {1}".format(in_table,e))
+	    logger.error("Cannot get ENUM info for table {0}: {1}".format(in_table,e))
 	    self.data_array=None
 	else:
 	    self.data_array=in_cursor.fetchall()

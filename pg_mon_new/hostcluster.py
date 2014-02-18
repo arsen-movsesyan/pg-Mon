@@ -46,10 +46,6 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 	return ret
 
 
-#    def get_conn_string(self,dbname=None):
-#	return self.conn_string
-
-
     def add(self,ip_address,hostname,*args,**kwargs):
 	self.db_fields['param_ip_address']=ip_address
 	self.db_fields['hostname']=hostname
@@ -128,6 +124,7 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 	    self._populate()
 	    cur.close()
 	    self.db_conn.commit()
+	    logger.info("Updated cluster parameters: {0}".format(params.keys()))
 #	else:
 #	    logger.debug("No new data obtained during discover for hostcluster {0}".format(self.db_fields['hostname']))
 	return True
@@ -144,7 +141,6 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 	except Exception as e:
 	    logger.error("Cannot execute database discovery query on Prod: {0}".format(e.pgerror))
 	    p_cur.close()
-	    self.prod_conn.close()
 	    return False
 	prod_dbs=p_cur.fetchall()
 	p_cur.close()
@@ -159,7 +155,6 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 	except Exception as e:
 	    logger.error("Cannot execute database discovery query on Local: {0}".format(e.pgerror))
 	    cur.close()
-	    self.prod_conn.close()
 	    return False
 	local_dbs=cur.fetchall()
 	cur.close()
@@ -168,18 +163,16 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 		if l_db[0]==p_db[0] and l_db[1]==p_db[1]:
 		    old_db=DatabaseName(self.db_conn,self.get_conn_string(l_db[1]),l_db[2])
 		    if not old_db.discover_schemas():
-			self.prod_conn.close()
-			logger.error("Return from discover_databases. False from discover_schemas() for old")
-			return False
+			logger.error("HC.discover_databases. False from discover_schemas() for old")
+		    old_db.__del__()
 		    break
 	    else:
 		old_db=DatabaseName(self.db_conn,self.get_conn_string(l_db[1]),l_db[2])
 		if old_db.retire():
 		    logger.info("Retired database {0} in cluster {1}".format(l_db[1],self.db_fields['hostname']))
 		else:
-		    logger.error("Return from HC.discover_databases() cannot retire old")
-		    self.prod_conn.close()
-		    return False
+		    logger.error("HC.discover_databases() cannot retire old")
+		old_db.__del__()
 	for p_db in prod_dbs:
 	    for l_db in local_dbs:
 		if l_db[0]==p_db[0] and l_db[1]==p_db[1]:
@@ -189,15 +182,11 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 		new_db.set_fields(hc_id=self.id,obj_oid=p_db[0],db_name=p_db[1])
 		if new_db._create():
 		    logger.info("Create new database {0} for cluster {1}".format(p_db[1],self.db_fields['hostname']))
-		    new_db.set_prod_dsn(self.prod_dsn)
 		    if not new_db.discover_schemas():
-			self.prod_conn.close()
-			logger.error("Return from HC.discover_databases. False from discover_schemas() for new")
-			return False
+			logger.error("HC.discover_databases. False from discover_schemas() for new")
 		else:
-		    logger.error("Return from HC.discover_databases(). Canot create new")
-		    self.prod_conn.close()
-		    return False
+		    logger.error("HC.discover_databases(). Canot create new")
+		new_db.__del__()
 	return True
 
 
@@ -208,14 +197,12 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 	dep_dn=self.get_dependants(True)
 	if not dep_dn:
 	    logger.error("Returned from HC.stat no dependants returned")
-	    self.prod_conn.close()
 	    return False
 	for dn_set in dep_dn:
 	    dn=DatabaseName(self.db_conn,dn_set['db_dsn'],dn_set['id'])
 	    if not dn.stat(in_time_id):
-		logger.error("Returned from HC.stat False from db.stat")
-		self.prod_conn.close()
-		return False
+		logger.error("Error in HC.stat False from db.stat")
+	    dn.__del__()
 	return True
 
 
@@ -226,14 +213,12 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 	dep_dn=self.get_dependants(True)
 	if not dep_dn:
 	    logger.error("Returned from HC.runtime_stat no dependants returned")
-	    self.prod_conn.close()
 	    return False
 	for dn_set in dep_dn:
 	    dn=DatabaseName(self.db_conn,dn_set['db_dsn'],dn_set['id'])
 	    if not dn.runtime_stat(in_time_id):
-		logger.error("Returned from HC.runtime_stat False from db.stat")
-		self.prod_conn.close()
-		return False
+		logger.error("Error in HC.runtime_stat False from db.stat")
+	    dn.__del__()
 	return True
 
 
@@ -254,14 +239,14 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 	cur=self._get_cursor()
 	if not cur:
 	    logger.error("Return from HC.get_dependants No cursor obtained")
-	    self.prod_conn.close()
+#	    self.prod_conn.close()
 	    return False
 	try:
 	    cur.execute(select_stat)
 	except Exception as e:
 	    logger.error("Cannot execute query for dependant databases for host {0}. Error {1}".format(self.id,e.pgerror))
 	    cur.close()
-	    self.prod_conn.close()
+#	    self.prod_conn.close()
 	    return False
 	ret=[]
 	for db in cur.fetchall():
@@ -270,3 +255,8 @@ pg_stat_get_buf_alloc() AS buffers_alloc"""
 	return ret
 
 
+
+    def __del__(self):
+	if self.prod_conn:
+	    if not self.prod_conn.closed:
+		self.prod_conn.close()

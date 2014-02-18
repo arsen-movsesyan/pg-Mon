@@ -38,6 +38,7 @@ class LogTimeMain(object):
 	self.id=cur.fetchone()[0]
 #	logger.debug("Log time ID: {0}".format(self.id))
 	cur.close()
+	self.db_conn.commit()
 	return True
 
 

@@ -10,15 +10,15 @@ logger=settings.logger
 
 class TableName(table.genericName):
 
-    def __init__(self,in_db_conn,in_prod_dsn,in_id=None):
+    def __init__(self,in_db_conn,in_prod_conn,in_id=None):
 	super(TableName,self).__init__(in_db_conn,in_id)
 	self.table='table_name'
 	self.toast_id=None
 	self.sub_table='index_name'
 	self.sub_fk='tn_id'
+	self.prod_conn=in_prod_conn
 	if in_id:
 	    self._populate()
-	    self.prod_dsn=in_prod_dsn
 	    self.stat_obj=table.genericStat(self.db_conn,'table_stat','tn_id',in_id)
 	    self.va_stat_obj=table.genericStat(self.db_conn,'table_va_stat','tn_id',in_id)
 	    self.stat_query="""SELECT
@@ -56,42 +56,40 @@ FROM pg_class WHERE oid={0}""".format(self.db_fields['obj_oid'])
 	except Exception as e:
 	    logger.error("Canot get statistic info: {0}".format(e.pgerror))
 	    p_cur.close()
-	    self.prod_conn.close()
 	    return False
 	self.va_stat_obj.set_field_dict(table.zip_field_names(p_cur.fetchone(),p_cur.description))
 	self.va_stat_obj.set_field('time_id',in_time_id)
 	p_cur.close()
 	if not self.va_stat_obj._create():
-	    logger.error("Returning from TN.va_stat() False from va_stat.create")
-	    self.prod_conn.close()
-	    return False
+	    logger.error("TN.va_stat() False from va_stat.create")
 	return True
 
 
     def stat(self,in_time_id):
 	if not super(TableName,self).stat(in_time_id):
 	    logger.error("Return from TN.stat False from super.stat()")
-	    self.prod_conn.close()
 	    return False
 	idx_sets=self.get_dependants(False)
 	if not idx_sets:
-	    pass
+	    logger.warning("Returning from TN.stat no ids_sets returned")
+	    return True
 	else:
 	    for idx_set in idx_sets:
 		idn=IndexName(self.db_conn,self.prod_dsn,idx_set)
+		idn.set_prod_conn(self.prod_conn)
 		if not idn.stat(in_time_id):
-		    pass
+		    logger.error("TN.stat False from idn.stat")
 	ttn_id=self.get_toast_id()
 	if ttn_id:
 	    ttn=TableToastName(self.db_conn,self.prod_dsn,ttn_id)
+	    ttn.set_prod_conn(self.prod_conn)
 	    if not ttn.stat(in_time_id):
-		logger.eror("Returning from TN.stat False from ttn.stat")
-		self.prod_conn.close()
-		return False
+		logger.error("TN.stat False from ttn.stat")
 	    tin_id=ttn.get_tindex_id()
 	    tin=IndexToastName(self.db_conn,self.prod_dsn,tin_id)
+	    tin.set_prod_conn(self.prod_conn)
 	    if not tin.stat(in_time_id):
-		pass
+		logger.error("TN.stat False from tin.stat")
 	return True
 
 
@@ -109,14 +107,12 @@ FROM pg_class WHERE oid={0}""".format(self.db_fields['obj_oid'])
 	except Exception as e:
 	    logger.error("Canot execute index discovery query on Prod: {0}".format(e.pgerror))
 	    p_cur.close()
-	    self.prod_conn.close()
 	    return False
 	prod_idxs=p_cur.fetchall()
 	p_cur.close()
 	cur=self._get_cursor()
 	if not cur:
 	    logger.error("Returning from TN.discover_toast No cur obtained")
-	    self.prod_conn.close()
 	    return False
 	try:
 	    cur.execute("SELECT obj_oid,idx_name,id FROM index_name WHERE tn_id={0} AND alive".format(self.id))
@@ -134,9 +130,7 @@ FROM pg_class WHERE oid={0}""".format(self.db_fields['obj_oid'])
 		logger.info("Retired index {0} in table {1}".format(l_idx[1],self.db_fields['tbl_name']))
 		old_idx=IndexName(self.db_conn,self.prod_dsn,l_idx[2])
 		if not old_idx.retire():
-		    logger.error("Returning from TN.discover_indexes Cannot retire old")
-		    self.prod_conn.close()
-		    return False
+		    logger.error("TN.discover_indexes Cannot retire old")
 	for p_idx in prod_idxs:
 	    for l_idx in local_idxs:
 		if l_idx[0]==p_idx[0] and l_idx[1]==p_idx[1]:
@@ -145,15 +139,12 @@ FROM pg_class WHERE oid={0}""".format(self.db_fields['obj_oid'])
 		new_index=IndexName(self.db_conn,self.prod_dsn)
 		new_index.set_fields(tn_id=self.id,obj_oid=p_idx[0],idx_name=p_idx[1],is_unique=p_idx[2],is_primary=p_idx[3])
 		if not new_index._create():
-		    logger.error("Returning from TN.discover_indexes Cannot create new")
-		    self.prod_conn.close()
-		    return False
+		    logger.error("TN.discover_indexes Cannot create new")
 		logger.info("Create new index {0} in table {1}".format(p_idx[1],self.db_fields['tbl_name']))
 	return True
 
 
     def discover_toast(self):
-#	logger.debug("!! within discover_toast")
 	p_cur=self._get_p_cursor()
 	if not p_cur:
 	    logger.error("Returning from TN.discover_toast No p_cur obtained")
@@ -168,65 +159,50 @@ FROM pg_class WHERE oid={0}""".format(self.db_fields['obj_oid'])
 	except Exception as e:
 	    logger.error("Canot execute toast discovery query on Prod: {0}".format(e.pgerror))
 	    p_cur.close()
-	    self.prod_conn.close()
 	    return False
 	prod_ttbl=p_cur.fetchone()
 	p_cur.close()
 	cur=self._get_cursor()
 	if not cur:
 	    logger.error("Returning from TN.discover_toast No cur obtained")
-	    self.prod_conn.close()
 	    return False
 	try:
 	    cur.execute("SELECT obj_oid,ttbl_name,id FROM table_toast_name WHERE tn_id={0} AND alive".format(self.id))
 	except Exception as e:
 	    logger.error("Canot execute toast discovery query on Local: {0}".format(e.pgerror))
 	    cur.close()
-	    self.prod_conn.close()
 	    return False
 	local_ttbl=cur.fetchone()
 	cur.close()
 	if local_ttbl and prod_ttbl:
 	    if not (local_ttbl[0] == prod_ttbl[0] and local_ttbl[1] == prod_ttbl[1]):
 		logger.info("Retired TOAST table {0} for table {1}".format(local_ttbl[1],self.db_fields['tbl_name']))
-		old_ttbl=TableToastName(self.db_conn,self.prod_dsn,local_ttbl[2])
+		old_ttbl=TableToastName(self.db_conn,self.prod_conn,local_ttbl[2])
 		if not old_ttbl.retire():
-		    logger.error("Returning from TN.discover_toast Cannot retire old to create new")
-		    self.prod_conn.close()
-		    return False
+		    logger.error("TN.discover_toast Cannot retire old to create new")
 		logger.info("Create new TOAST table {0} in table {1}".format(prod_ttbl[1],self.db_fields['tbl_name']))
-		new_ttbl=TableToastName(self.db_conn,self.prod_dsn)
+		new_ttbl=TableToastName(self.db_conn,self.prod_conn)
 		new_ttbl.set_fields(tn_id=self.id,obj_oid=prod_ttbl[0],ttbl_name=prod_ttbl[1])
 		if not new_ttbl._create():
-		    logger.error("Returning from TN.discover_toast Cannot create new after retire old")
-		    self.prod_conn.close()
-		    return False
+		    logger.error("TN.discover_toast Cannot create new after retire old")
 		self.toast_id=local_ttbl[2]
 		if not new_ttbl.discover_index():
-		    logger.error("Returning from TTN.discover_toast False from discover_index for new after retire")
-		    self.prod_conn.close()
-		    return False
+		    logger.error("TTN.discover_toast False from discover_index for new after retire")
 	elif local_ttbl and not prod_ttbl:
 	    self.toast_id=None
 	    logger.info("Retired TOAST table {0} for table {1}".format(local_ttbl[1],self.db_fields['tbl_name']))
-	    old_ttbl=TableToastName(self.db_conn,self.prod_dsn,local_ttbl[2])
+	    old_ttbl=TableToastName(self.db_conn,self.prod_conn,local_ttbl[2])
 	    if not old_ttbl.retire():
-		logger.error("Returning from TN.discover_toast Cannot retire old")
-		self.prod_conn.close()
-		return False
+		logger.error("TN.discover_toast Cannot retire old")
 	elif not local_ttbl and prod_ttbl:
 	    logger.info("Create new TOAST table {0} in table {1}".format(prod_ttbl[1],self.db_fields['tbl_name']))
-	    new_ttbl=TableToastName(self.db_conn,self.prod_dsn)
+	    new_ttbl=TableToastName(self.db_conn,self.prod_conn)
 	    new_ttbl.set_fields(tn_id=self.id,obj_oid=prod_ttbl[0],ttbl_name=prod_ttbl[1])
 	    if not new_ttbl._create():
-		logger.error("Returning from TN.discover_toast Cannot create new")
-		self.prod_conn.close()
-		return False
+		logger.error("TN.discover_toast Cannot create new")
 	    self.toast_id=new_ttbl.get_id()
 	    if not new_ttbl.discover_index():
-		logger.error("Returning from TTN.discover_toast False from discover_index for new")
-		self.prod_conn.close()
-		return False
+		logger.error("TTN.discover_toast False from discover_index for new")
 	return True
 
 
@@ -236,14 +212,14 @@ FROM pg_class WHERE oid={0}""".format(self.db_fields['obj_oid'])
 	    cur=self._get_cursor()
 	    if not cur:
 		logger.error("Returning from TN.get_toast_id. No cur obtained")
-		self.prod_conn.close()
+#		self.prod_conn.close()
 		return -1
 	    try:
 		cur.execute("SELECT id FROM table_toast_name WHERE tn_id={0} AND alive".format(self.id))
 	    except Exception as e:
 		logger.error("Canot get toast ID: {0}".format(e.pgerror))
 		cur.close()
-		self.prod_conn.close()
+#		self.prod_conn.close()
 		return -1
 	    local_ttbl=cur.fetchone()
 	    cur.close()
