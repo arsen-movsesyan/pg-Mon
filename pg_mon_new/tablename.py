@@ -71,7 +71,7 @@ FROM pg_class WHERE oid={0}""".format(self.db_fields['obj_oid'])
 	    return False
 	idx_sets=self.get_dependants(False)
 	if not idx_sets:
-	    logger.warning("Returning from TN.stat no ids_sets returned")
+	    logger.info("TN.stat no ids_sets returned. Maybe no indexes present. Tabe {0}".format(self.db_fields['tbl_name']))
 	    return True
 	else:
 	    for idx_set in idx_sets:
