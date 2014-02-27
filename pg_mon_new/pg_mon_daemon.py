@@ -39,7 +39,7 @@ class PgmonDaemon(Daemon):
 	reload(settings)
 
     def _delay(self):
-	delay_to_next=60 * (settings.runtime_stat_interval - self._get_current_time("%M")) - self._get_current_time()
+	delay_to_next=60 * (settings.runtime_stat_interval - self._get_current_time("%M") % settings.runtime_stat_interval) - self._get_current_time()
 	logger.debug("Delay Invoked. Sec: {0}".format(delay_to_next))
 	time.sleep(delay_to_next)
 
